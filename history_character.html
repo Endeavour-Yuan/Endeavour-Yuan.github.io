@@ -17,7 +17,8 @@
     --shadow:0 10px 30px rgba(38,110,95,.10);
     --shadow-lift:0 16px 40px rgba(38,110,95,.18);
   }
-  *{ box-sizing:border-box; margin:0; padding:0; }
+  /* 屏蔽移动端系统点按高亮（选项卡闪灰的元凶之一） */
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
   [hidden]{ display:none !important; }
   html{ -webkit-text-size-adjust:100%; }
   body{
@@ -130,18 +131,26 @@
     display:inline-flex; align-items:center; justify-content:center; gap:8px;
     font-family:inherit; font-size:15px; font-weight:600; letter-spacing:.04em;
     padding:12px 26px; border-radius:999px; cursor:pointer; border:1px solid transparent;
+    touch-action:manipulation;
     transition:transform .22s ease, box-shadow .22s ease, background .22s ease, opacity .22s ease;
   }
   .btn.primary{ background:var(--main); color:#fff; box-shadow:0 6px 18px rgba(47,160,140,.30); }
-  .btn.primary:hover:not(:disabled){ background:var(--main2); transform:translateY(-2px); box-shadow:0 12px 26px rgba(47,160,140,.38); }
   .btn.ghost{ background:rgba(255,255,255,.8); color:var(--main); border-color:var(--line); }
-  .btn.ghost:hover:not(:disabled){ transform:translateY(-2px); box-shadow:var(--shadow); background:#fff; }
   .btn:disabled{ opacity:.4; cursor:not-allowed; box-shadow:none; }
   .btn:active{ transform:translateY(1px) scale(.97); }
   .btn.block{ width:100%; }
   .btn.lg{ font-size:16px; padding:14px 34px; }
   :focus-visible{ outline:2px solid var(--main2); outline-offset:3px; border-radius:8px; }
   #btnStart{ animation:btnPulse 2.8s ease-in-out infinite; }
+
+  /* 触屏「粘性 hover」修复：所有 hover 效果仅在真正支持悬停的设备上生效 */
+  @media (hover:hover){
+    .btn.primary:hover:not(:disabled){ background:var(--main2); transform:translateY(-2px); box-shadow:0 12px 26px rgba(47,160,140,.38); }
+    .btn.ghost:hover:not(:disabled){ transform:translateY(-2px); box-shadow:var(--shadow); background:#fff; }
+    .pref-opt:hover{ transform:translateY(-3px); box-shadow:var(--shadow-lift); border-color:var(--main); }
+    .opt:hover{ transform:translateY(-2px); border-color:var(--main); background:#fff; box-shadow:var(--shadow); }
+    .gl:hover{ background:rgba(47,160,140,.16); }
+  }
 
   /* ===== 访问码门禁 ===== */
   .gate{
@@ -220,13 +229,12 @@
     animation:fadeUp .5s ease .12s backwards; }
   .pref-sub b{ color:var(--main); }
   .pref-opts{ display:grid; gap:16px; text-align:left; }
-  .pref-opt{ padding:22px 24px; cursor:pointer; font-family:inherit; text-align:left;
+  .pref-opt{ padding:22px 24px; cursor:pointer; font-family:inherit; text-align:left; touch-action:manipulation;
     transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
     animation:fadeUp .45s ease backwards; }
   .pref-opts .pref-opt:nth-child(1){ animation-delay:.18s }
   .pref-opts .pref-opt:nth-child(2){ animation-delay:.25s }
   .pref-opts .pref-opt:nth-child(3){ animation-delay:.32s }
-  .pref-opt:hover{ transform:translateY(-3px); box-shadow:var(--shadow-lift); border-color:var(--main); }
   .pref-opt .po-t{ font-size:17px; font-weight:700; }
   .pref-opt .po-d{ font-size:12.8px; color:var(--ink-soft); margin-top:6px; }
 
@@ -255,21 +263,19 @@
   .opts{ display:grid; gap:12px; margin-top:24px; }
   .opt{
     display:flex; gap:14px; align-items:flex-start; text-align:left;
-    font-family:inherit; cursor:pointer; padding:15px 18px;
+    font-family:inherit; cursor:pointer; padding:15px 18px; touch-action:manipulation;
     background:rgba(255,255,255,.7); border:1.5px solid var(--line); border-radius:16px;
     transition:transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
     animation:fadeUp .38s ease backwards;
   }
   .opts .opt:nth-child(1){ animation-delay:.05s } .opts .opt:nth-child(2){ animation-delay:.11s }
   .opts .opt:nth-child(3){ animation-delay:.17s } .opts .opt:nth-child(4){ animation-delay:.23s }
-  .opt:hover{ transform:translateY(-2px); border-color:var(--main); background:#fff; box-shadow:var(--shadow); }
   .opt:active{ transform:scale(.985); }
   .opt-dot{ flex:none; width:18px; height:18px; margin-top:4px; border-radius:50%;
     border:2px solid rgba(47,160,140,.40); transition:all .2s ease; }
   .opt.sel{ border-color:var(--main); background:rgba(224,243,238,.92); box-shadow:0 8px 22px rgba(47,160,140,.16); }
   .opt.sel .opt-dot{ background:var(--main); border-color:var(--main); box-shadow:inset 0 0 0 3.5px #fff; }
-  .opt-text{ font-size:15px; font-weight:600; line-height:1.7; }
-  .opt-hint{ display:block; font-size:11.5px; color:var(--ink-faint); margin-top:4px; letter-spacing:.03em; }
+  .opt-text{ font-size:15px; font-weight:600; line-height:1.8; }
   .quiz-nav{ display:flex; justify-content:space-between; gap:12px; margin-top:26px; }
 
   /* ===== 词注（生词解释） ===== */
@@ -279,7 +285,7 @@
     background:rgba(47,160,140,.07); border-radius:4px; padding:0 3px;
     transition:background .2s ease;
   }
-  .gl:hover, .gl:focus-visible{ background:rgba(47,160,140,.16); }
+  .gl:focus-visible{ background:rgba(47,160,140,.16); }
   .gl-dot{
     font-style:normal; display:inline-block; vertical-align:super;
     transform:translateY(-5px); margin-left:2px;
@@ -319,39 +325,71 @@
 
   /* ===== 结果页 ===== */
   #result{ padding-top:14px; }
-  .match-hero{ text-align:center; padding:38px 26px 34px; position:relative; overflow:hidden; }
-  .hero-ornament{ width:min(520px,90%); display:block; margin:0 auto 4px; opacity:.9;
+  .match-hero{ text-align:center; padding:34px 26px 34px; position:relative; overflow:hidden; }
+  .hero-ornament{ width:min(520px,90%); display:block; margin:0 auto 10px; opacity:.9;
     animation:fadeUp .5s ease backwards, floatY 8s ease-in-out 1.4s infinite; }
-  .fig-photo{ width:136px; height:136px; margin:10px auto 6px; position:relative;
-    animation:popIn .6s cubic-bezier(.2,.85,.3,1.18) .12s backwards; }
-  .fig-photo img{
-    width:100%; height:100%; border-radius:50%; object-fit:cover; display:block;
-    border:5px solid #fff; background:#DFF0EA;
-    box-shadow:0 10px 26px rgba(38,110,95,.22);
+
+  /* 头部左右分栏：左为「立轴装裱」全身像，右为人物信息 */
+  .hero-split{ display:flex; gap:34px; align-items:stretch; justify-content:center; }
+  .scroll-frame{
+    flex:none; width:min(300px, 56%);
+    background:#fff; border-radius:12px;
+    padding:12px 12px 0;
+    border:1.5px solid rgba(47,160,140,.30);
+    box-shadow:0 14px 34px rgba(38,110,95,.20);
+    position:relative;
+    animation:popIn .6s cubic-bezier(.2,.85,.3,1.18) .1s backwards;
   }
-  .fig-photo::before{
-    content:''; position:absolute; inset:-12px; border-radius:50%;
-    border:1.5px dashed rgba(47,160,140,.45);
-    animation:spinSlow 28s linear infinite; /* 虚线环绕慢旋 */
+  .scroll-frame::before{ /* 装裱内衬细线 */
+    content:''; position:absolute; inset:7px; border-radius:7px;
+    border:1px solid rgba(47,160,140,.22); pointer-events:none;
   }
-  .match-ring{ width:200px; height:200px; margin:12px auto 0;
-    animation:popIn .6s cubic-bezier(.2,.85,.3,1.18) .42s backwards; }
-  .fig-name{ font-size:clamp(30px,7vw,42px); letter-spacing:.1em; margin:16px 0 8px;
-    animation:fadeUp .5s ease .26s backwards; }
+  .scroll-inner{
+    width:100%; aspect-ratio:3/4;
+    background:radial-gradient(circle at 50% 32%, #F6FBF8, #EAF3EE 78%);
+    border-radius:7px; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .scroll-inner img{
+    width:100%; height:100%; object-fit:contain; display:block; /* 全身完整呈现，不裁切 */
+  }
+  .scroll-plate{ /* 底部名牌：姓名 + 朝代 + 姓氏小印 */
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 8px 12px; gap:10px;
+  }
+  .scroll-plate .sp-info{ min-width:0; }
+  .scroll-plate .sp-name{ display:block; font-weight:800; font-size:16px; letter-spacing:.14em; color:var(--ink); }
+  .scroll-plate .sp-dyn{ display:block; font-size:11.5px; color:var(--ink-faint); letter-spacing:.1em; }
+  .sp-seal{
+    flex:none; width:32px; height:32px; border-radius:6px;
+    background:var(--main); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:16px;
+    box-shadow:0 3px 8px rgba(47,160,140,.35);
+  }
+  .hero-info{
+    flex:1; min-width:0;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    text-align:center;
+  }
+  .fig-name{ font-size:clamp(28px,6vw,40px); letter-spacing:.1em; margin:0 0 8px;
+    animation:fadeUp .5s ease .22s backwards; }
   .fig-meta{ font-size:14px; color:var(--main); font-weight:700; letter-spacing:.12em;
-    animation:fadeUp .5s ease .34s backwards; }
-  .tag-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:20px; }
+    animation:fadeUp .5s ease .3s backwards; }
+  .match-ring{ width:200px; height:200px; margin:14px auto 0;
+    animation:popIn .6s cubic-bezier(.2,.85,.3,1.18) .4s backwards; }
+  .tag-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
   .tag-row > *{ animation:chipPop .4s ease backwards; }
-  .tag-row > *:nth-child(1){ animation-delay:.52s } .tag-row > *:nth-child(2){ animation-delay:.59s }
-  .tag-row > *:nth-child(3){ animation-delay:.66s } .tag-row > *:nth-child(4){ animation-delay:.73s }
+  .tag-row > *:nth-child(1){ animation-delay:.5s } .tag-row > *:nth-child(2){ animation-delay:.57s }
+  .tag-row > *:nth-child(3){ animation-delay:.64s } .tag-row > *:nth-child(4){ animation-delay:.71s }
   .tag{ font-size:12.5px; font-weight:700; color:#fff; background:var(--main); padding:5px 15px; border-radius:999px; letter-spacing:.06em; }
   .badge-dom{ font-size:12.5px; font-weight:700; color:var(--main); background:rgba(255,255,255,.92);
     border:1.5px solid var(--main); padding:4px 15px; border-radius:999px; letter-spacing:.06em; }
   .quote-box{
-    margin:26px auto 0; max-width:520px; text-align:left;
+    margin:28px auto 0; max-width:520px; text-align:left;
     border-left:4px solid var(--main); padding:6px 4px 6px 20px;
     font-size:15.5px; color:var(--ink-soft); font-weight:600; line-height:1.9;
-    animation:fadeUp .55s ease .6s backwards;
+    animation:fadeUp .55s ease .58s backwards;
   }
   .quote-box .qby{ display:block; text-align:right; font-size:12px; color:var(--ink-faint); font-weight:400; margin-top:8px; }
 
@@ -366,6 +404,17 @@
   .section-note{ font-size:13.5px; color:var(--ink-soft); margin-bottom:14px; }
   .section-note b{ color:var(--main); }
   .prose{ font-size:14.5px; color:var(--ink); line-height:2; }
+
+  /* 人物小传 · 科普（嵌于 01 板块，词注批注生效区） */
+  .bio-block{
+    margin-top:22px; padding:16px 18px 13px;
+    border:1.5px dashed rgba(47,160,140,.30); border-radius:14px;
+    background:rgba(47,160,140,.05);
+  }
+  .bio-head{ font-size:13px; font-weight:800; color:#1F7A6A; letter-spacing:.06em;
+    margin-bottom:6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .bio-head span{ font-size:11px; color:var(--ink-faint); font-weight:400; }
+  .bio-text{ font-size:13.8px; color:var(--ink-soft); line-height:2; }
 
   .radar-wrap{ margin:6px auto 18px; max-width:460px; }
   .dim-row{ display:grid; grid-template-columns:76px 1fr 44px; gap:12px; align-items:center; margin:11px 0; }
@@ -386,24 +435,23 @@
   .tone-card h4{ text-align:center; }
   .tone-card p{ text-align:left; width:100%; }
 
-  /* 台词卡：大号引号水印固定于左上角专属留白，正文与落款整体居中。
-   * 用 .card.quote-card 双类特异性（0,2,0），确保移动端 .card 的内边距覆盖不会破坏此布局 */
+  /* 台词卡：大号引号水印固定于左上角专属留白，正文与落款整体居中 */
   .card.quote-card{
     position:relative;
-    padding:58px 20px 20px;              /* 顶部 58px 是引号水印的专属留白，正文不可能与它相遇 */
+    padding:58px 20px 20px;              /* 顶部 58px 是引号水印的专属留白 */
     text-align:center;
-    display:flex; flex-direction:column; justify-content:center; /* 等高卡片内短引文垂直居中 */
+    display:flex; flex-direction:column; justify-content:center;
   }
   .quote-card::before{
     content:'「';
     position:absolute; left:16px; top:12px;
-    font-family:'Songti SC','STSong','SimSun',serif; /* 宋体引号更有金石气 */
+    font-family:'Songti SC','STSong','SimSun',serif;
     font-size:44px; line-height:1; font-weight:400;
     color:rgba(47,160,140,.22);
     pointer-events:none;
   }
   .quote-card .qt{ font-size:15px; font-weight:700; line-height:1.95; }
-  .quote-card .qt::after{ /* 引文与落款之间的居中小分隔线 */
+  .quote-card .qt::after{
     content:''; display:block; width:30px; height:2px; border-radius:2px;
     background:rgba(47,160,140,.32); margin:14px auto 0;
   }
@@ -454,10 +502,18 @@
     .grid3{ grid-template-columns:repeat(3,1fr); }
     .tone-card p{ text-align:justify; }
   }
+  @media (max-width:640px){
+    /* 窄屏：全身像与信息上下堆叠，画幅居中 */
+    .hero-split{ flex-direction:column; align-items:center; gap:22px; }
+    .scroll-frame{ width:min(272px, 76%); }
+    .hero-info{ width:100%; }
+    .hero-ornament{ display:none; }
+  }
   @media (max-width:480px){
     body{ font-size:14px; }
     .container{ padding:18px 14px 64px; }
     .card{ padding:20px 18px; }
+    .match-hero{ padding:24px 14px 26px; }
     .sell-grid{ grid-template-columns:1fr; }
     .quiz-top{ top:58px; padding:12px 14px; }
     .quiz-card{ padding:22px 18px 18px; }
@@ -465,6 +521,7 @@
     .site-head{ padding:12px 14px; }
     .match-ring{ width:180px; height:180px; }
     .q-stem{ line-height:1.8; }
+    .card.quote-card{ padding:54px 16px 18px; }
   }
 
   /* ===== 动效偏好：要求减少动效时全部关停 ===== */
@@ -533,7 +590,7 @@
     <div class="hero">
       <p class="eyebrow">HISTORICAL FIGURE ARCHIVE</p>
       <h1>你像哪位<span class="accent">历史人物</span>？</h1>
-      <p class="hero-sub">回答 24 道情境题，读取你的八维性格结构，和 113 位清代以前的中华历史人物比一比底色——找到那个跟你处理世界的方式最像的人。</p>
+      <p class="hero-sub">回答 24 道情境题，读取你的八维性格结构，和 116 位清代以前的中华历史人物比一比底色——找到那个跟你处理世界的方式最像的人。</p>
       <div class="hero-btns">
         <button class="btn primary lg" id="btnStart">开始读取档案</button>
         <button class="btn ghost lg" id="btnHow">看看如何匹配</button>
@@ -562,7 +619,7 @@
           <circle cx="8" cy="6" r="3.4"/><path d="M8 10.5v10M5 13h6"/>
           <circle cx="18" cy="6" r="3.4"/><path d="M18 10.5v10M15 13.5c1.8 3.5 4.2 3.5 6 0"/>
         </svg>
-        <div><h3>男女皆有</h3><p>58 位男性、55 位女性人物同库匹配，可按你的偏好缩小候选范围。</p></div>
+        <div><h3>男女皆有</h3><p>58 位男性、58 位女性人物同库匹配，可按你的偏好缩小候选范围。</p></div>
       </div>
       <div class="card sell">
         <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#2FA08C" stroke-width="1.8" stroke-linecap="round">
@@ -583,7 +640,6 @@
       <h3>测试说明</h3>
       <ul>
         <li>全是情境选择题，没有标准答案，凭第一直觉选就行；</li>
-        <li>每个选项对应一种行为倾向，选最贴近你本能反应的那个；</li>
         <li>题目从 1000 道历史场景题库里随机抽，尽量不重复出题；</li>
         <li>看不懂的古词别担心——带「注」的词点一下就有解释；</li>
         <li>答完最后一题会自动生成人物档案；结果仅供自省和谈资。</li>
@@ -598,7 +654,7 @@
     <div class="pref-opts">
       <button class="card pref-opt" data-p="f">
         <span class="po-t">女性人物优先</span>
-        <span class="po-d">在 55 位女性历史人物中为你匹配前世档案</span>
+        <span class="po-d">在 58 位女性历史人物中为你匹配前世档案</span>
       </button>
       <button class="card pref-opt" data-p="m">
         <span class="po-t">男性人物优先</span>
@@ -606,7 +662,7 @@
       </button>
       <button class="card pref-opt" data-p="any">
         <span class="po-t">不限性别</span>
-        <span class="po-d">在全部 113 位历史人物里，纯粹按性格距离匹配</span>
+        <span class="po-d">在全部 116 位历史人物里，纯粹按性格距离匹配</span>
       </button>
     </div>
   </section>
@@ -651,7 +707,7 @@
       <circle cx="36" cy="36" r="26" fill="rgba(47,160,140,.12)"/>
       <text x="36" y="46" text-anchor="middle" font-size="26" font-weight="700" fill="#2FA08C">档</text>
     </svg>
-    <p>正在翻阅一百一十三卷人物档案…</p>
+    <p>正在翻阅一百一十六卷人物档案…</p>
     <div class="gen-bar"><i></i></div>
   </div>
 </div>
@@ -674,7 +730,7 @@
 /* ================================================================
  * 前世人物志 · 你像哪位历史人物
  * 题库引擎（24 基准题 + 1000 道口语化场景题）→ 8 维计分
- * → 113 人人物库欧氏距离匹配 → 图形化档案页（Chart.js 雷达图 + 原生兜底）
+ * → 116 人人物库（男女各 58）欧氏距离匹配 → 图形化档案页
  * → 动效体系 + 词注系统 + 答题氛围层 → Canvas 长图导出（原生绘制）
  * ================================================================ */
 const $ = s => document.querySelector(s);
@@ -809,7 +865,7 @@ const ARCHETYPES = {
   },
 };
 
-/* ---------------- 人物库：113 人（男 58 / 女 55，清代以前） ----------------
+/* ---------------- 人物库：116 人（男 58 / 女 58，清代以前） ----------------
  * n 姓名 / g 性别 / c 朝代 / r 身份角色 / a 原型 / q 台词 */
 const FIGURES = [
   /* —— 男性 58 —— */
@@ -871,11 +927,12 @@ const FIGURES = [
   {n:'严光',g:'m',c:'东汉',r:'富春山隐士',a:'free',q:'士故有志，何至相迫乎。'},
   {n:'嵇康',g:'m',c:'魏晋',r:'竹林名士',a:'free',q:'越名教而任自然。'},
   {n:'陶渊明',g:'m',c:'东晋',r:'五柳先生',a:'free',q:'不为五斗米折腰。'},
-  /* —— 女性 55 —— */
+  /* —— 女性 58 —— */
   {n:'武则天',g:'f',c:'唐',r:'则天大圣皇帝',a:'ruler',q:'朕之天下，敢为人所不能为。'},
   {n:'吕雉',g:'f',c:'西汉',r:'高皇后',a:'ruler',q:'既执掌乾坤，便不惧风雨。'},
   {n:'萧绰',g:'f',c:'辽',r:'承天皇太后',a:'ruler',q:'军国大事，我一人决之。'},
   {n:'独孤伽罗',g:'f',c:'隋',r:'文献皇后',a:'ruler',q:'誓无异生之子。'},
+  {n:'邓绥',g:'f',c:'东汉',r:'和熹皇后',a:'ruler',q:'临朝非我所欲，社稷不可一日无主。'},
   {n:'钟离春',g:'f',c:'战国',r:'齐宣王后',a:'strategist',q:'妾不肖，愿乞补王之阙。'},
   {n:'窦漪房',g:'f',c:'西汉',r:'窦太后',a:'strategist',q:'福祸相倚，唯慎唯忍。'},
   {n:'辛宪英',g:'f',c:'三国',r:'名门智女',a:'strategist',q:'世事如棋，当早识其变。'},
@@ -885,6 +942,7 @@ const FIGURES = [
   {n:'文成公主',g:'f',c:'唐',r:'和亲公主',a:'pioneer',q:'所行之处，皆为故土。'},
   {n:'黄道婆',g:'f',c:'元',r:'棉纺织革新家',a:'pioneer',q:'错纱配色，综线挈花。'},
   {n:'谈允贤',g:'f',c:'明',r:'女医',a:'pioneer',q:'以女子之身，行济世之医。'},
+  {n:'吕母',g:'f',c:'新莽末',r:'起义女首领',a:'pioneer',q:'散尽家财，只为讨一个公道。'},
   {n:'王昭君',g:'f',c:'西汉',r:'明妃',a:'diplomat',q:'翩翩之燕，远集西羌。'},
   {n:'刘细君',g:'f',c:'西汉',r:'乌孙公主',a:'diplomat',q:'吾家嫁我兮天一方。'},
   {n:'刘解忧',g:'f',c:'西汉',r:'解忧公主',a:'diplomat',q:'身在他乡，心系故国。'},
@@ -920,6 +978,7 @@ const FIGURES = [
   {n:'梁红玉',g:'f',c:'南宋',r:'抗金女将',a:'guardian',q:'击鼓三通，山河震动。'},
   {n:'秦良玉',g:'f',c:'明',r:'忠贞侯',a:'guardian',q:'白杆所指，寸土不让。'},
   {n:'马秀英',g:'f',c:'明',r:'孝慈高皇后',a:'guardian',q:'愿无忘群臣同艰难。'},
+  {n:'缇萦',g:'f',c:'西汉',r:'上书救父的孝女',a:'guardian',q:'妾愿没入官婢，以赎父刑。'},
   {n:'巴清',g:'f',c:'秦',r:'丹砂女商',a:'merchant',q:'用财自卫，不见侵。'},
   {n:'俞大娘',g:'f',c:'唐',r:'航运船主',a:'merchant',q:'航船千斛，生死相托。'},
   {n:'苏小小',g:'f',c:'南朝齐',r:'西泠诗妓',a:'free',q:'妾乘油壁车，郎骑青骢马。'},
@@ -929,7 +988,129 @@ const FIGURES = [
   {n:'聂隐娘',g:'f',c:'唐',r:'女侠',a:'free',q:'隐迹人间，不露锋芒。'},
 ];
 
-/* ---------------- 词注词典：题干/选项/人物资料中的生僻词 ----------------
+/* ---------------- 人物小传 · 科普（116 位人物均配，词条批注自动生效） ---------------- */
+const BIOS = {
+  /* —— 男性 —— */
+  '嬴政':'秦王朝建立者。十年扫灭六国，统一文字、货币与车轨，又筑长城、修驰道，把「天下」第一次焊成整体；晚年求仙苛法，也为帝国的速亡埋了雷。',
+  '刘彻':'西汉在位最久的雄主。北击匈奴、派张骞凿空西域、独尊儒术，把汉朝推向极盛；连年征战耗空国库，晚年下诏罪己，算是少见的清醒收场。',
+  '刘秀':'东汉开国皇帝，起于宗室远支。昆阳以少胜多，得天下后以「柔道」治国，退功臣、进文吏、轻徭薄赋，是开国之君里少有的善始善终。',
+  '杨坚':'隋朝开国皇帝。代周建隋、统一南北，创三省六部与科举雏形，被后世史家列入影响世界进程的帝王；晚年废长立幼，为隋亡埋下伏笔。',
+  '李世民':'唐朝第二位皇帝。玄武门之变夺位后纳谏任贤、轻刑薄赋，对外平定四夷、被尊「天可汗」，贞观之治成为此后千年的治世范本。',
+  '赵匡胤':'宋朝开国皇帝，陈桥兵变黄袍加身。一杯酒释兵权，把晚唐以来的武人政治改写为文官政治，重文轻武从此定了大宋三百年的底色。',
+  '朱元璋':'明朝开国皇帝，从放牛娃、行脚僧一路打到帝位。铁腕反贪、休养生息，也废丞相、兴大狱，把皇权攥到了历代最紧的程度。',
+  '姜尚':'又称姜子牙，周朝开国军师。渭水垂钓遇文王，辅佐武王牧野克商，被后世兵家尊为鼻祖；《封神演义》里执打神鞭的老者，原型正是他。',
+  '管仲':'齐国名相，辅佐齐桓公九合诸侯。兴盐铁、通货殖，留下「仓廪实而知礼节」的名论，连孔子都感叹：没有管仲，我们早成了野人。',
+  '孙膑':'战国军事家，《孙膑兵法》的作者。桂陵、马陵两役把「围魏救赵」打成教科书，证明了庙算之外，地势与人心同样是兵器。',
+  '张仪':'战国纵横家，连横策略的操盘手。以「横」破「纵」，凭三寸之舌拆散六国同盟，为秦国的东出撕开了口子。',
+  '张良':'汉初三杰之一，谋圣。圯上受书、佐汉灭楚，功成后急流勇退、从赤松子游，是开国功臣里少有的善终样本。',
+  '诸葛亮':'蜀汉丞相。隆中一对定三分，治蜀依法、南抚夷越、北伐中原，「鞠躬尽瘁」四个字从此成为人臣的标尺。',
+  '司马懿':'曹魏权臣，西晋基业的实际奠基人。装病蛰伏、隐忍待时，高平陵之变一朝夺权，把一个「忍」字做成了兵法。',
+  '刘基':'明朝开国谋臣，世称刘伯温。通经史、晓天文，为朱元璋献时务十八策；民间把他与诸葛亮并称，神化为前知五百年的智者。',
+  '张骞':'西汉外交家。两度出使西域，被匈奴扣留十余年持节不改，史书把这次贯通称为「凿空」——丝绸之路的第一块界碑由他竖起。',
+  '班超':'东汉名将，投笔从戎的边地传奇。率三十六人纵横西域三十年、重开都护府，「不入虎穴，焉得虎子」就是他的原话。',
+  '玄奘':'唐代高僧，唯识宗创始人。西行五万里、孤身十七年，取回佛经六百余部主持翻译，《大唐西域记》至今是中亚考古的地图。',
+  '郑和':'明代航海家，七下西洋的统帅。率两百余艘宝船最远抵东非，比哥伦布早近一个世纪；航海档案后来散佚，成历史一大憾事。',
+  '徐霞客':'明代地理学家。三十余年徒步考察大半个中国，最早系统记述喀斯特地貌；《徐霞客游记》的开篇之日，如今是「中国旅游日」。',
+  '蔺相如':'战国赵国上卿。完璧归赵、渑池护主，位居廉颇之上却引车避匿，换来将相和，把外交气度演成了成语。',
+  '晏婴':'齐国名相，历仕三朝。身材矮小而机智过人，二桃杀三士、橘化为枳皆出其手；一件狐裘穿三十年，俭出名臣的另一种样子。',
+  '苏秦':'战国纵横家，合纵的旗手。身佩六国相印，使秦兵十五年不敢函谷出关；锥刺股的苦读典故，也出自他发迹前夜。',
+  '鲁肃':'东吴战略家。榻上策比隆中对早七年画出三分蓝图，力主联刘抗曹，是赤壁之战背后真正的推手之一。',
+  '孔丘':'儒家学派创始人。周游列国十四年推行仁政而不遇，退而修书设教，弟子三千；其言行为此后两千多年的华人立了心尺。',
+  '李耳':'道家学派创始人，世称老子。做过周室守藏史，见周衰骑牛西出函谷，留下五千言《道德经》，无为之道影响遍及哲学与治术。',
+  '墨翟':'墨家创始人，乱世里的工程师。主张兼爱、非攻，带队帮弱国守城止战；其门下纪律严明、赴火蹈刃不旋踵，首领称「巨子」。',
+  '孟轲':'战国儒家宗师，亚圣。好辩而雄辩，把「民贵君轻」「浩然之气」讲进汉语的骨头里；生前不遇，身后与孔子并称「孔孟」。',
+  '司马迁':'西汉史学家。因李陵之祸受宫刑而不废其志，忍辱著成《史记》百三十篇，为两千年正史立下体例。',
+  '张衡':'东汉科学家兼文学家。造浑天仪与候风地动仪，把地震观测变成仪器问题；一篇《二京赋》构思十年，科学与辞赋在他身上并存。',
+  '朱熹':'南宋理学集大成者。所编《四书章句》成为此后六百年科举的标准教材，「格物致知」由一派学问长成官方正统。',
+  '王守仁':'明代心学宗师，世称阳明先生。龙场悟道提出「知行合一」，又以书生之身平定宁王之乱；「此心光明」是他临终的最后一句话。',
+  '商鞅':'战国改革家，两次变法强秦。废井田、行郡县、立军功爵，秦国二十年脱胎换骨；功成而身死车裂，其法却留了下来。',
+  '范仲淹':'北宋政治家、文学家。庆历新政未成而先贬，却在《岳阳楼记》里写下「先忧后乐」，为士大夫精神立了牌位。',
+  '王安石':'北宋改革家。熙宁变法理财强兵，青苗、免役诸法争论千年；「天变不足畏」的执拗，让他成为后世褒贬分歧最大的人物之一。',
+  '张居正':'明代改革家，万历初年的实际执政者。推行一条鞭法与考成法，为衰明的国库续命数十年；身后遭抄家清算，荣辱都到了极处。',
+  '屈原':'战国楚国大夫，中国第一位留下姓名的大诗人。举贤授能之策不容于朝，自沉汨罗；《离骚》的香草美人，是中国诗歌的源代码。',
+  '王羲之':'东晋书法家，书圣。兰亭雅集微醺挥毫，《兰亭序》被尊为天下第一行书；传说他爱鹅，从鹅颈的弧线里悟笔意。',
+  '李白':'盛唐诗仙。二十五岁仗剑出蜀，诗风如天外来客；一生想做官又见不得官场，「仰天大笑出门去」是他的名片。',
+  '杜甫':'盛唐诗圣。亲历安史之乱全程，把流亡路上的民生写进律诗的最高处；生前潦倒，身后被尊为诗家宗主，诗称「诗史」。',
+  '苏轼':'北宋文豪。诗词文书画皆登顶，一生三次大贬却越贬越通透，「一蓑烟雨任平生」是他给自己开的药方。',
+  '辛弃疾':'南宋豪放词人。二十一岁率五十骑闯五万敌营擒叛将，南归后却一生不得用兵，《破阵子》里全是没处安放的马力。',
+  '唐寅':'明代画家，桃花庵主。乡试解元却卷入科场案断送仕途，卖画为生，诗画一半狂一半痛，「别人笑我太疯癫」是他的自况。',
+  '汤显祖':'明代戏曲家，《临川四梦》的作者。《牡丹亭》一句「情不知所起，一往而深」，为明清戏曲立起「主情」的大旗。',
+  '卫青':'西汉大将军。出身骑奴而七击匈奴无败绩，官至大司马而不养士、不自矜，把谦抑活成了另一种锋利。',
+  '霍去病':'西汉名将。十七岁封冠军侯，六击匈奴、封狼居胥；「匈奴未灭，无以家为」的少年意气，是此后两千年武人的天花板。',
+  '关羽':'汉末名将，后世尊为关帝。白马刺颜良、水淹七军威震华夏，败走麦城而义不降吴，忠义的符号由史实一路长成信仰。',
+  '岳飞':'南宋抗金名将。背刺「尽忠报国」，郾城大破铁浮屠，被十二道金牌召回冤死风波亭；平反之后，「岳家军」成了军纪的同义词。',
+  '文天祥':'南宋末代丞相。起兵勤王、被俘不屈，《正气歌》与「人生自古谁无死」写在囚牢与刑场之间，是宋亡时最硬的一块骨头。',
+  '戚继光':'明代抗倭名将。练义乌兵、创鸳鸯阵，荡平东南倭患，后镇蓟州修长城；还留下《纪效新书》，把练兵写成了学问。',
+  '范蠡':'春秋末政治家、商人祖师。助越灭吴后泛舟五湖，三致千金而三散之，「陶朱公」从此成了巨富的代称。',
+  '端木赐':'孔门十哲之一的子贡。利口巧辞、善辨货殖，被后世尊为儒商之祖；孔子周游列国的盘缠，多靠这位学生沿途经营。',
+  '白圭':'战国大商，经营之祖。提出「人弃我取，人取我与」与「乐观时变」，把生意做成了对周期的预判。',
+  '吕不韦':'由大商而秦相。以「奇货可居」押中王位继承，聚门客三千编成《吕氏春秋》，「一字千金」的悬赏就出自这部书。',
+  '庄周':'战国道家宗师。漆园小吏而心游万仞，梦蝶、濠梁之辩、曳尾涂中，把逍遥写成了汉语想象力的边疆。',
+  '严光':'东汉隐士，字子陵。少与刘秀同窗，帝业成后披羊裘钓于富春江畔，光武三聘而不出，成了帝王与布衣交谊的孤本。',
+  '嵇康':'魏晋名士，竹林七贤的精神领袖。打铁为生、越名教而任自然，《广陵散》绝于刑场，一曲成谶的自由代价。',
+  '陶渊明':'东晋诗人，田园诗开山。任彭泽令八十余日，「不为五斗米折腰」挂印归去，此后种豆南山，把清贫活成了审美。',
+  /* —— 女性 —— */
+  '武则天':'中国历史上唯一的正统女皇帝。十四岁入宫，从才人到皇后、太后，最终改唐为周；政启开元、治宏贞观，无字碑是她留给自己的注脚。',
+  '吕雉':'汉高祖皇后，临朝称制的第一人。佐刘邦定天下，掌权后政出一门而民生晏然，司马迁破例把她写进帝王本纪。',
+  '萧绰':'辽朝承天皇太后，小字燕燕。摄政二十七年，澶渊之盟订于其手，辽的国势在她任内抵达顶点。',
+  '独孤伽罗':'隋文帝皇后，与帝并称「二圣」。坚持一夫一妻、深度参与朝政，开皇年间的人事任免里常藏着她的手笔。',
+  '邓绥':'东汉和熹皇后。十六岁入宫，二十五岁起临朝称制十六年；夜读经传、水旱自省，遣使通西域、命蔡伦监作造纸——东汉的一段学问与工艺，是她护住的。',
+  '钟离春':'战国齐宣王王后，世称无盐女。貌陋而深明大局，冒死进谏点破「四殆」之危，「丑女救国」由她写进史册。',
+  '窦漪房':'西汉窦太后，历文、景、武三朝。由民女而姬妾而太后，笃信黄老，景武之际的政局一半握在她的偏好里。',
+  '辛宪英':'三国魏国智女。一眼看穿高平陵之变的结局，几句料事如神的提醒保全了兄弟，史书为这样的女子破了例。',
+  '张出尘':'隋末唐初奇女子，红拂女。慧眼识李靖于布衣之中，夜奔出府与之驰马走天下，「风尘三侠」的女主角。',
+  '上官婉儿':'唐代女官，人称巾帼宰相。襁褓中随母没入掖庭，因才获武则天赏识掌管诏命，称量天下士；开元文坛的局面也有她一份奠基。',
+  '红线':'唐代传奇中的女侠，节度使府押衙。夜盗田承嗣枕边金合，消一场兵祸于无形，事成遁迹——唐人对「以一己止战」的全部想象。',
+  '文成公主':'唐代和亲公主。入藏联姻松赞干布，携去工匠、医药与佛经，唐蕃之间此后数十年无大战；拉萨至今供着她的事迹。',
+  '黄道婆':'宋末元初棉纺织革新家。流落崖州从黎族习艺，晚年返松江革新轧弹纺织之法，江南棉布业因她改写。',
+  '谈允贤':'明代女医。家学渊源、自学成医，著《女医杂言》六十一案，让妇科第一次有了女性自己的笔。',
+  '吕母':'新莽末年起义女首领，史书记载的第一位女性起义者。独子被县宰冤杀，她散尽家财聚众数千，破海曲城诛宰祭子，其后将部众托付义军。',
+  '王昭君':'西汉和亲宫女，明妃。自愿请行出塞嫁呼韩邪单于，「落雁」传说背后，是汉匈之间数十年无战事的太平。',
+  '刘细君':'西汉和亲公主，乌孙公主。远嫁西域的第一位皇室女性，《悲愁歌》里「远托异国」四字，是中国诗史上最早的乡愁之一。',
+  '刘解忧':'西汉和亲公主。在乌孙历嫁三王、生活半个世纪，晚年上疏求归，汉宣帝亲迎入京——她把外交做成了整个人生。',
+  '冯嫽':'西汉第一位女外交家。随解忧公主远赴乌孙，持汉节行西域诸国，史书称「城郭诸国敬信之」。',
+  '西施':'春秋末越国美女，「沉鱼」之首。传说被献于吴宫以乱其政，功成后泛舟五湖——美貌是否真能倾城，史笔始终没给她定论。',
+  '冼夫人':'南朝至隋的岭南女首领。历事三朝唯保境安民，被尊「圣母」，周恩来称她为「中国巾帼英雄第一人」。',
+  '长孙氏':'唐太宗皇后。著《女则》以古鉴今，谏外戚干政、护魏征于盛怒之下，贞观之治的软性基建里有她一功。',
+  '班昭':'东汉史学家。兄班固身后，奉诏续补《汉书》的天文志与八表，又任皇后及诸贵人之师，学者尊称「曹大家」。',
+  '蔡文姬':'汉末才女。乱世被掳入匈奴十二年，曹操以金璧赎归，《胡笳十八拍》与《悲愤诗》把流离写到了骨头上。',
+  '谢道韫':'东晋才女，咏絮之才的出处。一句「未若柳絮因风起」胜尽谢家子弟；晚年遭孙恩之乱，持刀护外孙突围的背影更胜咏絮。',
+  '徐惠':'唐太宗贤妃。四岁诵《论语》《诗经》，长成后上疏谏征伐营缮，言辞切直而得嘉纳，是贞观末年少有的清醒声音。',
+  '左芬':'西晋女文士，左思之妹。以才名入宫而不以色进，以文翰自适，《啄木诗》是她给自己写的注脚。',
+  '宋若昭':'唐代女官，尚宫。与姊妹共著《女论语》，掌宫中记注簿籍数十年，身后以一品礼葬——宫廷女性的天花板。',
+  '冯太后':'北魏文成帝皇后，孝文帝改革的真正前站。两度临朝，推行俸禄制与均田制，把鲜卑王朝推进汉化的深水区。',
+  '刘娥':'北宋章献明肃皇后。由蜀地歌女而至垂帘听政十一年，号令严明、政局不乱；「狸猫换太子」的黑锅，替她背了近千年。',
+  '班婕妤':'西汉女文学家。成帝朝以才德入宫，赵氏姐妹得宠后退居长信宫，《团扇歌》的秋扇见捐，成了后宫失意者的总隐喻。',
+  '卓文君':'西汉才女。夜奔司马相如、当垆卖酒，一首《白头吟》挽回变心的丈夫——爱情里的主动权，两千年前她先拿了。',
+  '虞姬':'项羽侍姬。垓下被围之夜，「大王意气尽，贱妾何聊生」与四面楚歌一起定格；《虞美人》这个词牌，用的是她的名字。',
+  '卫铄':'东晋女书法家，卫夫人。师承钟繇而传笔法于王羲之，《笔阵图》论点画如列兵阵——书圣的第一位老师。',
+  '薛涛':'唐代女诗人。入蜀中幕府酬唱元白，自制薛涛笺风靡一时；「女校书」之名虽未实授，千年里却只属于她。',
+  '鱼玄机':'唐代女冠诗人。「易求无价宝，难得有心郎」写尽她的时代与性情；因笞杀婢女被处决，天才与烈性各留一半注脚。',
+  '花蕊夫人':'五代后蜀贵妃。亡国被掳后一首「十四万人齐解甲，更无一个是男儿」，把数十万守军的溃败骂成千古名句。',
+  '李清照':'宋代词宗。前期写「绿肥红瘦」，后期写「寻寻觅觅」，国破家亡把闺阁词人淬成豪放也能落笔的大家；与夫共撰《金石录》，考据功夫同样了得。',
+  '朱淑真':'南宋女词人，断肠词人。婚姻不谐而诗词愈烈，「宁可抱香枝上老」；身后诗稿多被焚毁，存世者是幸存的锋芒。',
+  '管道升':'元代女书画家，赵孟頫之妻。墨竹、翰墨、词章皆能，一阕《我侬词》以捏泥塑人说透姻缘，艺术史上罕见的夫妻双璧。',
+  '柳如是':'明末秦淮八艳之首。诗书画皆能，明亡时劝夫殉国、自己投水被救，钱谦益降清后她仍暗助反清——气节与才华，在一个「妓」字上顶到了头。',
+  '董小宛':'明末秦淮名姬，后归冒辟疆。善制饮馔糕点，「董糖」传说出自其手；乱离中随夫家颠沛，《影梅庵忆语》里她是白月光。',
+  '黄峨':'明代蜀中才女，杨慎之妻。夫谪滇南三十年，她留守新都以词代书，散曲成就在明代女子中数一数二。',
+  '妇好':'商王武丁王后，中国最早的女统帅。甲骨卜辞里她主持祭祀、领兵上万征伐方国，出土铜钺与墓葬把她的军权坐实成文物。',
+  '花木兰':'北朝乐府《木兰诗》里的女英雄（原型尚有争议）。替父从军十二年，归来不做尚书郎，只求送儿还故乡——「谁说女子不如男」的原产地。',
+  '荀灌':'东晋少年女杰。十三岁率数十壮士夜突围，为被围的宛城搬来救兵，史书把这场解围记在她一个女孩名下。',
+  '平阳昭公主':'唐高祖之女。在长安城外自募七万人「娘子军」，为李渊入京打开门户；死后以军礼下葬，鼓吹羽葆，女性头一份。',
+  '梁红玉':'南宋抗金女将。黄天荡之战亲执桴鼓助韩世忠围困金军四十八日，「击鼓退金兵」从此进了戏文。',
+  '秦良玉':'明末女将，石柱土司。率白杆兵北上勤王数千里，是二十四史将相列传中唯一凭战功单独立传的女将军。',
+  '马秀英':'明太祖皇后，民间唤作大脚马皇后。随朱元璋从乱世走到天下，谏滥杀、护功臣，临终拒药曰「死生有命」——贤后的模子里浇的是义气。',
+  '缇萦':'西汉孝女。父亲淳于意获肉刑，十五岁的她随行上疏汉文帝，愿没入官婢以赎父刑；文帝悯而废肉刑——一封少女的奏疏，改掉千年酷法。',
+  '巴清':'秦代丹砂女商，人称寡妇清。守夫家产业经营丹砂矿而富甲一方，秦始皇筑「怀清台」礼遇——史上最早的女实业家国家级表彰。',
+  '俞大娘':'唐代航运女船主。所造「俞大娘船」载重万石、江海可行，船上生火种菜、妇孺齐全，被《唐国史补》当作业界传奇记了一笔。',
+  '苏小小':'南朝齐钱塘名妓，西泠桥畔的名片。疏财仗义、不恋金帛，「妾乘油壁车，郎骑青骢马」流传千年，慕才亭至今立在西湖边。',
+  '严蕊':'南宋营籍歌妓。被诬下狱数月，受刑而不肯妄攀无辜，「不是爱风尘」一词就是她的自辩口供；岳霖判其从良，一时称快。',
+  '玉真公主':'唐睿宗之女，早年入道。以公主之身住持京中道观，李白、王维皆出入其门——盛唐文人圈里，牵线的手有一只是她的。',
+  '李师师':'北宋汴京名妓。传说周邦彦、宋徽宗皆为座上客，靖康之乱后下落成谜——一个时代的艳名与倾覆，写在同一张名册上。',
+  '聂隐娘':'唐人传奇中的女侠。幼年被尼姑掳去教成刺客，长大后择主而事、终与磨镜少年退隐，是唐人对「自由武人」的全部想象。',
+};
+
+/* ---------------- 词注词典：题干/选项/人物资料/人物小传中的生僻词 ----------------
  * 命中即自动加「注」标记；词条按长度降序匹配，互不嵌套 */
 const GLOSSARY = {
   '掣肘':'被人从旁牵制、束手束脚，想做事却放不开手脚。',
@@ -979,6 +1160,25 @@ const GLOSSARY = {
   '押衙':'节度使府中的武职属官，类似主帅身边的亲随武官。',
   '丹砂':'朱砂，古代重要的矿物颜料与药材，可炼汞。',
   '咏絮之才':'以「柳絮因风起」咏雪的典故，代指才思敏捷的女子。',
+  /* —— 人物小传专用词条 —— */
+  '凿空':'史书对张骞首次打通西域道路的专用说法，意为「开辟空前的通路」。',
+  '科举':'通过分科考试选拔官员的制度，隋唐创立、明清鼎盛。',
+  '巨子':'墨家学派首领的专称，门徒须绝对服从。',
+  '理学':'宋代兴起的儒学体系，讲究天理、格物与修养工夫。',
+  '心学':'儒学流派，主张「心即理」、致良知、知行合一。',
+  '抗倭':'抗击侵扰东南沿海的日本武装集团（倭寇）。',
+  '临朝称制':'皇后或太后代皇帝裁决朝政，诏令等同帝命。',
+  '垂帘听政':'太后临朝、隔帘裁决政事的执政方式。',
+  '澶渊之盟':'辽宋之间订立的和约，此后两国百余年无大战。',
+  '女官':'宫廷中由女性担任的官职系统，掌管宫务与记注。',
+  '尚宫':'宫廷女官系统「六尚」之首，总管宫中事务。',
+  '和亲':'以联姻缔结或维系两国和平的外交手段。',
+  '单于':'匈奴等北方游牧族群最高首领的称号。',
+  '汉节':'使者所持的杖形信物，代表朝廷权威。',
+  '均田制':'按人口分配土地、据以计税征役的土地制度。',
+  '女冠':'出家的女道士，正式受箓后的身份称谓。',
+  '土司':'朝廷任命、准许世袭的少数民族地方首领。',
+  '上疏':'臣民向皇帝呈递奏章陈述意见或请求。',
 };
 const GLOSS_KEYS = Object.keys(GLOSSARY).sort((a, b) => b.length - a.length);
 function escHtml(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -1445,9 +1645,7 @@ function renderQuestion(){
     const body = document.createElement('span'); body.className = 'opt-body';
     const txt = document.createElement('span'); txt.className = 'opt-text';
     txt.innerHTML = annotate(o.t).html; // 选项加词注标记
-    const hint = document.createElement('span'); hint.className = 'opt-hint';
-    hint.textContent = `更接近「${DIM_NAME(o.d)}」的行为倾向`;
-    body.append(txt, hint);
+    body.append(txt);
     const dot = document.createElement('span'); dot.className = 'opt-dot';
     b.append(dot, body);
     b.addEventListener('click', () => selectOption(oi));
@@ -1613,8 +1811,7 @@ function miniRing(id, score){
 
 /* ================================================================
  * 雷达图：页面用 Chart.js 绘制；CDN 不可用时退回原生 Canvas。
- * 原生绘制 paintNativeRadar 同时供「页面兜底」与「长图导出」共用，
- * 标签按方位决定锚点并向外留足边距，不会与图形重叠。
+ * 原生绘制 paintNativeRadar 同时供「页面兜底」与「长图导出」共用。
  * ================================================================ */
 let radarChart = null;
 function radarConfig(scores){
@@ -1771,23 +1968,25 @@ function paintNativeRadar(ctx, cx, cy, R, scores, fs){
   ctx.restore();
 }
 
-/* ---------------- 人物头像：picsum 意象图 + 印章式兜底 ---------------- */
-const AVATAR_URL = name => `https://picsum.photos/seed/${encodeURIComponent('sqrz-' + name)}/360/360.jpg`;
+/* ---------------- 人物形象图：本地 images/人物名.png（全身像） + 竖版立轴占位兜底 ----------------
+ * 图片放入同目录 images/ 下、以人物姓名命名（如 images/李白.png）即可自动启用；
+ * 展示采用「立轴装裱」框 + object-fit:contain，全身完整可见。
+ * 文件不存在或加载失败时，显示竖排姓名立轴作为占位。 */
+const AVATAR_URL = name => `images/${name}.png`;
 const avCache = {};
-function loadAvatar(name, size = 360){
+function loadAvatar(name){
   if (avCache[name]) return Promise.resolve(avCache[name]);
   return new Promise(res => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     let settled = false;
     const done = v => { if (settled) return; settled = true; avCache[name] = v; res(v); };
     img.onload = () => done({ ok: true, img });
     img.onerror = () => done({ ok: false });
     img.src = AVATAR_URL(name);
-    setTimeout(() => done({ ok: false }), 4500); // 超时兜底
+    setTimeout(() => done({ ok: false }), 3000); // 超时兜底
   });
 }
-/* 青碧印章头像：网页兜底与长图导出共用同一绘制逻辑 */
+/* 圆形姓氏小印章（名片 / 立轴占位共用） */
 function drawSeal(ctx, cx, cy, r, name){
   const g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
   g.addColorStop(0, '#2FA08C'); g.addColorStop(1, '#57BBA3');
@@ -1803,11 +2002,44 @@ function drawSeal(ctx, cx, cy, r, name){
   ctx.fillText(name[0], cx, cy + r * .05);
   ctx.restore();
 }
-function sealDataURL(name, size = 320){
+/* 竖版立轴占位图：浅青底 + 竖排姓名 + 底部姓氏印章（网页展示与长图导出共用） */
+function drawPortraitFallback(ctx, x, y, w, h, name){
+  ctx.save();
+  const g = ctx.createLinearGradient(x, y, x + w, y + h);
+  g.addColorStop(0, '#F2F9F5'); g.addColorStop(1, '#DFEEE8');
+  ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+  ctx.strokeStyle = 'rgba(47,160,140,.32)'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(x + 5, y + 5, w - 10, h - 10);
+  // 顶部小装饰线
+  ctx.strokeStyle = 'rgba(47,160,140,.28)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x + w / 2 - 24, y + 24); ctx.lineTo(x + w / 2 + 24, y + 24); ctx.stroke();
+  // 竖排姓名
+  const chars = [...name];
+  const fs = Math.min(w * 0.32, (h - 150) / Math.max(1, chars.length));
+  ctx.font = `800 ${fs}px ${FONT}`;
+  ctx.fillStyle = 'rgba(47,160,140,.82)';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const gap = fs * 1.18;
+  const y0 = y + (h - 118) / 2 - (chars.length - 1) * gap / 2 + 14;
+  chars.forEach((c, i) => ctx.fillText(c, x + w / 2, y0 + i * gap));
+  // 底部姓氏印章
+  drawSeal(ctx, x + w / 2, y + h - 54, Math.min(30, w * 0.17), name);
+  ctx.restore();
+}
+/* 竖版占位 → dataURL（网页 <img> 兜底用） */
+function portraitFallbackDataURL(name, w = 360, h = 480){
   const cv = document.createElement('canvas');
-  cv.width = cv.height = size;
-  drawSeal(cv.getContext('2d'), size / 2, size / 2, size / 2, name);
+  cv.width = w; cv.height = h;
+  drawPortraitFallback(cv.getContext('2d'), 0, 0, w, h, name);
   return cv.toDataURL('image/png');
+}
+/* 图片按 contain 逻辑绘制进指定矩形（等比缩放、居中、不裁切） */
+function drawImageContain(ctx, img, x, y, w, h){
+  const iw = img.width, ih = img.height;
+  if (!iw || !ih) return;
+  const s = Math.min(w / iw, h / ih);
+  const dw = iw * s, dh = ih * s;
+  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
 /* ================================================================
@@ -1844,7 +2076,7 @@ function observeReveals(){
 }
 
 /* ================================================================
- * 结果页渲染（六板块 · 图形化）
+ * 结果页渲染（六板块 · 图形化 · 含人物科普小传 · 全身像立轴）
  * ================================================================ */
 const RANK_TITLES = ['第一底色', '隐藏天赋', '长期优势'];
 function renderResult(R){
@@ -1867,8 +2099,9 @@ function renderResult(R){
       <p class="qt">「${esc(q.t)}」</p>
       <p class="qb">${esc(q.by)}</p>
     </div>`).join('');
-  // 人物身份行同样加词注（如「营籍歌妓」「节度使府押衙」）
+  // 人物身份行与小传均加词注（如「营籍歌妓」「和亲公主」「澶渊之盟」）
   const metaAnn = annotate(`${f.c} · ${f.r} · ${A.label}`);
+  const bioAnn = annotate(BIOS[f.n] || '');
 
   $('#result').innerHTML = `
     <div class="card match-hero">
@@ -1879,14 +2112,31 @@ function renderResult(R){
         <circle cx="470" cy="22" r="9" fill="rgba(47,160,140,.25)"/>
         <path d="M40 18 q14 -12 28 0 q14 12 28 0" stroke="rgba(47,160,140,.30)" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
-      <div class="fig-photo"><img id="figImg" alt="${esc(f.n)} · 人物意象图"></div>
-      <h2 class="fig-name">${esc(f.n)}</h2>
-      <p class="fig-meta">${metaAnn.html}</p>
-      <div class="match-ring">${ringSVG('ringMain', R.sim, 200, '匹配相似度')}</div>
-      <div class="tag-row">
-        ${A.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-        <span class="badge-dom">主导维度 · ${R.top3[0].name}</span>
+
+      <div class="hero-split">
+        <!-- 左：全身像 · 立轴装裱 -->
+        <figure class="scroll-frame">
+          <div class="scroll-inner"><img id="figImg" alt="${esc(f.n)} 全身像"></div>
+          <figcaption class="scroll-plate">
+            <span class="sp-info">
+              <span class="sp-name">${esc(f.n)}</span>
+              <span class="sp-dyn">${esc(f.c)} · ${esc(f.r)}</span>
+            </span>
+            <span class="sp-seal" aria-hidden="true">${esc(f.n[0])}</span>
+          </figcaption>
+        </figure>
+        <!-- 右：人物信息 -->
+        <div class="hero-info">
+          <h2 class="fig-name">${esc(f.n)}</h2>
+          <p class="fig-meta">${metaAnn.html}</p>
+          <div class="match-ring">${ringSVG('ringMain', R.sim, 200, '匹配相似度')}</div>
+          <div class="tag-row">
+            ${A.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+            <span class="badge-dom">主导维度 · ${R.top3[0].name}</span>
+          </div>
+        </div>
       </div>
+
       <blockquote class="quote-box">「${esc(f.q)}」<span class="qby">—— ${esc(f.n)} 留下的声音</span></blockquote>
     </div>
 
@@ -1894,6 +2144,10 @@ function renderResult(R){
       <div class="section-head"><span class="no">01</span><h3>人物自画像</h3></div>
       <p class="section-note">你和 ${esc(f.n)} 相似的，不是经历和身份，而是<b>处理世界的方式</b>。</p>
       <p class="prose">${A.self}</p>
+      <div class="bio-block">
+        <div class="bio-head">📖 人物小传 · 科普<span>认识一下这位与你相似的人，标「注」的词可点</span></div>
+        <p class="bio-text">${bioAnn.html}</p>
+      </div>
     </div>
 
     <div class="section card reveal">
@@ -1933,9 +2187,9 @@ function renderResult(R){
     </div>
   `;
 
-  // 头像：优先 picsum 意象图，加载失败自动换成青碧印章
+  // 全身像：优先本地 images/人物名.png（contain 完整呈现），缺失时以竖版立轴占位
   const img = $('#figImg');
-  img.onerror = () => { img.onerror = null; img.src = sealDataURL(f.n); };
+  img.onerror = () => { img.onerror = null; img.src = portraitFallbackDataURL(f.n); };
   img.src = AVATAR_URL(f.n);
 
   // 雷达图：Chart.js（或原生兜底）
@@ -1945,7 +2199,7 @@ function renderResult(R){
   setTimeout(() => animateIn(document.querySelector('#result .match-hero')), REDUCED_MOTION ? 0 : 620);
   // 下方板块随滚动渐显并充能
   observeReveals();
-  // 身份行词注
+  // 身份行与小传的词注
   bindGloss($('#result'));
 
   $('#btnSave').addEventListener('click', exportResult);
@@ -1962,7 +2216,7 @@ function renderResult(R){
 
 /* ================================================================
  * Canvas 长图导出（宽 1200，高度按内容动态计算，原生绘制）
- * 与网页同风格：浅青渐变背景、白色圆角卡片、青碧主色、图形化元素
+ * 头部为「立轴装裱全身像（左）+ 人物信息（右）」分栏，与网页一致
  * ================================================================ */
 const FONT = '"PingFang SC","Microsoft YaHei",sans-serif';
 function rr(ctx, x, y, w, h, r){
@@ -2032,6 +2286,7 @@ function drawChips(ctx, items, y){
 function paintReport(ctx, H, R, av){
   const W = 1200, PAD = 70, CW = W - PAD * 2;
   const f = R.figure, A = R.arch;
+  const bioText = BIOS[f.n] || '';
   // 浅青渐变背景（与网页一致）+ 两团极淡光斑
   const bg = ctx.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, '#E9F5F0'); bg.addColorStop(.5, '#F4FAF7'); bg.addColorStop(1, '#E3F1EB');
@@ -2057,7 +2312,7 @@ function paintReport(ctx, H, R, av){
     ctx.fillText(title, PAD + 44 + 62, y);
   };
 
-  /* —— 头部：标题 / 头像 / 姓名 / 匹配圆环 —— */
+  /* —— 头部：标题 + 左右分栏（立轴全身像 / 人物信息） —— */
   let y = 100;
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   ctx.font = `700 24px ${FONT}`; ctx.fillStyle = '#2FA08C';
@@ -2066,59 +2321,61 @@ function paintReport(ctx, H, R, av){
   ctx.beginPath(); ctx.moveTo(W / 2 - 210, y - 8); ctx.lineTo(W / 2 - 168, y - 8); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(W / 2 + 168, y - 8); ctx.lineTo(W / 2 + 210, y - 8); ctx.stroke();
 
-  y += 40;
-  const avR = 92, avCy = y + avR;
-  // 外圈装饰环（实线 + 虚线）
-  ctx.strokeStyle = 'rgba(47,160,140,.30)'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(W / 2, avCy, avR + 14, 0, Math.PI * 2); ctx.stroke();
-  ctx.setLineDash([7, 9]);
-  ctx.strokeStyle = 'rgba(47,160,140,.35)'; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.arc(W / 2, avCy, avR + 26, 0, Math.PI * 2); ctx.stroke();
-  ctx.setLineDash([]);
-  // 头像：picsum 意象图（圆形裁剪）或青碧印章兜底
+  y += 34;
+  const frameW = 340, frameH = 460, headH = frameH + 64;
+  drawCard(y, headH);
+  const fx = PAD + 44, fy = y + 32;
+  // 立轴装裱外框（双线）
+  ctx.strokeStyle = 'rgba(47,160,140,.38)'; ctx.lineWidth = 2;
+  rr(ctx, fx, fy, frameW, frameH, 10); ctx.stroke();
+  ctx.strokeStyle = 'rgba(47,160,140,.20)'; ctx.lineWidth = 1;
+  rr(ctx, fx + 7, fy + 7, frameW - 14, frameH - 14, 7); ctx.stroke();
+  // 画心：本地全身像（contain 完整呈现）或竖版立轴占位；底部留 56px 名牌区
+  const pxx = fx + 14, pyy = fy + 14, pww = frameW - 28, phh = frameH - 28 - 56;
   if (av && av.ok){
-    ctx.save();
-    ctx.beginPath(); ctx.arc(W / 2, avCy, avR, 0, Math.PI * 2); ctx.clip();
-    ctx.drawImage(av.img, W / 2 - avR, avCy - avR, avR * 2, avR * 2);
-    ctx.restore();
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 6;
-    ctx.beginPath(); ctx.arc(W / 2, avCy, avR - 3, 0, Math.PI * 2); ctx.stroke();
+    drawImageContain(ctx, av.img, pxx, pyy, pww, phh);
   }else{
-    drawSeal(ctx, W / 2, avCy, avR, f.n);
+    drawPortraitFallback(ctx, pxx, pyy, pww, phh, f.n);
   }
-  y = avCy + avR;
+  // 名牌：姓名 + 朝代
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.font = `700 26px ${FONT}`; ctx.fillStyle = '#1E4A42';
+  ctx.fillText(f.n, fx + 18, fy + frameH - 24);
+  ctx.textAlign = 'right';
+  ctx.font = `400 21px ${FONT}`; ctx.fillStyle = '#7E948D';
+  ctx.fillText(f.c, fx + frameW - 52, fy + frameH - 24);
+  // 名牌右侧姓氏小印章
+  drawSeal(ctx, fx + frameW - 32, fy + frameH - 32, 18, f.n);
 
-  y += 86;
-  ctx.font = `800 58px ${FONT}`; ctx.fillStyle = '#1E4A42'; ctx.textAlign = 'center';
-  ctx.fillText(f.n, W / 2, y);
-  y += 52;
-  ctx.font = `600 27px ${FONT}`; ctx.fillStyle = '#2FA08C';
-  ctx.fillText(`${f.c} · ${f.r} · ${A.label}`, W / 2, y);
-  y += 60;
-
-  // 匹配相似度大圆环（数字 + 百分号整体精确居中）
-  const ringCy = y + 128, ringR = 128;
-  drawRingVal(ctx, W / 2, ringCy, ringR, R.sim, 18);
-  ctx.font = `800 62px ${FONT}`;
+  // 右区：姓名 / 朝代身份 / 匹配圆环
+  const rx0 = fx + frameW + 56, rw0 = PAD + CW - rx0, rcx = rx0 + rw0 / 2;
+  ctx.textAlign = 'center';
+  ctx.font = `800 54px ${FONT}`; ctx.fillStyle = '#1E4A42';
+  ctx.fillText(f.n, rcx, fy + 64);
+  ctx.font = `600 26px ${FONT}`; ctx.fillStyle = '#2FA08C';
+  ctx.fillText(`${f.c} · ${f.r} · ${A.label}`, rcx, fy + 112);
+  const ringC = fy + 248, ringRR = 100;
+  drawRingVal(ctx, rcx, ringC, ringRR, R.sim, 16);
+  ctx.font = `800 50px ${FONT}`;
   const numStr = String(R.sim);
   const numW = ctx.measureText(numStr).width;
-  ctx.font = `700 32px ${FONT}`;
+  ctx.font = `700 26px ${FONT}`;
   const pctW = ctx.measureText('%').width;
-  const totalW = numW + 12 + pctW;
-  const x0 = W / 2 - totalW / 2;
+  const totalW = numW + 10 + pctW;
+  const x0 = rcx - totalW / 2;
   ctx.textAlign = 'left';
-  ctx.font = `800 62px ${FONT}`; ctx.fillStyle = '#1E4A42';
-  ctx.fillText(numStr, x0, ringCy + 22);
-  ctx.font = `700 32px ${FONT}`; ctx.fillStyle = '#2FA08C';
-  ctx.fillText('%', x0 + numW + 12, ringCy + 22);
-  y = ringCy + ringR + 54;
+  ctx.font = `800 50px ${FONT}`; ctx.fillStyle = '#1E4A42';
+  ctx.fillText(numStr, x0, ringC + 18);
+  ctx.font = `700 26px ${FONT}`; ctx.fillStyle = '#2FA08C';
+  ctx.fillText('%', x0 + numW + 10, ringC + 18);
   ctx.textAlign = 'center';
-  ctx.font = `700 24px ${FONT}`; ctx.fillStyle = '#7E948D';
-  ctx.fillText('匹 配 相 似 度', W / 2, y);
+  ctx.font = `700 22px ${FONT}`; ctx.fillStyle = '#7E948D';
+  ctx.fillText('匹 配 相 似 度', rcx, ringC + ringRR + 44);
+  y += headH + 34;
 
-  y += 78;
+  // 标签胶囊（全宽居中）
   const chips = [...A.tags.map(t => ({ t, strong: true })), { t: `主导维度 · ${R.top3[0].name}`, strong: false }];
-  y = drawChips(ctx, chips, y) + 58;
+  y = drawChips(ctx, chips, y + 12) + 52;
 
   // 台词引用卡
   ctx.font = `600 30px ${FONT}`;
@@ -2133,15 +2390,29 @@ function paintReport(ctx, H, R, av){
   ctx.fillText(`—— ${f.n} 留下的声音`, PAD + CW - 44, y + qH - 30);
   y += qH + 40;
 
-  /* —— 01 人物自画像（附「像」字印章角标） —— */
+  /* —— 01 人物自画像 + 人物小传（附「像」字印章角标） —— */
   ctx.font = `400 26px ${FONT}`;
   const selfLines = wrapLines(ctx, A.self, CW - 88);
   const noteLines = wrapLines(ctx, `你和 ${f.n} 相似的，不是经历和身份，而是处理世界的方式。`, CW - 88);
-  const c1h = 96 + noteLines.length * 40 + 20 + selfLines.length * 46 + 44;
+  ctx.font = `400 24px ${FONT}`;
+  const bioLines = wrapLines(ctx, bioText, CW - 88);
+  const c1h = 96 + noteLines.length * 40 + 20 + selfLines.length * 46 + 44
+            + (bioLines.length ? 54 + bioLines.length * 42 : 0);
   drawCard(y, c1h);
   sectionTitle(y + 62, '01', '人物自画像');
   let ty = para(ctx, `你和 ${f.n} 相似的，不是经历和身份，而是处理世界的方式。`, PAD + 44, y + 100, CW - 88, 25, 40, '600', '#2FA08C');
-  para(ctx, A.self, PAD + 44, ty + 18, CW - 88, 26, 46, '400', '#1E4A42');
+  const selfEnd = para(ctx, A.self, PAD + 44, ty + 18, CW - 88, 26, 46, '400', '#1E4A42');
+  if (bioLines.length){
+    // 虚线分隔
+    ctx.save(); ctx.setLineDash([6, 7]);
+    ctx.strokeStyle = 'rgba(47,160,140,.30)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(PAD + 44, selfEnd + 14); ctx.lineTo(PAD + CW - 44, selfEnd + 14); ctx.stroke();
+    ctx.restore();
+    ctx.textAlign = 'left';
+    ctx.font = `800 25px ${FONT}`; ctx.fillStyle = '#1F7A6A';
+    ctx.fillText('📖 人物小传', PAD + 44, selfEnd + 52);
+    para(ctx, bioText, PAD + 44, selfEnd + 66, CW - 88, 24, 42, '400', '#4F6E66');
+  }
   ctx.save();
   ctx.translate(PAD + CW - 92, y + c1h - 92); ctx.rotate(.06);
   rr(ctx, -34, -34, 68, 68, 10);
@@ -2271,10 +2542,10 @@ async function exportResult(){
   const R = state.result;
   if (!R){ toast('还没生成档案呢'); return; }
   toast('正在绘制结果长图…', 2200);
-  const av = await loadAvatar(R.figure.n, 360);
+  const av = await loadAvatar(R.figure.n);
   // 两遍绘制：先按预估高度试画取得真实高度，再以精确高度重画并裁剪
   const build = avv => {
-    let H = 7600;
+    let H = 8200;
     let probe = document.createElement('canvas'); probe.width = 1200; probe.height = H;
     let end = paintReport(probe.getContext('2d'), H, R, avv);
     if (end + 40 > H){
@@ -2290,7 +2561,7 @@ async function exportResult(){
   let cv = build(av);
   let blob = await canvasBlob(cv);
   if (!blob){
-    // 画布可能被跨域图片污染：退回印章头像重画一遍
+    // 画布可能被本地文件协议污染：退回立轴占位重画一遍
     cv = build({ ok: false });
     blob = await canvasBlob(cv);
   }
@@ -2350,14 +2621,17 @@ async function exportResult(){
   const baseCovered = new Set(BASE_QUESTIONS.flatMap(q => q.opts.map(o => o.d)));
   console.assert(baseCovered.size === 8, `[基准题] 应覆盖全部 8 维，实际 ${baseCovered.size}`);
   console.assert(BASE_QUESTIONS.every(q => q.opts.length === 4 && q.ch && q.t), `[基准题] 结构应完整`);
-  // 人物库：113 人（男 58 / 女 55），原型有效
+  // 人物库：116 人（男 58 / 女 58），原型有效
   const males = FIGURES.filter(x => x.g === 'm').length;
   const females = FIGURES.filter(x => x.g === 'f').length;
-  console.assert(FIGURES.length === 113, `[人物库] 应共 113 人，实际 ${FIGURES.length}`);
+  console.assert(FIGURES.length === 116, `[人物库] 应共 116 人，实际 ${FIGURES.length}`);
   console.assert(males === 58, `[人物库] 男性应 58 人，实际 ${males}`);
-  console.assert(females === 55, `[人物库] 女性应 55 人，实际 ${females}`);
+  console.assert(females === 58, `[人物库] 女性应 58 人，实际 ${females}`);
   console.assert(FIGURES.every(x => ARCHETYPES[x.a] && x.n && x.c && x.r && x.q && x.g),
     `[人物库] 每人应具备姓名/性别/朝代/身份/有效原型/台词`);
+  // 人物小传：116 位人物全员配齐
+  const noBio = FIGURES.filter(x => !BIOS[x.n] || BIOS[x.n].length < 20).map(x => x.n);
+  console.assert(noBio.length === 0, `[人物小传] 每位人物都应配科普小传，缺失：${noBio.join('、')}`);
   console.assert(Object.keys(ARCHETYPES).length === 10, `[原型] 应为 10 种，实际 ${Object.keys(ARCHETYPES).length}`);
   console.assert(Object.values(ARCHETYPES).every(a =>
     a.vec.length === 8 && a.vec.every(v => v >= 0 && v <= 100) && a.label && a.tags.length >= 3 &&
@@ -2366,15 +2640,15 @@ async function exportResult(){
   // 每种原型在人物库中至少有一人（保证任何匹配都有归属）
   console.assert(Object.keys(ARCHETYPES).every(k => FIGURES.some(x => x.a === k)),
     `[原型] 每种原型应至少对应一位人物`);
-  // 词注：每个词条应至少出现在题库文本或人物资料中（无死词条）
+  // 词注：每个词条应至少出现在题库文本或人物资料/小传中（无死词条）
   const allQText = BANK.map(q => q.stem + q.opts.map(o => o.t).join('')).join('');
-  const allFigText = FIGURES.map(x => x.c + x.r).join('');
+  const allFigText = FIGURES.map(x => x.c + x.r + (BIOS[x.n] || '')).join('');
   console.assert(GLOSS_KEYS.every(k => allQText.includes(k) || allFigText.includes(k)),
-    `[词注] 每个词条应至少出现在题库或人物资料中，死词条：` +
+    `[词注] 每个词条应至少出现在题库或人物资料/小传中，死词条：` +
     GLOSS_KEYS.filter(k => !allQText.includes(k) && !allFigText.includes(k)).join('、'));
   console.log('%c前世人物志 · 数据自检完成（如有 false 断言请检查上方输出）',
     'color:#2FA08C;font-weight:bold');
-  console.log(`%c雷达图渲染器：${CHART_OK ? 'Chart.js ' + (window.Chart && Chart.version || '') : '原生 Canvas（Chart.js 未加载，已自动兜底）'} · 词注词条 ${GLOSS_KEYS.length} 条`,
+  console.log(`%c雷达图渲染器：${CHART_OK ? 'Chart.js ' + (window.Chart && Chart.version || '') : '原生 Canvas（Chart.js 未加载，已自动兜底）'} · 人物库 ${FIGURES.length} 人（男 58 / 女 58） · 词注词条 ${GLOSS_KEYS.length} 条`,
     'color:#2FA08C');
 })();
 
