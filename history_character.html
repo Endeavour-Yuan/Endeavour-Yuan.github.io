@@ -3,88 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8E2B21">
 <title>前世人物志｜你像哪位历史人物</title>
 <style>
   :root{
-    /* 清新青碧配色 */
-    --main:#2FA08C; --main2:#4FB9A3; --main-soft:#7CC5B5;
-    --ink:#1E4A42; --ink-soft:#4F6E66; --ink-faint:#7E948D;
-    --bg1:#E9F5F0; --bg2:#F4FAF7; --bg3:#E3F1EB;
-    --line:rgba(47,160,140,.20);
-    --warn:#C0563F;
-    --card:rgba(255,255,255,.80);
+    /* ===== 工笔重彩配色：绢本 · 朱砂 · 泥金 · 焦墨 ===== */
+    --main:#B13A2A;
+    --main-deep:#8E2B21;
+    --main2:#C74E3B;
+    --gold:#B8934A;
+    --gold-soft:#D8BE85;
+    --ink:#33241C;
+    --ink-soft:#6A5747;
+    --ink-faint:#96826D;
+    --bg1:#F5EDD8; --bg2:#FAF5E7; --bg3:#EFE3C6;
+    --line:rgba(184,147,74,.38);
+    --warn:#96552D;
+    --card:rgba(253,249,238,.88);
     --radius:22px;
-    --shadow:0 10px 30px rgba(38,110,95,.10);
-    --shadow-lift:0 16px 40px rgba(38,110,95,.18);
+    --shadow:0 10px 30px rgba(84,56,28,.12);
+    --shadow-lift:0 16px 40px rgba(84,56,28,.20);
+    --font-kai:"Kaiti SC","STKaiti","KaiTi","Songti SC","STSong","SimSun",serif;
   }
-  /* 屏蔽移动端系统点按高亮（选项卡闪灰的元凶之一） */
   *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
   [hidden]{ display:none !important; }
   html{ -webkit-text-size-adjust:100%; }
+  ::selection{ background:rgba(177,58,42,.22); }
   body{
     min-height:100vh;
-    background:linear-gradient(165deg,var(--bg1) 0%,var(--bg2) 45%,var(--bg3) 100%);
-    background-attachment:fixed;
+    background:
+      repeating-linear-gradient(0deg,  rgba(184,147,74,.030) 0 1px, transparent 1px 7px),
+      repeating-linear-gradient(90deg, rgba(184,147,74,.030) 0 1px, transparent 1px 7px),
+      linear-gradient(165deg,var(--bg1) 0%,var(--bg2) 45%,var(--bg3) 100%);
+    background-attachment:fixed, fixed, fixed;
     color:var(--ink);
     font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
     line-height:1.75; letter-spacing:.02em;
   }
-  /* 背景静态光斑 */
   body::before,body::after{
     content:''; position:fixed; z-index:-2; border-radius:50%; pointer-events:none;
   }
   body::before{ width:540px;height:540px;left:-190px;top:-150px;
-    background:radial-gradient(circle,rgba(47,160,140,.15),transparent 65%); }
+    background:radial-gradient(circle,rgba(216,190,133,.20),transparent 65%); }
   body::after{ width:660px;height:660px;right:-250px;bottom:-210px;
-    background:radial-gradient(circle,rgba(124,197,181,.22),transparent 65%); }
-  /* 背景漂浮光点（全局装饰） */
+    background:radial-gradient(circle,rgba(177,58,42,.06),transparent 65%); }
   #bgDots{ position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
   #bgDots i{ position:absolute; border-radius:50%; }
   #bgDots i:nth-child(1){ width:120px;height:120px;left:12%;top:16%;
-    background:radial-gradient(circle,rgba(124,197,181,.34),transparent 70%);
+    background:radial-gradient(circle,rgba(216,190,133,.35),transparent 70%);
     animation:floatY 7.5s ease-in-out infinite; }
   #bgDots i:nth-child(2){ width:70px;height:70px;right:16%;top:42%;
-    background:radial-gradient(circle,rgba(47,160,140,.24),transparent 70%);
+    background:radial-gradient(circle,rgba(177,58,42,.10),transparent 70%);
     animation:floatY 9.5s ease-in-out -2.5s infinite; }
   #bgDots i:nth-child(3){ width:170px;height:170px;left:52%;bottom:7%;
-    background:radial-gradient(circle,rgba(124,197,181,.26),transparent 70%);
+    background:radial-gradient(circle,rgba(216,190,133,.26),transparent 70%);
     animation:floatY 8.5s ease-in-out -4.5s infinite; }
   .container{ max-width:880px; margin:0 auto; padding:28px 22px 84px; }
 
-  /* ===== 答题氛围层：柔雾 / 光尘 / 墨圈涟漪（仅答题时淡入） ===== */
+  /* ===== 答题氛围层 ===== */
   #ambient{
     position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
     opacity:0; transition:opacity 1.4s ease;
   }
   body.quiz-on #ambient{ opacity:1; }
-  body:not(.quiz-on) #ambient *{ animation-play-state:paused; } /* 非答题时暂停，省电 */
+  body:not(.quiz-on) #ambient *{ animation-play-state:paused; }
   .amb-blob{ position:absolute; border-radius:50%; }
   .ab1{ width:52vmax; height:52vmax; left:-16vmax; top:-14vmax;
-    background:radial-gradient(circle, rgba(124,197,181,.16), transparent 62%);
+    background:radial-gradient(circle, rgba(216,190,133,.16), transparent 62%);
     animation:ambA 24s ease-in-out infinite alternate; }
   .ab2{ width:44vmax; height:44vmax; right:-14vmax; top:22vh;
-    background:radial-gradient(circle, rgba(47,160,140,.13), transparent 62%);
+    background:radial-gradient(circle, rgba(177,58,42,.06), transparent 62%);
     animation:ambB 30s ease-in-out infinite alternate; }
   .ab3{ width:58vmax; height:58vmax; left:18vw; bottom:-24vmax;
-    background:radial-gradient(circle, rgba(178,222,208,.20), transparent 64%);
+    background:radial-gradient(circle, rgba(232,214,171,.22), transparent 64%);
     animation:ambC 27s ease-in-out infinite alternate; }
   .amb-mist{ position:absolute; width:80vmax; height:22vmax; border-radius:50%;
-    background:radial-gradient(ellipse at center, rgba(255,255,255,.55), rgba(255,255,255,0) 70%); }
+    background:radial-gradient(ellipse at center, rgba(255,251,238,.50), rgba(255,251,238,0) 70%); }
   .am1{ top:12vh; left:-30vmax; animation:mistDrift 38s ease-in-out infinite alternate; }
   .am2{ bottom:18vh; left:-50vmax; height:16vmax; animation:mistDrift 52s ease-in-out infinite alternate-reverse; }
-  /* 墨圈涟漪：缓慢扩散后消散 */
   .amb-rings{ position:absolute; width:0; height:0; }
   .amb-rings i{ position:absolute; left:0; top:0; width:26px; height:26px;
     margin:-13px 0 0 -13px; border-radius:50%;
-    border:1.5px solid rgba(47,160,140,.20); opacity:0;
+    border:1.5px solid rgba(184,147,74,.24); opacity:0;
     animation:ripple 10.5s ease-out infinite; }
   .amb-rings i:nth-child(2){ animation-delay:3.5s; }
   .amb-rings i:nth-child(3){ animation-delay:7s; }
   .r1{ left:16vw; top:64vh; }
   .r2{ right:24vw; top:30vh; }
-  /* 光尘：自下而上缓缓浮升 */
   .mote{ position:absolute; border-radius:50%; opacity:0;
-    background:radial-gradient(circle, rgba(47,160,140,.38), rgba(47,160,140,0) 70%); }
+    background:radial-gradient(circle, rgba(201,168,106,.42), rgba(201,168,106,0) 70%); }
   .mt1{ left:12vw; bottom:-4vh; width:9px; height:9px; animation:moteRise 17s linear infinite; }
   .mt2{ left:26vw; bottom:-4vh; width:6px; height:6px; animation:moteRise 21s linear infinite 4s; }
   .mt3{ left:41vw; bottom:-4vh; width:11px; height:11px; animation:moteRise 15s linear infinite 8s; }
@@ -96,12 +103,10 @@
   @keyframes fadeUp{ from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:none} }
   @keyframes popIn{ 0%{opacity:0; transform:scale(.7)} 62%{opacity:1; transform:scale(1.05)} 100%{opacity:1; transform:scale(1)} }
   @keyframes floatY{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-13px)} }
-  @keyframes spinSlow{ to{ transform:rotate(360deg) } }
-  @keyframes shimmer{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   @keyframes slideInFwd{ from{opacity:0; transform:translateX(36px)} to{opacity:1; transform:none} }
   @keyframes slideInBwd{ from{opacity:0; transform:translateX(-36px)} to{opacity:1; transform:none} }
   @keyframes chipPop{ from{opacity:0; transform:scale(.68) translateY(9px)} to{opacity:1; transform:none} }
-  @keyframes btnPulse{ 0%,100%{box-shadow:0 6px 18px rgba(47,160,140,.30)} 50%{box-shadow:0 8px 30px rgba(47,160,140,.55)} }
+  @keyframes btnPulse{ 0%,100%{box-shadow:0 6px 18px rgba(177,58,42,.30)} 50%{box-shadow:0 8px 30px rgba(177,58,42,.52)} }
   @keyframes genSpin{ 0%{transform:rotate(0) scale(1)} 50%{transform:rotate(180deg) scale(.9)} 100%{transform:rotate(360deg) scale(1)} }
   @keyframes genSlide{ from{transform:translateX(-46px)} to{transform:translateX(206px)} }
   @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-9px)} 75%{transform:translateX(9px)} }
@@ -116,17 +121,51 @@
     85%{ opacity:.45 }
     100%{ transform:translate(3vw,-112vh); opacity:0 }
   }
+  @keyframes inkIn{ from{ opacity:0; transform:scale(.985) } to{ opacity:1; transform:none } }
+  @keyframes sealDrop{
+    0%{ opacity:0; transform:scale(1.9) rotate(-16deg) }
+    60%{ opacity:1; transform:scale(.9) rotate(-2deg) }
+    100%{ opacity:1; transform:scale(1) rotate(-6deg) }
+  }
+  @keyframes selGlow{
+    0%{ box-shadow:0 0 0 0 rgba(177,58,42,.38) }
+    100%{ box-shadow:0 8px 22px rgba(177,58,42,.14) }
+  }
+  @keyframes beadGlow{
+    0%,100%{ box-shadow:0 0 0 3px rgba(253,249,238,.9), 0 0 8px rgba(216,168,91,.55) }
+    50%{ box-shadow:0 0 0 3px rgba(253,249,238,.9), 0 0 16px rgba(216,168,91,.95) }
+  }
 
-  /* ===== 通用卡片 / 按钮 ===== */
+  /* ===== 通用卡片 ===== */
   .card{
-    background:var(--card);
+    position:relative;
+    background:
+      repeating-linear-gradient(0deg,  rgba(184,147,74,.022) 0 1px, transparent 1px 6px),
+      repeating-linear-gradient(90deg, rgba(184,147,74,.022) 0 1px, transparent 1px 6px),
+      linear-gradient(165deg, rgba(253,250,240,.92), rgba(250,244,228,.86));
     backdrop-filter:blur(12px);
     -webkit-backdrop-filter:blur(12px);
-    border:1px solid rgba(255,255,255,.75);
+    border:1px solid rgba(255,252,242,.9);
+    outline:1px solid var(--line);
+    outline-offset:-1px;
     border-radius:var(--radius);
     box-shadow:var(--shadow);
     padding:26px 28px;
   }
+  .card::after{
+    content:''; position:absolute; inset:6px; pointer-events:none;
+    border:1px dashed rgba(184,147,74,.38);
+    border-radius:calc(var(--radius) - 9px);
+    background:
+      radial-gradient(circle 3px at 9px 9px, rgba(184,147,74,.62) 99%, transparent),
+      radial-gradient(circle 3px at calc(100% - 9px) 9px, rgba(184,147,74,.62) 99%, transparent),
+      radial-gradient(circle 3px at 9px calc(100% - 9px), rgba(184,147,74,.62) 99%, transparent),
+      radial-gradient(circle 3px at calc(100% - 9px) calc(100% - 9px), rgba(184,147,74,.62) 99%, transparent);
+    animation:inkIn .9s ease .25s backwards;
+  }
+  .reveal:not(.in) .card::after{ opacity:0; animation:none; }
+  .reveal.in .card::after{ animation:inkIn .9s ease .2s backwards; }
+
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:8px;
     font-family:inherit; font-size:15px; font-weight:600; letter-spacing:.04em;
@@ -134,22 +173,21 @@
     touch-action:manipulation;
     transition:transform .22s ease, box-shadow .22s ease, background .22s ease, opacity .22s ease;
   }
-  .btn.primary{ background:var(--main); color:#fff; box-shadow:0 6px 18px rgba(47,160,140,.30); }
-  .btn.ghost{ background:rgba(255,255,255,.8); color:var(--main); border-color:var(--line); }
+  .btn.primary{ background:var(--main); color:#FDF6E3; box-shadow:0 6px 18px rgba(177,58,42,.30); }
+  .btn.ghost{ background:rgba(253,249,238,.85); color:var(--main-deep); border-color:var(--line); }
   .btn:disabled{ opacity:.4; cursor:not-allowed; box-shadow:none; }
   .btn:active{ transform:translateY(1px) scale(.97); }
   .btn.block{ width:100%; }
   .btn.lg{ font-size:16px; padding:14px 34px; }
-  :focus-visible{ outline:2px solid var(--main2); outline-offset:3px; border-radius:8px; }
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:8px; }
   #btnStart{ animation:btnPulse 2.8s ease-in-out infinite; }
 
-  /* 触屏「粘性 hover」修复：所有 hover 效果仅在真正支持悬停的设备上生效 */
   @media (hover:hover){
-    .btn.primary:hover:not(:disabled){ background:var(--main2); transform:translateY(-2px); box-shadow:0 12px 26px rgba(47,160,140,.38); }
-    .btn.ghost:hover:not(:disabled){ transform:translateY(-2px); box-shadow:var(--shadow); background:#fff; }
-    .pref-opt:hover{ transform:translateY(-3px); box-shadow:var(--shadow-lift); border-color:var(--main); }
-    .opt:hover{ transform:translateY(-2px); border-color:var(--main); background:#fff; box-shadow:var(--shadow); }
-    .gl:hover{ background:rgba(47,160,140,.16); }
+    .btn.primary:hover:not(:disabled){ background:var(--main2); transform:translateY(-2px); box-shadow:0 12px 26px rgba(177,58,42,.38); }
+    .btn.ghost:hover:not(:disabled){ transform:translateY(-2px); box-shadow:var(--shadow); background:#FDF9EE; }
+    .pref-opt:hover{ transform:translateY(-3px); box-shadow:var(--shadow-lift); border-color:var(--gold); }
+    .opt:hover{ transform:translateY(-2px); border-color:var(--main); background:#FDF9EE; box-shadow:var(--shadow); }
+    .gl:hover{ background:rgba(177,58,42,.12); }
   }
 
   /* ===== 访问码门禁 ===== */
@@ -161,24 +199,25 @@
   .gate.off{ opacity:0; pointer-events:none; }
   .gate-card{
     width:min(400px,100%); text-align:center;
-    background:rgba(255,255,255,.82); backdrop-filter:blur(16px);
-    border:1px solid rgba(255,255,255,.8); border-radius:26px;
-    box-shadow:0 24px 60px rgba(38,110,95,.20);
+    background:rgba(253,249,238,.92); backdrop-filter:blur(16px);
+    border:1px solid rgba(255,252,242,.9); outline:1px solid var(--line); outline-offset:-4px;
+    border-radius:26px;
+    box-shadow:0 24px 60px rgba(84,56,28,.22);
     padding:40px 34px 32px;
     animation:popIn .55s cubic-bezier(.2,.85,.3,1.18) .1s backwards;
   }
   .gate-card.shake{ animation:shake .4s ease; }
   .gate-seal{ width:64px;height:64px;margin:0 auto 12px;display:block; }
-  .gate-eyebrow{ font-size:12px; letter-spacing:.42em; color:var(--main); font-weight:700; margin-bottom:12px; }
-  .gate-card h2{ font-size:26px; letter-spacing:.06em; }
+  .gate-eyebrow{ font-size:12px; letter-spacing:.42em; color:var(--gold); font-weight:700; margin-bottom:12px; }
+  .gate-card h2{ font-size:27px; letter-spacing:.1em; font-family:var(--font-kai); }
   .gate-desc{ font-size:13.5px; color:var(--ink-soft); margin:12px 0 24px; }
   #codeInput{
     width:100%; text-align:center; font-size:26px; font-weight:700; letter-spacing:.62em; text-indent:.62em;
     font-family:inherit; color:var(--ink);
-    padding:13px 10px; border-radius:14px; border:1.5px solid var(--line); background:rgba(255,255,255,.9);
+    padding:13px 10px; border-radius:14px; border:1.5px solid var(--line); background:rgba(255,252,242,.9);
     outline:none; transition:border-color .2s ease, box-shadow .2s ease;
   }
-  #codeInput:focus{ border-color:var(--main); box-shadow:0 0 0 4px rgba(47,160,140,.15); }
+  #codeInput:focus{ border-color:var(--main); box-shadow:0 0 0 4px rgba(177,58,42,.14); }
   .gate-err{ min-height:22px; font-size:13px; color:var(--warn); margin:12px 0 6px; font-weight:600; }
   .gate-tip{ font-size:11.5px; color:var(--ink-faint); margin-top:16px; letter-spacing:.05em; }
 
@@ -187,22 +226,30 @@
     position:sticky; top:0; z-index:50;
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
     padding:14px 24px;
-    background:rgba(240,249,245,.75); backdrop-filter:blur(12px);
-    border-bottom:1px solid rgba(47,160,140,.10);
+    background:rgba(247,240,222,.82); backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(184,147,74,.30);
   }
-  .brand{ font-weight:800; letter-spacing:.12em; font-size:15px; color:var(--main); }
+  .brand{ font-weight:800; letter-spacing:.16em; font-size:16px; color:var(--main-deep); font-family:var(--font-kai); }
   .steps{ display:flex; gap:6px; list-style:none; font-size:12px; color:var(--ink-faint); }
   .steps li{ padding:4px 10px; border-radius:999px; border:1px solid transparent; transition:all .25s ease; }
-  .steps li.on{ color:var(--main); border-color:var(--line); background:rgba(255,255,255,.85); font-weight:700;
+  .steps li.on{ color:var(--main-deep); border-color:var(--line); background:rgba(253,249,238,.92); font-weight:700;
     animation:chipPop .35s ease backwards; }
 
   /* ===== 首页 ===== */
   .hero{ text-align:center; padding:48px 10px 20px; }
-  .eyebrow{ font-size:11.5px; letter-spacing:.4em; color:var(--main); font-weight:700;
+  .eyebrow{ font-size:11.5px; letter-spacing:.4em; color:var(--gold); font-weight:700;
     animation:fadeUp .5s ease .05s backwards; }
-  .hero h1{ font-size:clamp(30px,6vw,46px); letter-spacing:.04em; margin:16px 0 18px; line-height:1.35;
+  .hero h1{ font-size:clamp(30px,6vw,46px); letter-spacing:.06em; margin:16px 0 18px; line-height:1.35;
+    font-family:var(--font-kai);
     animation:fadeUp .55s ease .12s backwards; }
   .hero h1 .accent{ color:var(--main); }
+  .title-seal{
+    display:inline-block; vertical-align:super; width:30px; height:30px; line-height:30px;
+    margin-left:12px; border-radius:5px; transform:translateY(-6px);
+    background:linear-gradient(160deg,#B13A2A,#8E2B21); color:#F7ECD4;
+    font-family:var(--font-kai); font-size:15px; font-weight:700;
+    box-shadow:inset 0 0 0 2px rgba(247,236,212,.4), 0 2px 6px rgba(84,56,28,.3);
+  }
   .hero-sub{ max-width:560px; margin:0 auto; color:var(--ink-soft); font-size:15px;
     animation:fadeUp .55s ease .2s backwards; }
   .hero-btns{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:32px;
@@ -214,17 +261,17 @@
   .sell:nth-child(1){ animation-delay:.06s } .sell:nth-child(2){ animation-delay:.13s }
   .sell:nth-child(3){ animation-delay:.2s } .sell:nth-child(4){ animation-delay:.27s }
   .sell svg{ flex:none; margin-top:3px; }
-  .sell h3{ font-size:15px; letter-spacing:.06em; margin-bottom:5px; }
+  .sell h3{ font-size:15px; letter-spacing:.06em; margin-bottom:5px; font-family:var(--font-kai); color:var(--main-deep); }
   .sell p{ font-size:12.8px; color:var(--ink-soft); line-height:1.65; }
   .notice{ animation:fadeUp .5s ease .34s backwards; }
-  .notice h3{ font-size:15px; letter-spacing:.08em; color:var(--main); margin-bottom:10px; }
+  .notice h3{ font-size:15px; letter-spacing:.08em; color:var(--main-deep); margin-bottom:10px; font-family:var(--font-kai); }
   .notice ul{ padding-left:1.25em; font-size:13.5px; color:var(--ink-soft); }
   .notice li{ margin:6px 0; }
   .notice li::marker{ color:var(--main); }
 
   /* ===== 偏好选择 ===== */
   #pref{ text-align:center; padding-top:44px; }
-  #pref h2{ font-size:26px; letter-spacing:.05em; animation:fadeUp .5s ease .05s backwards; }
+  #pref h2{ font-size:27px; letter-spacing:.08em; font-family:var(--font-kai); animation:fadeUp .5s ease .05s backwards; }
   .pref-sub{ font-size:13.5px; color:var(--ink-soft); margin:12px auto 30px; max-width:460px;
     animation:fadeUp .5s ease .12s backwards; }
   .pref-sub b{ color:var(--main); }
@@ -235,7 +282,7 @@
   .pref-opts .pref-opt:nth-child(1){ animation-delay:.18s }
   .pref-opts .pref-opt:nth-child(2){ animation-delay:.25s }
   .pref-opts .pref-opt:nth-child(3){ animation-delay:.32s }
-  .pref-opt .po-t{ font-size:17px; font-weight:700; }
+  .pref-opt .po-t{ font-size:17px; font-weight:700; font-family:var(--font-kai); }
   .pref-opt .po-d{ font-size:12.8px; color:var(--ink-soft); margin-top:6px; }
 
   /* ===== 答题 ===== */
@@ -244,135 +291,196 @@
   .quiz-meta{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
   .chip{
     display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em;
-    color:var(--main); background:rgba(47,160,140,.10); border:1px solid var(--line);
+    color:var(--main-deep); background:rgba(184,147,74,.12); border:1px solid var(--line);
     padding:3px 12px; border-radius:999px;
+    font-family:var(--font-kai);
   }
   .q-count{ font-size:14px; font-weight:800; letter-spacing:.1em; }
   .q-pct{ margin-left:auto; font-size:12.5px; color:var(--ink-faint); font-weight:700; }
-  .progress{ height:8px; border-radius:99px; background:rgba(47,160,140,.14); margin-top:12px; overflow:hidden; }
-  .progress-bar{ height:100%; width:0; border-radius:99px; position:relative; overflow:hidden;
-    background:linear-gradient(90deg,var(--main),var(--main-soft)); transition:width .45s ease; }
-  .progress-bar::after{ /* 流光扫过 */
-    content:''; position:absolute; inset:0;
-    background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);
-    background-size:200% 100%; animation:shimmer 2.4s linear infinite; }
+  .progress{ height:8px; border-radius:99px; background:rgba(184,147,74,.22); margin-top:12px; }
+  .progress-bar{ height:100%; width:0; border-radius:99px; position:relative;
+    background:linear-gradient(90deg,var(--main),var(--gold-soft));
+    transition:width 1.4s cubic-bezier(.33,.75,.35,1); }
+  .progress-bar::after{
+    content:''; position:absolute; right:-3px; top:50%;
+    width:14px; height:14px; margin-top:-7px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #F5E8C6, #D8A85B 55%, #B8934A 95%);
+    animation:beadGlow 2.6s ease-in-out infinite;
+  }
   .quiz-card{ padding:30px 28px 24px; }
   .quiz-card.fwd{ animation:slideInFwd .32s cubic-bezier(.22,.7,.3,1) backwards; }
   .quiz-card.bwd{ animation:slideInBwd .32s cubic-bezier(.22,.7,.3,1) backwards; }
-  .q-stem{ font-size:clamp(17px,3.4vw,21px); font-weight:700; line-height:1.85; letter-spacing:.02em; min-height:3.4em; }
+  .q-stem{
+    font-size:clamp(17px,3.4vw,21px); font-weight:700; line-height:1.85; letter-spacing:.02em; min-height:3.4em;
+    display:flex; align-items:flex-start; gap:10px;
+  }
+  #qStem::before{
+    content:'问';
+    flex:none;
+    width:27px; height:27px; border-radius:5px;
+    margin-top:calc(.925em - 13.5px);
+    background:linear-gradient(160deg,#B13A2A,#8E2B21); color:#F7ECD4;
+    font-family:var(--font-kai); font-size:14px; font-weight:700;
+    line-height:27px; text-align:center;
+    box-shadow:inset 0 0 0 1.5px rgba(247,236,212,.4), 0 2px 5px rgba(84,56,28,.25);
+  }
   .opts{ display:grid; gap:12px; margin-top:24px; }
   .opt{
     display:flex; gap:14px; align-items:flex-start; text-align:left;
-    font-family:inherit; cursor:pointer; padding:15px 18px; touch-action:manipulation;
-    background:rgba(255,255,255,.7); border:1.5px solid var(--line); border-radius:16px;
+    font-family:inherit; cursor:pointer; padding:15px 56px 15px 18px; touch-action:manipulation;
+    background:
+      repeating-linear-gradient(0deg,  rgba(184,147,74,.02) 0 1px, transparent 1px 6px),
+      rgba(253,249,238,.75);
+    border:1.5px solid var(--line); border-radius:16px;
     transition:transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
     animation:fadeUp .38s ease backwards;
+    position:relative;
   }
   .opts .opt:nth-child(1){ animation-delay:.05s } .opts .opt:nth-child(2){ animation-delay:.11s }
   .opts .opt:nth-child(3){ animation-delay:.17s } .opts .opt:nth-child(4){ animation-delay:.23s }
   .opt:active{ transform:scale(.985); }
   .opt-dot{ flex:none; width:18px; height:18px; margin-top:4px; border-radius:50%;
-    border:2px solid rgba(47,160,140,.40); transition:all .2s ease; }
-  .opt.sel{ border-color:var(--main); background:rgba(224,243,238,.92); box-shadow:0 8px 22px rgba(47,160,140,.16); }
-  .opt.sel .opt-dot{ background:var(--main); border-color:var(--main); box-shadow:inset 0 0 0 3.5px #fff; }
+    border:2px solid rgba(177,58,42,.45); transition:all .2s ease; }
+  .opt.sel{ border-color:var(--main); background:rgba(177,58,42,.07);
+    animation:selGlow .8s ease; }
+  .opt.sel .opt-dot{ background:var(--main); border-color:var(--main); box-shadow:inset 0 0 0 3.5px #FDF9EE; }
+  .opt .seal-mark{
+    position:absolute; right:14px; top:50%;
+    width:32px; height:32px; margin-top:-16px; border-radius:5px;
+    background:linear-gradient(160deg,#B13A2A,#8E2B21); color:#F7ECD4;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-kai); font-weight:700; font-size:16px;
+    box-shadow:inset 0 0 0 2px rgba(247,236,212,.4), 0 3px 8px rgba(84,56,28,.3);
+    transform:rotate(-6deg);
+    animation:sealDrop .5s cubic-bezier(.2,.85,.3,1.18) backwards;
+    pointer-events:none;
+  }
+  .opt .seal-mark.still{ animation:none; }
   .opt-text{ font-size:15px; font-weight:600; line-height:1.8; }
   .quiz-nav{ display:flex; justify-content:space-between; gap:12px; margin-top:26px; }
 
-  /* ===== 词注（生词解释） ===== */
+  /* ===== 词注 ===== */
   .gl{
-    color:#1F7A6A; font-weight:600; cursor:help;
-    border-bottom:2px dotted rgba(47,160,140,.65);
-    background:rgba(47,160,140,.07); border-radius:4px; padding:0 3px;
+    color:#8E2B21; font-weight:600; cursor:help;
+    border-bottom:2px dotted rgba(177,58,42,.60);
+    background:rgba(177,58,42,.06); border-radius:4px; padding:0 3px;
     transition:background .2s ease;
   }
-  .gl:focus-visible{ background:rgba(47,160,140,.16); }
+  .gl:focus-visible{ background:rgba(177,58,42,.12); }
   .gl-dot{
     font-style:normal; display:inline-block; vertical-align:super;
     transform:translateY(-5px); margin-left:2px;
     font-size:9px; line-height:1; padding:1.5px 4px; border-radius:6px;
-    background:var(--main); color:#fff; font-weight:700;
+    background:var(--main); color:#FDF6E3; font-weight:700;
   }
   .gloss-box{
     margin-top:18px; padding:14px 18px 12px;
-    border:1.5px dashed rgba(47,160,140,.38); border-radius:14px;
-    background:rgba(47,160,140,.06);
+    border:1.5px dashed rgba(184,147,74,.55); border-radius:14px;
+    background:rgba(184,147,74,.08);
     animation:fadeUp .4s ease .18s backwards;
   }
-  .gb-head{ font-size:13px; font-weight:800; color:#1F7A6A; letter-spacing:.06em;
+  .gb-head{ font-size:13px; font-weight:800; color:var(--main-deep); letter-spacing:.06em;
     margin-bottom:6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
   .gb-head span{ font-size:11px; color:var(--ink-faint); font-weight:400; }
   .gb-item{ font-size:12.5px; color:var(--ink-soft); line-height:1.8; }
   .gb-item b{ color:var(--ink); font-weight:800; }
-  .gb-item b::after{ content:'·'; margin:0 6px; color:rgba(47,160,140,.55); }
-  /* 词泡提示 */
+  .gb-item b::after{ content:'·'; margin:0 6px; color:rgba(184,147,74,.7); }
   .gloss-tip{
     position:fixed; z-index:230; left:0; top:0;
     width:min(300px,calc(100vw - 24px));
-    background:rgba(23,58,52,.95); color:#EAF6F1;
+    background:rgba(46,30,22,.95); color:#EFE2C4;
     border-radius:14px; padding:12px 16px 11px;
-    box-shadow:0 14px 36px rgba(23,58,52,.40);
+    box-shadow:0 14px 36px rgba(46,30,22,.42);
+    border:1px solid rgba(216,190,133,.35);
     font-size:13px; line-height:1.7; pointer-events:none;
     opacity:0; transform:translate(-50%,calc(-100% - 12px)) scale(.94);
     transform-origin:bottom center;
     transition:opacity .25s ease, transform .25s ease;
   }
   .gloss-tip.show{ opacity:1; transform:translate(-50%,calc(-100% - 12px)) scale(1); }
-  .gloss-tip .gt-term{ display:block; color:#9FE3CF; font-weight:800; margin-bottom:2px; }
+  .gloss-tip .gt-term{ display:block; color:#E4C57C; font-weight:800; margin-bottom:2px; }
   .gloss-tip::after{
     content:''; position:absolute; left:50%; bottom:-6px; transform:translateX(-50%);
-    border:7px solid transparent; border-top-color:rgba(23,58,52,.95); border-bottom:none;
+    border:7px solid transparent; border-top-color:rgba(46,30,22,.95); border-bottom:none;
   }
 
   /* ===== 结果页 ===== */
   #result{ padding-top:14px; }
-  .match-hero{ text-align:center; padding:34px 26px 34px; position:relative; overflow:hidden; }
-  .hero-ornament{ width:min(520px,90%); display:block; margin:0 auto 10px; opacity:.9;
+  .match-hero{ text-align:center; padding:34px 26px 30px; position:relative; overflow:visible; }
+  .hero-ornament{ width:min(520px,90%); display:block; margin:0 auto 10px; opacity:.95;
     animation:fadeUp .5s ease backwards, floatY 8s ease-in-out 1.4s infinite; }
 
-  /* 头部左右分栏：左为「立轴装裱」全身像，右为人物信息 */
   .hero-split{ display:flex; gap:34px; align-items:stretch; justify-content:center; }
   .scroll-frame{
     flex:none; width:min(300px, 56%);
-    background:#fff; border-radius:12px;
-    padding:12px 12px 0;
-    border:1.5px solid rgba(47,160,140,.30);
-    box-shadow:0 14px 34px rgba(38,110,95,.20);
+    border-radius:10px;
+    padding:14px 14px 0;
+    background:
+      repeating-linear-gradient(45deg,  rgba(216,190,133,.17) 0 2px, transparent 2px 9px),
+      repeating-linear-gradient(-45deg, rgba(216,190,133,.17) 0 2px, transparent 2px 9px),
+      linear-gradient(160deg,#9C3024,#8E2B21);
+    border:1px solid rgba(216,190,133,.55);
+    box-shadow:0 14px 34px rgba(84,56,28,.30);
     position:relative;
     animation:popIn .6s cubic-bezier(.2,.85,.3,1.18) .1s backwards;
   }
-  .scroll-frame::before{ /* 装裱内衬细线 */
-    content:''; position:absolute; inset:7px; border-radius:7px;
-    border:1px solid rgba(47,160,140,.22); pointer-events:none;
+  .scroll-frame::before{
+    content:''; position:absolute; inset:7px; border-radius:6px;
+    border:1px solid rgba(216,190,133,.55); pointer-events:none;
   }
   .scroll-inner{
     width:100%; aspect-ratio:3/4;
-    background:radial-gradient(circle at 50% 32%, #F6FBF8, #EAF3EE 78%);
-    border-radius:7px; overflow:hidden;
+    background:radial-gradient(circle at 50% 30%, #FAF4E2, #EFE4C6 82%);
+    border:1px solid rgba(184,147,74,.45);
+    border-radius:4px; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
   }
   .scroll-inner img{
-    width:100%; height:100%; object-fit:contain; display:block; /* 全身完整呈现，不裁切 */
+    width:100%; height:100%; object-fit:contain; display:block;
   }
-  .scroll-plate{ /* 底部名牌：姓名 + 朝代 + 姓氏小印 */
+  .speech{
+    position:absolute; z-index:4;
+    top:42px; left:calc(100% - 28px); width:188px;
+    background:rgba(253,250,240,.96);
+    border:1.5px solid rgba(184,147,74,.75);
+    border-radius:14px 14px 14px 4px;
+    padding:9px 12px 8px;
+    font-family:var(--font-kai);
+    font-size:12.5px; font-weight:600; line-height:1.8; color:var(--ink);
+    letter-spacing:.02em; text-align:left;
+    box-shadow:0 6px 18px rgba(84,56,28,.24);
+    transform-origin:left bottom;
+    animation:popIn .5s cubic-bezier(.2,.85,.3,1.18) .55s backwards;
+  }
+  .speech::before{
+    content:''; position:absolute; left:-8px; bottom:16px;
+    width:14px; height:14px;
+    background:rgba(253,250,240,.96);
+    border-left:1.5px solid rgba(184,147,74,.75);
+    border-bottom:1.5px solid rgba(184,147,74,.75);
+    transform:rotate(45deg);
+  }
+  .scroll-plate{
     display:flex; align-items:center; justify-content:space-between;
     padding:10px 8px 12px; gap:10px;
   }
   .scroll-plate .sp-info{ min-width:0; }
-  .scroll-plate .sp-name{ display:block; font-weight:800; font-size:16px; letter-spacing:.14em; color:var(--ink); }
+  .scroll-plate .sp-name{ display:block; font-weight:700; font-size:17px; letter-spacing:.16em; color:var(--main-deep); font-family:var(--font-kai); }
   .scroll-plate .sp-dyn{ display:block; font-size:11.5px; color:var(--ink-faint); letter-spacing:.1em; }
   .sp-seal{
-    flex:none; width:32px; height:32px; border-radius:6px;
-    background:var(--main); color:#fff;
+    flex:none; width:34px; height:34px; border-radius:6px;
+    background:linear-gradient(160deg,#B13A2A,#8E2B21); color:#F7ECD4;
     display:flex; align-items:center; justify-content:center;
-    font-weight:800; font-size:16px;
-    box-shadow:0 3px 8px rgba(47,160,140,.35);
+    font-weight:700; font-size:17px; font-family:var(--font-kai);
+    box-shadow:inset 0 0 0 2px rgba(247,236,212,.4), 0 3px 8px rgba(84,56,28,.3);
   }
   .hero-info{
     flex:1; min-width:0;
     display:flex; flex-direction:column; justify-content:center; align-items:center;
     text-align:center;
   }
-  .fig-name{ font-size:clamp(28px,6vw,40px); letter-spacing:.1em; margin:0 0 8px;
+  .fig-name{ font-size:clamp(28px,6vw,40px); letter-spacing:.14em; margin:0 0 8px;
+    font-family:var(--font-kai);
     animation:fadeUp .5s ease .22s backwards; }
   .fig-meta{ font-size:14px; color:var(--main); font-weight:700; letter-spacing:.12em;
     animation:fadeUp .5s ease .3s backwards; }
@@ -382,78 +490,121 @@
   .tag-row > *{ animation:chipPop .4s ease backwards; }
   .tag-row > *:nth-child(1){ animation-delay:.5s } .tag-row > *:nth-child(2){ animation-delay:.57s }
   .tag-row > *:nth-child(3){ animation-delay:.64s } .tag-row > *:nth-child(4){ animation-delay:.71s }
-  .tag{ font-size:12.5px; font-weight:700; color:#fff; background:var(--main); padding:5px 15px; border-radius:999px; letter-spacing:.06em; }
-  .badge-dom{ font-size:12.5px; font-weight:700; color:var(--main); background:rgba(255,255,255,.92);
+  .tag{ font-size:12.5px; font-weight:700; color:#FDF6E3; background:var(--main); padding:5px 15px; border-radius:999px; letter-spacing:.06em; }
+  .badge-dom{ font-size:12.5px; font-weight:700; color:var(--main-deep); background:rgba(253,249,238,.95);
     border:1.5px solid var(--main); padding:4px 15px; border-radius:999px; letter-spacing:.06em; }
-  .quote-box{
-    margin:28px auto 0; max-width:520px; text-align:left;
-    border-left:4px solid var(--main); padding:6px 4px 6px 20px;
-    font-size:15.5px; color:var(--ink-soft); font-weight:600; line-height:1.9;
-    animation:fadeUp .55s ease .58s backwards;
-  }
-  .quote-box .qby{ display:block; text-align:right; font-size:12px; color:var(--ink-faint); font-weight:400; margin-top:8px; }
 
-  /* 滚动渐显板块 */
+  .hero-bio{
+    margin-top:26px; padding:16px 18px 13px;
+    border:1.5px dashed rgba(184,147,74,.55); border-radius:14px;
+    background:rgba(184,147,74,.08);
+    text-align:left;
+    animation:fadeUp .55s ease .66s backwards;
+  }
+  .hero-bio .bio-head{ font-size:13px; font-weight:800; color:var(--main-deep); letter-spacing:.06em;
+    margin-bottom:6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .hero-bio .bio-head span{ font-size:11px; color:var(--ink-faint); font-weight:400; }
+  .hero-bio .bio-text{ font-size:13.8px; color:var(--ink-soft); line-height:2; }
+
   .reveal{ opacity:0; transform:translateY(26px);
     transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1); }
   .reveal.in{ opacity:1; transform:none; }
-  .section{ margin-top:24px; }
-  .section-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:14px; }
-  .section-head .no{ font-size:26px; font-weight:800; color:rgba(47,160,140,.32); letter-spacing:.04em; }
-  .section-head h3{ font-size:18px; letter-spacing:.08em; }
-  .section-note{ font-size:13.5px; color:var(--ink-soft); margin-bottom:14px; }
-  .section-note b{ color:var(--main); }
-  .prose{ font-size:14.5px; color:var(--ink); line-height:2; }
-
-  /* 人物小传 · 科普（嵌于 01 板块，词注批注生效区） */
-  .bio-block{
-    margin-top:22px; padding:16px 18px 13px;
-    border:1.5px dashed rgba(47,160,140,.30); border-radius:14px;
-    background:rgba(47,160,140,.05);
+  .section{ margin-top:26px; }
+  .section-head{
+    display:flex; align-items:baseline; gap:12px;
+    margin:0 4px 14px; padding-bottom:9px;
+    border-bottom:1px solid rgba(184,147,74,.32);
   }
-  .bio-head{ font-size:13px; font-weight:800; color:#1F7A6A; letter-spacing:.06em;
-    margin-bottom:6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
-  .bio-head span{ font-size:11px; color:var(--ink-faint); font-weight:400; }
-  .bio-text{ font-size:13.8px; color:var(--ink-soft); line-height:2; }
+  .section-head .no{ font-size:26px; font-weight:800; color:rgba(184,147,74,.85); letter-spacing:.04em; font-family:var(--font-kai); }
+  .section-head h3{ font-size:19px; letter-spacing:.1em; font-family:var(--font-kai); }
+  .section-note{ font-size:13.5px; color:var(--ink-soft); margin-bottom:14px; }
+  .section-note b{ color:var(--main-deep); }
+  .prose{ font-size:14.5px; color:var(--ink); line-height:2; }
+  .hl{
+    font-style:normal; font-weight:700; color:var(--main-deep);
+    background:rgba(177,58,42,.055);
+    border-bottom:2px dotted rgba(177,58,42,.40);
+    padding:0 2px; border-radius:3px;
+  }
 
-  .radar-wrap{ margin:6px auto 18px; max-width:460px; }
-  .dim-row{ display:grid; grid-template-columns:76px 1fr 44px; gap:12px; align-items:center; margin:11px 0; }
-  .dim-name{ font-size:14px; font-weight:700; }
-  .dim-track{ height:12px; border-radius:99px; background:rgba(47,160,140,.14); overflow:hidden; }
-  .dim-fill{ height:100%; width:0; border-radius:99px;
-    background:linear-gradient(90deg,var(--main),var(--main-soft));
-    transition:width .9s cubic-bezier(.22,.8,.3,1); }
-  .dim-val{ font-size:14px; font-weight:800; color:var(--main); text-align:right; }
+  .chart-duo{ display:grid; grid-template-columns:1fr; gap:10px; align-items:start; justify-items:center; }
+  .chart-cell{ width:100%; text-align:center; }
+  .chart-cap{
+    font-family:var(--font-kai); font-size:15px; font-weight:700;
+    letter-spacing:.14em; margin-bottom:8px;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .chart-cap::before{ content:''; width:26px; border-top:3.5px solid; border-radius:3px; }
+  .cap-you{ color:var(--main-deep); }
+  .cap-you::before{ border-color:var(--main); }
+  .cap-ta{ color:var(--gold); }
+  .cap-ta::before{ border-top-style:dashed; border-color:var(--gold); }
+  .radar-wrap{ margin:0 auto; width:100%; max-width:440px; }
 
   .grid3{ display:grid; grid-template-columns:1fr; gap:16px; }
   .mini-card{ padding:20px 22px; }
-  .mini-card h4{ font-size:14.5px; letter-spacing:.05em; margin-bottom:8px; color:var(--main); }
-  .mini-card h4 .rk{ font-size:11px; color:var(--ink-faint); font-weight:600; letter-spacing:.16em; display:block; margin-bottom:4px; }
+  .mini-card h4{ font-size:14.5px; letter-spacing:.05em; margin-bottom:8px; color:var(--main-deep); font-family:var(--font-kai); }
+  .mini-card h4.warn{ color:var(--warn); }
+  .mini-card h4 .rk{ font-size:11px; color:var(--main); font-weight:600; letter-spacing:.16em; display:block; margin-bottom:4px; }
   .mini-card p{ font-size:13.2px; color:var(--ink-soft); line-height:1.85; }
   .tone-card{ display:flex; flex-direction:column; align-items:center; }
   .tone-card .mini-ring{ width:88px; height:88px; margin-bottom:10px; flex:none; }
   .tone-card h4{ text-align:center; }
   .tone-card p{ text-align:left; width:100%; }
 
-  /* 台词卡：大号引号水印固定于左上角专属留白，正文与落款整体居中 */
+  .cmp-card{ grid-column:1 / -1; }
+  .cmp-duo{ display:grid; grid-template-columns:1fr; gap:20px; }
+  .cmp-sec{ font-family:var(--font-kai); font-size:14px; font-weight:700; letter-spacing:.08em;
+    color:var(--main-deep); margin-bottom:4px; }
+  .cmp-sec.warn{ color:var(--warn); }
+  .cmp-item{ margin:13px 0 3px; }
+  .cmp-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .cmp-head b{ font-family:var(--font-kai); font-size:15.5px; color:var(--main-deep); letter-spacing:.06em; }
+  .cmp-head span{ font-size:12px; font-weight:700; color:var(--main); }
+  .cmp-head span.big{ color:var(--warn); }
+  .cmp-track{ position:relative; height:12px; border-radius:7px; background:rgba(184,147,74,.18); margin-top:8px; }
+  .cmp-track i{ position:absolute; left:0; top:0; bottom:0; border-radius:7px;
+    background:linear-gradient(90deg,var(--main),var(--main2)); }
+  .cmp-track u{ position:absolute; top:-4px; bottom:-4px; width:3.5px; border-radius:2px;
+    background:var(--gold); box-shadow:0 0 0 1.5px rgba(253,249,238,.9); }
+  .cmp-sub{ display:flex; justify-content:space-between; font-size:11px; color:var(--ink-faint); margin-top:4px; }
+  .cmp-note{ font-size:11px; color:var(--ink-faint); margin-top:12px; }
+
+  .peers{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; align-items:center; }
+  .peer{ display:inline-flex; align-items:baseline; gap:7px; padding:6px 14px; border-radius:999px;
+    background:rgba(177,58,42,.06); border:1px solid rgba(177,58,42,.35); }
+  .peer b{ font-size:14px; font-weight:700; color:var(--main-deep); font-family:var(--font-kai); letter-spacing:.04em; }
+  .peer i{ font-style:normal; font-size:11px; color:var(--ink-faint); }
+  .peers-more{ font-size:12px; color:var(--ink-faint); }
+
+  .eulogy-card{ text-align:center; padding:30px 26px 26px; }
+  .eul-lead{ display:block; font-family:var(--font-kai); font-size:20px; font-weight:700; color:var(--main);
+    letter-spacing:.6em; text-indent:.6em; margin-bottom:12px; }
+  .eul-text{ font-family:var(--font-kai); font-size:16.5px; line-height:2.2; color:var(--ink); max-width:560px; margin:0 auto; }
+  .eul-seal{ width:42px; height:42px; border-radius:7px; margin:18px auto 0;
+    background:linear-gradient(160deg,#B13A2A,#8E2B21); color:#F7ECD4;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-kai); font-weight:700; font-size:21px;
+    box-shadow:inset 0 0 0 2px rgba(247,236,212,.4), 0 3px 8px rgba(84,56,28,.3); }
+
   .card.quote-card{
     position:relative;
-    padding:58px 20px 20px;              /* 顶部 58px 是引号水印的专属留白 */
+    padding:58px 20px 20px;
     text-align:center;
     display:flex; flex-direction:column; justify-content:center;
   }
   .quote-card::before{
     content:'「';
     position:absolute; left:16px; top:12px;
-    font-family:'Songti SC','STSong','SimSun',serif;
+    font-family:var(--font-kai);
     font-size:44px; line-height:1; font-weight:400;
-    color:rgba(47,160,140,.22);
+    color:rgba(177,58,42,.24);
     pointer-events:none;
   }
-  .quote-card .qt{ font-size:15px; font-weight:700; line-height:1.95; }
+  .quote-card .qt{ font-family:var(--font-kai); font-size:16px; font-weight:700; line-height:1.95; }
   .quote-card .qt::after{
     content:''; display:block; width:30px; height:2px; border-radius:2px;
-    background:rgba(47,160,140,.32); margin:14px auto 0;
+    background:rgba(184,147,74,.55); margin:14px auto 0;
   }
   .quote-card .qb{ font-size:12px; color:var(--ink-faint); margin-top:10px; letter-spacing:.04em; }
 
@@ -464,35 +615,36 @@
   .gen-overlay{
     position:fixed; inset:0; z-index:180;
     display:flex; align-items:center; justify-content:center;
-    background:rgba(233,245,240,.72); backdrop-filter:blur(6px);
+    background:rgba(245,237,216,.75); backdrop-filter:blur(6px);
     animation:fadeUp .3s ease backwards;
   }
   .gen-box{ text-align:center; }
   .gen-seal{ width:84px; height:84px; margin:0 auto 18px; display:block;
     animation:genSpin 1.6s cubic-bezier(.6,.1,.3,.9) infinite; }
-  .gen-box p{ font-size:15px; font-weight:700; color:var(--ink); letter-spacing:.08em; }
+  .gen-box p{ font-size:15px; font-weight:700; color:var(--ink); letter-spacing:.08em; font-family:var(--font-kai); }
   .gen-bar{ width:200px; height:6px; border-radius:99px; overflow:hidden;
-    margin:16px auto 0; background:rgba(47,160,140,.16); }
+    margin:16px auto 0; background:rgba(184,147,74,.25); }
   .gen-bar i{ display:block; height:100%; width:44px; border-radius:99px;
-    background:linear-gradient(90deg,var(--main),var(--main-soft));
+    background:linear-gradient(90deg,var(--main),var(--gold-soft));
     animation:genSlide 1.1s ease-in-out infinite alternate; }
 
   /* ===== toast / modal ===== */
   .toast{
     position:fixed; top:22px; left:50%; transform:translate(-50%,-16px); z-index:200;
     max-width:min(520px,88vw);
-    background:rgba(30,74,66,.92); color:#fff; backdrop-filter:blur(8px);
+    background:rgba(46,30,22,.93); color:#F5EDD8; backdrop-filter:blur(8px);
+    border:1px solid rgba(216,190,133,.35);
     font-size:13.5px; line-height:1.75; padding:13px 22px; border-radius:14px;
-    box-shadow:0 16px 40px rgba(30,74,66,.32); opacity:0; pointer-events:none;
+    box-shadow:0 16px 40px rgba(46,30,22,.35); opacity:0; pointer-events:none;
     transition:opacity .35s ease, transform .35s ease;
   }
   .toast.show{ opacity:1; transform:translate(-50%,0); }
-  .modal{ position:fixed; inset:0; z-index:150; background:rgba(30,74,66,.42);
+  .modal{ position:fixed; inset:0; z-index:150; background:rgba(46,30,22,.45);
     display:flex; align-items:center; justify-content:center; padding:20px; }
-  .modal-card{ width:min(560px,100%); max-height:88vh; overflow:auto; background:#fff;
-    border-radius:22px; padding:26px; text-align:center; box-shadow:0 30px 70px rgba(30,74,66,.30);
+  .modal-card{ width:min(560px,100%); max-height:88vh; overflow:auto; background:#FDF9EE;
+    border-radius:22px; padding:26px; text-align:center; box-shadow:0 30px 70px rgba(46,30,22,.32);
     animation:popIn .4s cubic-bezier(.2,.85,.3,1.18) backwards; }
-  .modal-card h3{ font-size:17px; letter-spacing:.06em; margin-bottom:6px; }
+  .modal-card h3{ font-size:17px; letter-spacing:.06em; margin-bottom:6px; font-family:var(--font-kai); }
   .modal-card p{ font-size:12.5px; color:var(--ink-soft); margin-bottom:14px; }
   .modal-card img{ width:100%; border-radius:12px; border:1px solid var(--line); display:block; }
   .modal-card .btn{ margin-top:16px; }
@@ -500,20 +652,34 @@
   /* ===== 响应式 ===== */
   @media (min-width:640px){
     .grid3{ grid-template-columns:repeat(3,1fr); }
+    .cmp-duo{ grid-template-columns:1fr 1fr; gap:26px; }
     .tone-card p{ text-align:justify; }
   }
-  @media (max-width:640px){
-    /* 窄屏：全身像与信息上下堆叠，画幅居中 */
-    .hero-split{ flex-direction:column; align-items:center; gap:22px; }
-    .scroll-frame{ width:min(272px, 76%); }
+  @media (min-width:760px){
+    .chart-duo{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:960px){
+    .hero-split{ flex-direction:column; align-items:center; gap:20px; padding-top:58px; }
     .hero-info{ width:100%; }
+    .scroll-frame{ width:min(272px,76%); }
+    .speech{ left:auto; right:-6px; top:-56px; width:186px; }
+    .speech::before{
+      left:42px; bottom:-8px;
+      border-left:none; border-bottom:none;
+      border-right:1.5px solid rgba(184,147,74,.75);
+      border-bottom:1.5px solid rgba(184,147,74,.75);
+      transform:rotate(45deg);
+    }
+  }
+  @media (max-width:640px){
     .hero-ornament{ display:none; }
   }
   @media (max-width:480px){
     body{ font-size:14px; }
     .container{ padding:18px 14px 64px; }
     .card{ padding:20px 18px; }
-    .match-hero{ padding:24px 14px 26px; }
+    .card::after{ inset:4px; border-radius:calc(var(--radius) - 7px); }
+    .match-hero{ padding:24px 14px 24px; }
     .sell-grid{ grid-template-columns:1fr; }
     .quiz-top{ top:58px; padding:12px 14px; }
     .quiz-card{ padding:22px 18px 18px; }
@@ -521,10 +687,17 @@
     .site-head{ padding:12px 14px; }
     .match-ring{ width:180px; height:180px; }
     .q-stem{ line-height:1.8; }
+    #qStem::before{ margin-top:calc(.9em - 13.5px); }
     .card.quote-card{ padding:54px 16px 18px; }
+    .hero-split{ padding-top:52px; }
+    .speech{ width:164px; top:-50px; font-size:11px; padding:7px 10px 6px; }
+    .title-seal{ width:26px; height:26px; line-height:26px; font-size:13px; }
+    .eul-text{ font-size:15px; }
+    .opt{ padding-right:50px; }
+    .opt .seal-mark{ width:28px; height:28px; margin-top:-14px; font-size:14px; }
   }
 
-  /* ===== 动效偏好：要求减少动效时全部关停 ===== */
+  /* ===== 动效偏好 ===== */
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{
       animation-duration:.01ms !important; animation-iteration-count:1 !important;
@@ -532,15 +705,16 @@
     }
     .gate.off{ transition:none; }
     .reveal{ opacity:1; transform:none; }
+    .reveal:not(.in) .card::after{ opacity:1; }
   }
 </style>
 </head>
 <body>
 
-<!-- 背景漂浮光点 -->
+<!-- 背景漂浮金晕 -->
 <div id="bgDots" aria-hidden="true"><i></i><i></i><i></i></div>
 
-<!-- 答题氛围层：柔雾 / 光尘 / 墨圈涟漪（仅答题时淡入） -->
+<!-- 答题氛围层 -->
 <div id="ambient" aria-hidden="true">
   <div class="amb-blob ab1"></div>
   <div class="amb-blob ab2"></div>
@@ -557,9 +731,10 @@
 <div class="gate" id="gate">
   <div class="gate-card" id="gateCard">
     <svg class="gate-seal" viewBox="0 0 72 72" aria-hidden="true">
-      <circle cx="36" cy="36" r="33" fill="none" stroke="#2FA08C" stroke-width="3"/>
-      <circle cx="36" cy="36" r="26" fill="rgba(47,160,140,.12)"/>
-      <text x="36" y="46" text-anchor="middle" font-size="26" font-weight="700" fill="#2FA08C">档</text>
+      <rect x="5" y="5" width="62" height="62" rx="9" fill="#8E2B21"/>
+      <rect x="12" y="12" width="48" height="48" rx="5" fill="none" stroke="rgba(247,236,212,.55)" stroke-width="2"/>
+      <text x="36" y="48" text-anchor="middle" font-size="28" font-weight="700" fill="#F7ECD4"
+            font-family="Kaiti SC,STKaiti,KaiTi,serif">档</text>
     </svg>
     <p class="gate-eyebrow">前世人物志 · 档案库</p>
     <h2>访问验证</h2>
@@ -589,25 +764,28 @@
   <section id="home" hidden>
     <div class="hero">
       <p class="eyebrow">HISTORICAL FIGURE ARCHIVE</p>
-      <h1>你像哪位<span class="accent">历史人物</span>？</h1>
+      <h1>你像哪位<span class="accent">历史人物</span>？<span class="title-seal" aria-hidden="true">印</span></h1>
       <p class="hero-sub">回答 24 道情境题，读取你的八维性格结构，和 116 位清代以前的中华历史人物比一比底色——找到那个跟你处理世界的方式最像的人。</p>
       <div class="hero-btns">
         <button class="btn primary lg" id="btnStart">开始读取档案</button>
         <button class="btn ghost lg" id="btnHow">看看如何匹配</button>
       </div>
-      <svg class="hero-deco" viewBox="0 0 760 140" fill="none" aria-hidden="true">
-        <circle cx="620" cy="38" r="16" fill="rgba(47,160,140,.20)"/>
-        <path d="M-10 140 L70 70 L130 112 L210 44 L300 140 Z" fill="rgba(47,160,140,.10)"/>
-        <path d="M180 140 L280 78 L360 116 L460 54 L560 140 Z" fill="rgba(47,160,140,.17)"/>
-        <path d="M460 140 L540 92 L620 124 L700 74 L770 140 Z" fill="rgba(47,160,140,.10)"/>
-        <path d="M40 34 q18 -16 36 0 q18 16 36 0" stroke="rgba(47,160,140,.32)" stroke-width="3" stroke-linecap="round"/>
-        <path d="M480 22 q14 -12 28 0 q14 12 28 0" stroke="rgba(47,160,140,.26)" stroke-width="3" stroke-linecap="round"/>
+      <svg class="hero-deco" viewBox="0 0 760 150" fill="none" aria-hidden="true">
+        <path d="M-10 150 L86 88 L168 120 L258 66 L356 150 Z" fill="rgba(154,120,70,.16)"/>
+        <path d="M188 150 L312 90 L414 124 L532 62 L652 150 Z" fill="rgba(184,147,74,.22)"/>
+        <path d="M500 150 L596 104 L676 130 L770 90 L770 150 Z" fill="rgba(154,120,70,.13)"/>
+        <circle cx="640" cy="44" r="16" fill="rgba(199,78,59,.72)"/>
+        <circle cx="640" cy="44" r="23" fill="none" stroke="rgba(199,78,59,.32)" stroke-width="2"/>
+        <path d="M64 52 q16 -14 32 0 q16 14 32 0" stroke="#B8934A" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M418 28 q13 -11 26 0 q13 11 26 0" stroke="rgba(184,147,74,.75)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M140 46 a9 9 0 1 0 9 -9" stroke="rgba(184,147,74,.6)" stroke-width="2"/>
+        <path d="M560 66 a8 8 0 1 0 8 -8" stroke="rgba(184,147,74,.55)" stroke-width="2"/>
       </svg>
     </div>
 
     <div class="sell-grid">
       <div class="card sell">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#2FA08C" stroke-width="1.8" stroke-linecap="round">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#B8934A" stroke-width="1.8" stroke-linecap="round">
           <circle cx="13" cy="7" r="3.2"/><path d="M6.5 22c0-4 2.9-6.5 6.5-6.5s6.5 2.5 6.5 6.5"/>
           <circle cx="4.5" cy="10" r="2.2"/><path d="M1.5 20c0-2.6 1.3-4.3 3.2-5"/>
           <circle cx="21.5" cy="10" r="2.2"/><path d="M24.5 20c0-2.6-1.3-4.3-3.2-5"/>
@@ -615,21 +793,21 @@
         <div><h3>古代群像</h3><p>上起殷商、下讫明末，一百余位真实存在过的历史人物，等你认领。</p></div>
       </div>
       <div class="card sell">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#2FA08C" stroke-width="1.8" stroke-linecap="round">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#B8934A" stroke-width="1.8" stroke-linecap="round">
           <circle cx="8" cy="6" r="3.4"/><path d="M8 10.5v10M5 13h6"/>
           <circle cx="18" cy="6" r="3.4"/><path d="M18 10.5v10M15 13.5c1.8 3.5 4.2 3.5 6 0"/>
         </svg>
         <div><h3>男女皆有</h3><p>58 位男性、58 位女性人物同库匹配，可按你的偏好缩小候选范围。</p></div>
       </div>
       <div class="card sell">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#2FA08C" stroke-width="1.8" stroke-linecap="round">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#B8934A" stroke-width="1.8" stroke-linecap="round">
           <path d="M4 22V12M10 22V6M16 22V14M22 22V9"/>
           <path d="M2 22h22" stroke-width="2"/>
         </svg>
-        <div><h3>多维分析</h3><p>8 个性格维度 × 10 种人物原型，雷达图呈现你的能力轮廓。</p></div>
+        <div><h3>多维分析</h3><p>8 个性格维度 × 10 种人物原型，朱金双雷达对照呈现你的轮廓。</p></div>
       </div>
       <div class="card sell">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#2FA08C" stroke-width="1.8" stroke-linecap="round">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#B8934A" stroke-width="1.8" stroke-linecap="round">
           <circle cx="13" cy="13" r="10.5"/><path d="M13 7v6l4.5 3"/>
         </svg>
         <div><h3>快速完成</h3><p>24 道情境题，答完自动生成档案，约 5 分钟，可一键保存长图。</p></div>
@@ -640,7 +818,7 @@
       <h3>测试说明</h3>
       <ul>
         <li>全是情境选择题，没有标准答案，凭第一直觉选就行；</li>
-        <li>题目从 1000 道历史场景题库里随机抽，尽量不重复出题；</li>
+        <li>题目从 1000 道历史场景题库里随机抽——同一场景不会以不同问法重复出现；</li>
         <li>看不懂的古词别担心——带「注」的词点一下就有解释；</li>
         <li>答完最后一题会自动生成人物档案；结果仅供自省和谈资。</li>
       </ul>
@@ -703,16 +881,17 @@
 <div class="gen-overlay" id="genOverlay" hidden>
   <div class="gen-box">
     <svg class="gen-seal" viewBox="0 0 72 72" aria-hidden="true">
-      <circle cx="36" cy="36" r="33" fill="none" stroke="#2FA08C" stroke-width="3"/>
-      <circle cx="36" cy="36" r="26" fill="rgba(47,160,140,.12)"/>
-      <text x="36" y="46" text-anchor="middle" font-size="26" font-weight="700" fill="#2FA08C">档</text>
+      <rect x="5" y="5" width="62" height="62" rx="9" fill="#8E2B21"/>
+      <rect x="12" y="12" width="48" height="48" rx="5" fill="none" stroke="rgba(247,236,212,.55)" stroke-width="2"/>
+      <text x="36" y="48" text-anchor="middle" font-size="28" font-weight="700" fill="#F7ECD4"
+            font-family="Kaiti SC,STKaiti,KaiTi,serif">档</text>
     </svg>
     <p>正在翻阅一百一十六卷人物档案…</p>
     <div class="gen-bar"><i></i></div>
   </div>
 </div>
 
-<!-- 移动端不支持系统分享时的兜底：内嵌长图，提示长按保存 -->
+<!-- 移动端长按保存兜底 -->
 <div class="modal" id="shareModal" hidden>
   <div class="modal-card">
     <h3>长按下图，保存到手机相册</h3>
@@ -722,30 +901,22 @@
   </div>
 </div>
 
-<!-- 图表库：Chart.js（用于页面雷达图）。加载失败时自动退回内置原生 Canvas 绘制 -->
+<!-- 图表库：Chart.js。加载失败时自动退回内置原生 Canvas 绘制 -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <script>
 'use strict';
-/* ================================================================
- * 前世人物志 · 你像哪位历史人物
- * 题库引擎（24 基准题 + 1000 道口语化场景题）→ 8 维计分
- * → 116 人人物库（男女各 58）欧氏距离匹配 → 图形化档案页
- * → 动效体系 + 词注系统 + 答题氛围层 → Canvas 长图导出（原生绘制）
- * ================================================================ */
 const $ = s => document.querySelector(s);
 
-/* Chart.js 可用性检测 + 全局默认样式 */
 const REDUCED_MOTION = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 const CAN_HOVER = !!(window.matchMedia && matchMedia('(hover: hover)').matches);
 const CHART_OK = typeof window.Chart === 'function';
 if (CHART_OK){
   Chart.defaults.font.family = "'PingFang SC','Microsoft YaHei',sans-serif";
-  Chart.defaults.color = '#1E4A42';
+  Chart.defaults.color = '#33241C';
 }
 
-/* ---------------- 八个性格维度 ----------------
- * 顺序约定：决断 / 共情 / 开创 / 洞察 / 表达 / 经营 / 独立 / 担当 */
+/* ---------------- 八个性格维度 ---------------- */
 const DIMS = [
   { k:'dec', name:'决断', desc:'你面对「要不要」时几乎不内耗：信息够用就出手，错了就调头。在众人反复权衡的场合，你常常是那个先迈步的人——这份「快」不是鲁莽，而是你愿意为自己的判断力负责。' },
   { k:'emp', name:'共情', desc:'你能听见别人没说出口的那半句话。情绪、处境、难言之隐，在你这里都有位置。这不是软弱，而是一种高频的接收能力——它让你在任何群体里都天然拥有信任。' },
@@ -758,7 +929,6 @@ const DIMS = [
 ];
 const DIM_NAME = k => DIMS.find(d => d.k === k).name;
 
-/* 主导维度被过度使用时的风险提醒（8 条） */
 const DIM_RISK = {
   dec:'决断过度会滑向武断——出手太快、听得太少，把「效率」慢慢变成「独裁」。重大决策前，给反对意见留一次专门的听证。',
   emp:'共情过度会淹掉自己——你是所有人的树洞，却找不到自己的出口。记得给自己留一块「不接收」的时间。',
@@ -770,8 +940,22 @@ const DIM_RISK = {
   dut:'担当过度会压垮肩膀——把所有人的责任都揽在身上，等于剥夺了别人成长的权利。你不是所有人的答案。',
 };
 
-/* ---------------- 十种人物原型 ----------------
- * vec 顺序 = DIMS 顺序（0–100） */
+/* ---------------- 赞曰短语 ---------------- */
+const EUL = {
+  dec:['临事不惑','当机立断'], emp:['善体人心','暖若春晖'],
+  pio:['敢辟新径','踏浪先行'], ins:['见微知著','烛照机先'],
+  exp:['言必有章','笔底生风'], man:['经纬人情','调度有方'],
+  ind:['不倚不惧','自守其真'], dut:['一诺如山','临难不辞'],
+};
+function buildEulogy(R){
+  const a = R.top3[0], b = R.top3[1];
+  return {
+    lead:'赞　曰',
+    body:`${EUL[a.k][0]}，${EUL[a.k][1]}；${EUL[b.k][0]}，${EUL[b.k][1]}。以「${a.name}」为骨，以「${R.arch.label}」为神——千载之下，与${R.figure.n}同其呼吸。`,
+  };
+}
+
+/* ---------------- 十种人物原型 ---------------- */
 const ARCHETYPES = {
   ruler: {
     label:'定局者', tags:['杀伐决断','格局宏大','以终为始'],
@@ -865,8 +1049,7 @@ const ARCHETYPES = {
   },
 };
 
-/* ---------------- 人物库：116 人（男 58 / 女 58，清代以前） ----------------
- * n 姓名 / g 性别 / c 朝代 / r 身份角色 / a 原型 / q 台词 */
+/* ---------------- 人物库：116 人（男 58 / 女 58，清代以前） ---------------- */
 const FIGURES = [
   /* —— 男性 58 —— */
   {n:'嬴政',g:'m',c:'秦',r:'始皇帝',a:'ruler',q:'六王毕，四海一；朕为始皇帝。'},
@@ -988,130 +1171,129 @@ const FIGURES = [
   {n:'聂隐娘',g:'f',c:'唐',r:'女侠',a:'free',q:'隐迹人间，不露锋芒。'},
 ];
 
-/* ---------------- 人物小传 · 科普（116 位人物均配，词条批注自动生效） ---------------- */
+/* ---------------- 人物小传 · 科普 ---------------- */
 const BIOS = {
   /* —— 男性 —— */
-  '嬴政':'秦王朝建立者。十年扫灭六国，统一文字、货币与车轨，又筑长城、修驰道，把「天下」第一次焊成整体；晚年求仙苛法，也为帝国的速亡埋了雷。',
-  '刘彻':'西汉在位最久的雄主。北击匈奴、派张骞凿空西域、独尊儒术，把汉朝推向极盛；连年征战耗空国库，晚年下诏罪己，算是少见的清醒收场。',
-  '刘秀':'东汉开国皇帝，起于宗室远支。昆阳以少胜多，得天下后以「柔道」治国，退功臣、进文吏、轻徭薄赋，是开国之君里少有的善始善终。',
-  '杨坚':'隋朝开国皇帝。代周建隋、统一南北，创三省六部与科举雏形，被后世史家列入影响世界进程的帝王；晚年废长立幼，为隋亡埋下伏笔。',
-  '李世民':'唐朝第二位皇帝。玄武门之变夺位后纳谏任贤、轻刑薄赋，对外平定四夷、被尊「天可汗」，贞观之治成为此后千年的治世范本。',
-  '赵匡胤':'宋朝开国皇帝，陈桥兵变黄袍加身。一杯酒释兵权，把晚唐以来的武人政治改写为文官政治，重文轻武从此定了大宋三百年的底色。',
-  '朱元璋':'明朝开国皇帝，从放牛娃、行脚僧一路打到帝位。铁腕反贪、休养生息，也废丞相、兴大狱，把皇权攥到了历代最紧的程度。',
-  '姜尚':'又称姜子牙，周朝开国军师。渭水垂钓遇文王，辅佐武王牧野克商，被后世兵家尊为鼻祖；《封神演义》里执打神鞭的老者，原型正是他。',
-  '管仲':'齐国名相，辅佐齐桓公九合诸侯。兴盐铁、通货殖，留下「仓廪实而知礼节」的名论，连孔子都感叹：没有管仲，我们早成了野人。',
-  '孙膑':'战国军事家，《孙膑兵法》的作者。桂陵、马陵两役把「围魏救赵」打成教科书，证明了庙算之外，地势与人心同样是兵器。',
-  '张仪':'战国纵横家，连横策略的操盘手。以「横」破「纵」，凭三寸之舌拆散六国同盟，为秦国的东出撕开了口子。',
-  '张良':'汉初三杰之一，谋圣。圯上受书、佐汉灭楚，功成后急流勇退、从赤松子游，是开国功臣里少有的善终样本。',
-  '诸葛亮':'蜀汉丞相。隆中一对定三分，治蜀依法、南抚夷越、北伐中原，「鞠躬尽瘁」四个字从此成为人臣的标尺。',
-  '司马懿':'曹魏权臣，西晋基业的实际奠基人。装病蛰伏、隐忍待时，高平陵之变一朝夺权，把一个「忍」字做成了兵法。',
-  '刘基':'明朝开国谋臣，世称刘伯温。通经史、晓天文，为朱元璋献时务十八策；民间把他与诸葛亮并称，神化为前知五百年的智者。',
-  '张骞':'西汉外交家。两度出使西域，被匈奴扣留十余年持节不改，史书把这次贯通称为「凿空」——丝绸之路的第一块界碑由他竖起。',
-  '班超':'东汉名将，投笔从戎的边地传奇。率三十六人纵横西域三十年、重开都护府，「不入虎穴，焉得虎子」就是他的原话。',
-  '玄奘':'唐代高僧，唯识宗创始人。西行五万里、孤身十七年，取回佛经六百余部主持翻译，《大唐西域记》至今是中亚考古的地图。',
-  '郑和':'明代航海家，七下西洋的统帅。率两百余艘宝船最远抵东非，比哥伦布早近一个世纪；航海档案后来散佚，成历史一大憾事。',
-  '徐霞客':'明代地理学家。三十余年徒步考察大半个中国，最早系统记述喀斯特地貌；《徐霞客游记》的开篇之日，如今是「中国旅游日」。',
-  '蔺相如':'战国赵国上卿。完璧归赵、渑池护主，位居廉颇之上却引车避匿，换来将相和，把外交气度演成了成语。',
-  '晏婴':'齐国名相，历仕三朝。身材矮小而机智过人，二桃杀三士、橘化为枳皆出其手；一件狐裘穿三十年，俭出名臣的另一种样子。',
-  '苏秦':'战国纵横家，合纵的旗手。身佩六国相印，使秦兵十五年不敢函谷出关；锥刺股的苦读典故，也出自他发迹前夜。',
-  '鲁肃':'东吴战略家。榻上策比隆中对早七年画出三分蓝图，力主联刘抗曹，是赤壁之战背后真正的推手之一。',
-  '孔丘':'儒家学派创始人。周游列国十四年推行仁政而不遇，退而修书设教，弟子三千；其言行为此后两千多年的华人立了心尺。',
-  '李耳':'道家学派创始人，世称老子。做过周室守藏史，见周衰骑牛西出函谷，留下五千言《道德经》，无为之道影响遍及哲学与治术。',
-  '墨翟':'墨家创始人，乱世里的工程师。主张兼爱、非攻，带队帮弱国守城止战；其门下纪律严明、赴火蹈刃不旋踵，首领称「巨子」。',
-  '孟轲':'战国儒家宗师，亚圣。好辩而雄辩，把「民贵君轻」「浩然之气」讲进汉语的骨头里；生前不遇，身后与孔子并称「孔孟」。',
-  '司马迁':'西汉史学家。因李陵之祸受宫刑而不废其志，忍辱著成《史记》百三十篇，为两千年正史立下体例。',
-  '张衡':'东汉科学家兼文学家。造浑天仪与候风地动仪，把地震观测变成仪器问题；一篇《二京赋》构思十年，科学与辞赋在他身上并存。',
-  '朱熹':'南宋理学集大成者。所编《四书章句》成为此后六百年科举的标准教材，「格物致知」由一派学问长成官方正统。',
-  '王守仁':'明代心学宗师，世称阳明先生。龙场悟道提出「知行合一」，又以书生之身平定宁王之乱；「此心光明」是他临终的最后一句话。',
-  '商鞅':'战国改革家，两次变法强秦。废井田、行郡县、立军功爵，秦国二十年脱胎换骨；功成而身死车裂，其法却留了下来。',
-  '范仲淹':'北宋政治家、文学家。庆历新政未成而先贬，却在《岳阳楼记》里写下「先忧后乐」，为士大夫精神立了牌位。',
-  '王安石':'北宋改革家。熙宁变法理财强兵，青苗、免役诸法争论千年；「天变不足畏」的执拗，让他成为后世褒贬分歧最大的人物之一。',
-  '张居正':'明代改革家，万历初年的实际执政者。推行一条鞭法与考成法，为衰明的国库续命数十年；身后遭抄家清算，荣辱都到了极处。',
-  '屈原':'战国楚国大夫，中国第一位留下姓名的大诗人。举贤授能之策不容于朝，自沉汨罗；《离骚》的香草美人，是中国诗歌的源代码。',
-  '王羲之':'东晋书法家，书圣。兰亭雅集微醺挥毫，《兰亭序》被尊为天下第一行书；传说他爱鹅，从鹅颈的弧线里悟笔意。',
-  '李白':'盛唐诗仙。二十五岁仗剑出蜀，诗风如天外来客；一生想做官又见不得官场，「仰天大笑出门去」是他的名片。',
-  '杜甫':'盛唐诗圣。亲历安史之乱全程，把流亡路上的民生写进律诗的最高处；生前潦倒，身后被尊为诗家宗主，诗称「诗史」。',
-  '苏轼':'北宋文豪。诗词文书画皆登顶，一生三次大贬却越贬越通透，「一蓑烟雨任平生」是他给自己开的药方。',
-  '辛弃疾':'南宋豪放词人。二十一岁率五十骑闯五万敌营擒叛将，南归后却一生不得用兵，《破阵子》里全是没处安放的马力。',
-  '唐寅':'明代画家，桃花庵主。乡试解元却卷入科场案断送仕途，卖画为生，诗画一半狂一半痛，「别人笑我太疯癫」是他的自况。',
-  '汤显祖':'明代戏曲家，《临川四梦》的作者。《牡丹亭》一句「情不知所起，一往而深」，为明清戏曲立起「主情」的大旗。',
-  '卫青':'西汉大将军。出身骑奴而七击匈奴无败绩，官至大司马而不养士、不自矜，把谦抑活成了另一种锋利。',
-  '霍去病':'西汉名将。十七岁封冠军侯，六击匈奴、封狼居胥；「匈奴未灭，无以家为」的少年意气，是此后两千年武人的天花板。',
-  '关羽':'汉末名将，后世尊为关帝。白马刺颜良、水淹七军威震华夏，败走麦城而义不降吴，忠义的符号由史实一路长成信仰。',
-  '岳飞':'南宋抗金名将。背刺「尽忠报国」，郾城大破铁浮屠，被十二道金牌召回冤死风波亭；平反之后，「岳家军」成了军纪的同义词。',
-  '文天祥':'南宋末代丞相。起兵勤王、被俘不屈，《正气歌》与「人生自古谁无死」写在囚牢与刑场之间，是宋亡时最硬的一块骨头。',
-  '戚继光':'明代抗倭名将。练义乌兵、创鸳鸯阵，荡平东南倭患，后镇蓟州修长城；还留下《纪效新书》，把练兵写成了学问。',
-  '范蠡':'春秋末政治家、商人祖师。助越灭吴后泛舟五湖，三致千金而三散之，「陶朱公」从此成了巨富的代称。',
-  '端木赐':'孔门十哲之一的子贡。利口巧辞、善辨货殖，被后世尊为儒商之祖；孔子周游列国的盘缠，多靠这位学生沿途经营。',
-  '白圭':'战国大商，经营之祖。提出「人弃我取，人取我与」与「乐观时变」，把生意做成了对周期的预判。',
-  '吕不韦':'由大商而秦相。以「奇货可居」押中王位继承，聚门客三千编成《吕氏春秋》，「一字千金」的悬赏就出自这部书。',
-  '庄周':'战国道家宗师。漆园小吏而心游万仞，梦蝶、濠梁之辩、曳尾涂中，把逍遥写成了汉语想象力的边疆。',
-  '严光':'东汉隐士，字子陵。少与刘秀同窗，帝业成后披羊裘钓于富春江畔，光武三聘而不出，成了帝王与布衣交谊的孤本。',
-  '嵇康':'魏晋名士，竹林七贤的精神领袖。打铁为生、越名教而任自然，《广陵散》绝于刑场，一曲成谶的自由代价。',
-  '陶渊明':'东晋诗人，田园诗开山。任彭泽令八十余日，「不为五斗米折腰」挂印归去，此后种豆南山，把清贫活成了审美。',
+  '嬴政':'秦王朝建立者，十三岁即秦王位。亲政后十年间扫灭韩、赵、魏、楚、燕、齐六国，结束五百年分裂；统一文字、货币、度量衡与车轨，北筑长城、南征百越、修驰道，把「天下」第一次焊成整体。晚年求仙问药、刑法苛严，为帝国速亡埋下了雷。',
+  '刘彻':'西汉在位最久的雄主，共五十四年。颁推恩令削藩、设刺史监察地方、独尊儒术立官学；卫青、霍去病数出塞北击匈奴，张骞凿空西域，汉朝的疆域与威名同时抵达顶点。连年征战几乎耗空文景积蓄，晚年下诏罪己罢兵，是雄主里少见的清醒收场。',
+  '刘秀':'东汉开国皇帝，汉高祖九世孙，起于南阳宗室远支。昆阳之战以万余破四十二万，堪称军事奇迹；称帝后又用十二年扫平赤眉与陇蜀。得天下后以「柔道」治国——退功臣而进文吏、释放奴婢、减免赋税，是开国君主里罕见的大团圆结局。',
+  '杨坚':'隋朝开国皇帝，出身关陇军事贵族。以外戚辅政代周建隋，八年内灭陈统一南北，结束近三百年南北朝分裂；创三省六部制与开皇律，行均田、修粮仓，开皇之治户口倍增，被后世史家列入影响世界进程的帝王。晚年废长立幼，为隋祚二世而斩埋下伏笔。',
+  '李世民':'唐朝第二位皇帝。隋末随父起兵，虎牢关一战擒双王定中原；玄武门之变夺位后，用房玄龄、杜如晦、魏征，轻刑薄赋、从谏如流，对外平东突厥与吐谷浑、被四夷尊为「天可汗」。贞观之治成为此后千年帝治的教科书。',
+  '赵匡胤':'宋朝开国皇帝。后周殿前都点检，陈桥驿兵变黄袍加身，兵不血刃取开封；随后「杯酒释兵权」，以厚禄换兵权，把晚唐两百年武人干政的乱局改写为文官政治。他立下不杀士大夫与言事人的祖训，重文轻武从此定了大宋三百年的气质。',
+  '朱元璋':'明朝开国皇帝，濠州钟离人。从放牛娃、皇觉寺行脚僧到红巾军统帅，四十岁登基，是中国历史上出身最寒微的开国之君。在位三十年铁腕反贪、编《大明律》、行卫所制，恢复战后经济；也废丞相、设锦衣卫、兴大狱，把皇权攥到了历代最紧的程度。',
+  '姜尚':'又称姜子牙、太公望，周朝开国军师。半生寒微，年过七旬于渭水之滨直钩垂钓，遇西伯姬昌载归拜为太师；佐武王牧野一战克商，受封于齐。相传著《六韬》，被后世兵家与谋略家共尊为鼻祖；《封神演义》里执打神鞭封众神的白须老者，原型正是他。',
+  '管仲':'春秋齐国名相。曾辅佐公子纠与小白争位、射中小白带钩，反被鲍叔牙举荐为相；佐桓公四十年，兴盐铁、通货殖、尊王攘夷，九合诸侯一匡天下。留下「仓廪实而知礼节」的名论，孔子叹：没有管仲，我们早成了披发左衽的野人。',
+  '孙膑':'战国军事家，孙武后裔，与庞涓同门于鬼谷子。遭庞涓妒害受膑刑断足，装疯脱身入齐；桂陵、马陵两役把「围魏救赵」打成教科书，马陵道减灶诱敌，万弩齐发射杀庞涓。所著《孙膑兵法》失传千年，1972 年银雀山汉墓竹简出土方重见天日。',
+  '张仪':'战国纵横家，魏国平民出身，师从鬼谷子。首创「连横」事秦之策，凭三寸之舌先后戏楚破齐、说魏事秦，把六百里商於说成六里，拆散合纵如拆积木；秦惠文王拜其为相，封武信君。苏秦合纵与张仪连横的对局，是战国棋盘后半程的主线。',
+  '张良':'汉初三杰之一，韩国贵族之后。散家财在博浪沙刺秦未遂，圯上为黄石公三次纳履得兵书；佐刘邦先入关中、鸿门宴周旋脱险、下邑画策定天下，人称「运筹帷幄之中，决胜千里之外」。功成后自请封留侯、闭门学辟谷，是汉初功臣里极少数的善终样本。',
+  '诸葛亮':'蜀汉丞相，躬耕南阳十年。二十七岁隆中一对为刘备画出三分蓝图，此后联吴抗曹、白帝托孤、五月渡泸、六出祁山；治蜀依法而民无怨言，连对手都叹其为「天下奇才」。「鞠躬尽瘁，死而后已」八个字，从此成为人臣的标尺。',
+  '司马懿':'河内温县人，历经曹操、曹丕、曹叡、曹芳四朝。以隐忍著称：装病七年拒曹爽、称病赚李胜，高平陵之变一朝夺权，奠定晋室基业。对蜀战事取坚壁拒守耗死诸葛亮，又平辽东、兴屯田——一个「忍」字，被他做成了兵法。',
+  '刘基':'明朝开国谋臣，处州青田人，世称刘伯温。元末进士，通经史、精象纬之学，五十岁出山辅佐朱元璋，献时务十八策，定「先灭陈友谅、后取张士诚」之序。民间把他与诸葛亮并称，神化为前知五百年的智者；功成请归，仍难逃胡惟庸案的牵连。',
+  '张骞':'西汉外交家。奉武帝命出使西域联合大月氏，途中两度被匈奴扣留共十一年，娶妻生子而持汉节不失；归来复使乌孙，副使遍至大宛、康居、安息。史书把这次贯通专称为「凿空」——丝绸之路的第一块界碑由他竖起，葡萄、苜蓿、良马也随之东来。',
+  '班超':'东汉名将，史学家班彪幼子。不甘为官府抄书，掷笔长叹「大丈夫当立功异域」；率三十六人夜袭鄯善、平莎车、败贵霜，纵横西域三十一年，五十余国纳质内属，官至西域都护、封定远侯。「不入虎穴，焉得虎子」正是他的原话。',
+  '玄奘':'唐代高僧，法相唯识宗创始人。贞观初孤身西行，穿莫贺延碛、越葱岭、历一百一十国，五万里行程十七年，在那烂陀寺从戒贤学法五年；归国主持翻译经论七十五部一千三百余卷，口述《大唐西域记》成为中亚与印度考古的地图。《西游记》唐僧的原型。',
+  '郑和':'明代航海家与外交家，云南人，小字三保。永乐三年起七下西洋：宝船两百余艘、将士两万七千，最远抵东非与红海，比哥伦布首航早八十七年；厚往薄来、平锡兰、擒海盗陈祖义，扬国威而不占一寸殖民地。航海档案后来散佚，成历史一大憾事。',
+  '徐霞客':'明代地理学家，江阴人。二十二岁出游，三十余年间北历燕冀、南涉闽粤、西南直达滇缅，足迹遍及两京十三省；晚年「万里遐征」考察金沙江水系，论证其为长江正源，最早系统记述岩溶地貌。六十万字游记的开篇之日，如今是中国旅游日。',
+  '蔺相如':'战国赵国上卿。携和氏璧入秦，见秦王无意偿城则持璧睨柱欲碎，完璧归赵；渑池会上以五步之血胁迫秦王击缶，再护国格。位在廉颇之上时引车避匿，一句「先国家之急而后私仇」令廉颇负荆请罪——将相和从此成为气度的代名词。',
+  '晏婴':'齐国名相，历仕灵、庄、景三朝五十余年。出使楚国以「橘化为枳」驳回戏辱，二桃杀三士的权谋收入兵书，又以「踊贵屦贱」谏景公减刑。身不满六尺而相齐，一件狐裘三十年，吃饭不备两种肉菜，是奢靡时代里罕见的俭相。',
+  '苏秦':'战国纵横家，洛阳人。早年游说失败归家，妻不下机、嫂不为炊，遂引锥刺股再读阴符；后倡合纵，六国于洹水会盟、共佩相印，使秦兵十五年不敢出函谷关。富贵归乡时嫂子蛇行匍伏，「前倨后恭」的成语即出于此。',
+  '鲁肃':'东吴战略家，出身豪族而散财赈穷。早于诸葛亮七年的「榻上策」已画出南北对峙蓝图；借粟三千斛予周瑜定交，力主联刘抗曹，促成孙刘联盟，赤壁一战天下三分。为人方严寡言、节俭无私，史评其「建独断之明，出众人之表」。',
+  '孔丘':'儒家学派创始人，殷商贵族之后。三十岁开私人讲学之先河，弟子三千、贤者七十二；五十岁仕鲁至司寇，政见不行后周游列国十四年而不遇，六十八岁归鲁删诗书、定礼乐、修春秋。其言行为此后两千五百年的华人立了心尺，被尊为至圣先师。',
+  '李耳':'道家学派创始人，世称老子。任周室守藏室之史，博览典章；孔子曾适周问礼于他。见周室衰微，骑青牛西出函谷，关令尹喜强留著书，乃留下五千言《道德经》飘然而去。「道法自然」「柔弱胜刚强」的无为之道，塑造了中国人的另一面精神底色。',
+  '墨翟':'墨家创始人。出身工匠，动手能力冠绝诸子——造车械与守城器械胜过公输班的云梯；倡兼爱、非攻、尚贤、节用，闻楚国将攻宋即徒步十日十夜赴郢劝阻。门下纪律严明、赴火蹈刃不旋踵，首领称「巨子」；秦汉后骤衰，直到清末才被重新发现。',
+  '孟轲':'战国儒家宗师。以好辩自任，游说齐梁诸君行仁政，发「民为贵，社稷次之，君为轻」之论；不合则浩然去之，留下「富贵不能淫，贫贱不能移，威武不能屈」的大丈夫标准。生前不遇，唐宋后地位飙升，与孔子并称「孔孟」，尊为亚圣。',
+  '司马迁':'西汉史学家，太史令司马谈之子。继父职修史，因替李陵辩护获罪受宫刑，为完成《史记》忍辱苟活。前后十余年著成百三十篇五十二万字，上起黄帝下至汉武，首创纪传体；「究天人之际，通古今之变」，鲁迅称之为史家之绝唱、无韵之离骚。',
+  '张衡':'东汉科学家兼文学家。两度任太史令，创制水运浑天仪与候风地动仪——地动仪验陇西地震而京师无感，是世界地震仪器的先声；著《灵宪》论天体。又用十年构思《二京赋》讽谏奢靡，科学与辞赋在他身上互不耽误。',
+  '朱熹':'南宋理学集大成者。十九岁中进士，一生仕途短暂而讲学著述不断：重建白鹿洞书院立学规，编《四书章句集注》成为此后六百年科举的标准教材；格物致知把儒学推向哲学化的高峰。晚年遭「伪学」之禁，死后尊为元明清三代的官方正统。',
+  '王守仁':'明代心学宗师，世称阳明先生。早年格竹七日病倒，贬谪龙场驿一夜顿悟「心即理」；又以书生带兵，三十五天平定宁王之乱、荡平四十年匪患。「知行合一」「致良知」把学问从书斋拉回人心，弟子满天下；临终一句「此心光明，亦复何言」是自评。',
+  '商鞅':'战国改革家，卫国庶公子。闻秦孝公求贤西入秦，两次变法二十年：废井田开阡陌、行郡县、立军功二十等爵、什伍连坐，秦国由西陲弱邦脱胎为虎狼之师。孝公死而被车裂灭族，但商君之法未废——他的身体死了，他的制度活到了秦亡。',
+  '范仲淹':'北宋政治家、军事家与文学家，两岁丧父随母改嫁。戍边西陲时军中传「有一范，西贼闻之惊破胆」；庆历新政触贵族而贬，邓州任上应友人之托写下《岳阳楼记》——未到岳阳而心纳洞庭，「先天下之忧而忧，后天下之乐而乐」为士大夫精神立了牌位。',
+  '王安石':'北宋改革家，临川人。神宗朝两度拜相推行熙宁变法：青苗、免役、市易、保甲诸法理财强兵，欲扭转积贫积弱；「天变不足畏，祖宗不足法，人言不足恤」的三不足精神，让他成为后世争议最大的人物。文学上位列唐宋八大家。',
+  '张居正':'明代改革家，江陵人，荆州神童十二岁进学。万历初年柄国十年，推行考成法整肃吏治、清丈田亩、一条鞭法合并赋役，太仓存粮可支十年，为衰明强行续命；生前尊为元辅先生，身后半年即遭抄家清算。改革家的荣与辱，在他身上都到了极处。',
+  '屈原':'战国楚国诗人与政治家，楚武王后裔。任左徒、三闾大夫，主张举贤授能、联齐抗秦，两度遭谗流放汉北与江南；郢都陷落后自沉汨罗。作《离骚》《九歌》《天问》，以香草美人开中国浪漫主义一脉——端午节与龙舟竞渡，皆因纪念他而生。',
+  '王羲之':'东晋书法家，出身琅琊顶级门阀。师卫夫人、取法钟繇，各体皆精尤擅行书；永和九年兰亭修禊，微醺写就三百二十四字的《兰亭序》，酒醒重写数十本皆不及原稿，被尊为天下第一行书。官至右军将军故称王右军，性爱鹅，曾以书法换道士一群白鹅。',
+  '李白':'盛唐诗人，号青莲居士。二十四岁仗剑出蜀，「仰天大笑出门去，我辈岂是蓬蒿人」；供奉翰林不过两年便赐金放还，此后浪迹天下纵酒狂歌。诗风如天外来客，被贺知章呼为「谪仙人」，杜甫赞其「笔落惊风雨，诗成泣鬼神」。',
+  '杜甫':'盛唐诗圣，杜审言之孙。青年壮游齐赵「会当凌绝顶」，中年困守长安十年始得一衔；安史之乱中身陷贼营、授左拾遗，晚年漂泊西南，五十九岁殁于湘江舟中。律诗最工，「三吏」「三别」记录大乱中的民生，其诗被尊为「诗史」。',
+  '苏轼':'北宋文豪，与父弟并列唐宋八大家。一生历典八州、三度大贬：乌台诗案险丧命，黄州东坡种地自号，惠州啖荔枝，儋州办学堂。「大江东去」开豪放词派，《赤壁赋》成千古绝唱，书画列宋四家；越贬越通透，「一蓑烟雨任平生」是他给自己开的药方。',
+  '辛弃疾':'南宋豪放词人，济南人。二十一岁聚两千人投义军，叛徒杀帅降金，他率五十骑夜闯五万金营生擒之，「壮声英概，懦士为之兴起」；南归四十年却始终不得重用，上《美芹十论》无人理会。词存六百余首，把无处安放的马力全写进了《破阵子》。',
+  '唐寅':'明代画家，苏州人，字伯虎。十六岁中秀才第一，乡试又夺南京解元；次年会试因科场舞弊案牵连下狱，功名断绝。卖画为生，筑桃花庵自号桃花庵主，诗画一半狂放一半隐痛。画列明四家，民间「唐伯虎点秋香」让他成了最著名的落魄才子。',
+  '汤显祖':'明代戏曲家，临川人。因上疏弹劾权臣贬徐闻、遂昌，弃官归乡筑玉茗堂。所作《临川四梦》以《牡丹亭》最著：「情不知所起，一往而深」令闺阁女子读之断肠。他与莎士比亚同年离世，东西两大戏剧巨匠隔洋相望。',
+  '卫青':'西汉大将军，骑奴出身，因姊卫子夫得宠而显。七击匈奴皆不败：龙城之战开边胜纪录，收河南地置朔方郡，漠北之战以武刚车自环却单于主力。位至大司马而不养士、不自矜，把谦抑活成了另一种锋利。',
+  '霍去病':'西汉名将，卫青外甥。十七岁率八百骑斩两千级封冠军侯；十九岁两征河西，歼灭休屠、浑邪主力，打通河西走廊；二十一岁漠北之战封狼居胥山、临瀚海而还。武帝为他建府邸，他答「匈奴未灭，无以家为也」；二十四岁病逝，武帝发铁甲军列阵送葬。',
+  '关羽':'汉末名将。亡命奔涿郡从刘备，下邳兵败降曹而心不忘旧主；白马之战于万军中刺颜良、斩其首还，封汉寿亭侯。归刘备后镇荆州，水淹七军、擒于禁斩庞德，威震华夏；旋遭孙吴背盟袭后，败走麦城遇害。忠义形象历经千年由人成神，关帝庙遍布寰宇。',
+  '岳飞':'南宋抗金名将。背上「尽忠报国」四字为母所刺；从卒伍累迁至宣抚使，郾城大破金军铁浮屠与拐子马，朱仙镇距开封一步之遥。被十二道金牌召回，以「莫须有」冤死风波亭，年三十九；平反后追封鄂王，「撼山易，撼岳家军难」出自敌人之口。',
+  '文天祥':'南宋末代丞相，宝祐四年状元。散尽家财起兵勤王，被俘后吞药不死、燕京囚牢中作《正气歌》，忽必烈亲许宰相之位不动其志，囚三年从容就义。「人生自古谁无死，留取丹心照汗青」写在过零丁洋的船上，是宋亡时最硬的一块骨头。',
+  '戚继光':'明代抗倭名将，将门之后。见卫所兵不可用，赴义乌募矿工农夫三千练成戚家军，创十二人分工的鸳鸯阵破倭刀；台州九战九捷，数年荡平东南倭患。北调蓟州十六年修敌台练车营，著《纪效新书》把练兵写成了学问。',
+  '范蠡':'春秋末政治家与商人祖师。佐越王勾践二十余年，献十年生聚之策，伴其入吴为奴三年；灭吴功成当夜即泛舟五湖，留书文种「飞鸟尽，良弓藏」。后至陶地称朱公，三致千金而三散之，陶朱公从此成巨富代称。',
+  '端木赐':'孔门十哲之一，字子贡。利口巧辞、经商于曹鲁之间家累千金，被后世尊为儒商之祖——孔子周游列国的盘缠多赖此生；外交上一次出使，存鲁、乱齐、破吴、强晋而霸越。孔子逝后众弟子守丧三年，独子贡结庐六年。',
+  '白圭':'战国大商，被尊为「商祖」。提出「人弃我取，人取我与」的逆周期原则，乐观时变、趋时若猛兽挚鸟之发；又以治水之理喻经商，称智、勇、仁、强缺一不可。魏王欲以为相，他辞而不就——把职业商人的自觉讲得堂堂正正。',
+  '吕不韦':'由大商而秦相。在邯郸识落魄秦质子异人，认定「奇货可居」，散千金为其谋得嗣位，得封文信侯、食河南十万户；执政时灭东周、挫五国，聚门客三千编《吕氏春秋》，悬一字千金于市门求改一字。免相徙蜀后饮鸩自尽。',
+  '庄周':'战国道家宗师，做过漆园小吏而心游万仞。楚威王遣使以千金聘为相，他持竿不顾，宁曳尾于涂中；妻死鼓盆而歌，梦蝶而疑物我，濠梁之上与惠施辩鱼之乐。《庄子》想象恢诡，大鹏、庖丁、混沌皆成汉语的公共意象。',
+  '严光':'东汉隐士，字子陵。少与刘秀同游学，光武即位后他变名隐遁；光武寻访再三聘至京城，与他同榻而眠，他足加帝腹而不改。授谏议大夫不受，归耕富春山，后人名其钓处为严陵濑——「客星犯御座」的星占记录，成了布衣与天子交谊的唯一孤本。',
+  '嵇康':'魏晋名士，竹林七贤的精神领袖。娶曹操曾孙女，拒司马氏征辟；打铁于柳树之下，钟会来访不为之礼，终因《与山巨源绝交书》招祸被谗处死。刑场上索琴弹《广陵散》，曲终叹「于今绝矣」，三千太学生请以为师而不得——一曲成谶的自由代价。',
+  '陶渊明':'东晋诗人，田园诗开山。二十九岁起时官时隐十三年，彭泽令任上仅八十余日，因不肯为五斗米折腰向乡里小儿挂印而去；归后种豆南山、采菊东篱，清贫至乞食而笔下自若。《归去来兮辞》《桃花源记》把田园与理想国一并写入汉语。',
   /* —— 女性 —— */
-  '武则天':'中国历史上唯一的正统女皇帝。十四岁入宫，从才人到皇后、太后，最终改唐为周；政启开元、治宏贞观，无字碑是她留给自己的注脚。',
-  '吕雉':'汉高祖皇后，临朝称制的第一人。佐刘邦定天下，掌权后政出一门而民生晏然，司马迁破例把她写进帝王本纪。',
-  '萧绰':'辽朝承天皇太后，小字燕燕。摄政二十七年，澶渊之盟订于其手，辽的国势在她任内抵达顶点。',
-  '独孤伽罗':'隋文帝皇后，与帝并称「二圣」。坚持一夫一妻、深度参与朝政，开皇年间的人事任免里常藏着她的手笔。',
-  '邓绥':'东汉和熹皇后。十六岁入宫，二十五岁起临朝称制十六年；夜读经传、水旱自省，遣使通西域、命蔡伦监作造纸——东汉的一段学问与工艺，是她护住的。',
-  '钟离春':'战国齐宣王王后，世称无盐女。貌陋而深明大局，冒死进谏点破「四殆」之危，「丑女救国」由她写进史册。',
-  '窦漪房':'西汉窦太后，历文、景、武三朝。由民女而姬妾而太后，笃信黄老，景武之际的政局一半握在她的偏好里。',
-  '辛宪英':'三国魏国智女。一眼看穿高平陵之变的结局，几句料事如神的提醒保全了兄弟，史书为这样的女子破了例。',
-  '张出尘':'隋末唐初奇女子，红拂女。慧眼识李靖于布衣之中，夜奔出府与之驰马走天下，「风尘三侠」的女主角。',
-  '上官婉儿':'唐代女官，人称巾帼宰相。襁褓中随母没入掖庭，因才获武则天赏识掌管诏命，称量天下士；开元文坛的局面也有她一份奠基。',
-  '红线':'唐代传奇中的女侠，节度使府押衙。夜盗田承嗣枕边金合，消一场兵祸于无形，事成遁迹——唐人对「以一己止战」的全部想象。',
-  '文成公主':'唐代和亲公主。入藏联姻松赞干布，携去工匠、医药与佛经，唐蕃之间此后数十年无大战；拉萨至今供着她的事迹。',
-  '黄道婆':'宋末元初棉纺织革新家。流落崖州从黎族习艺，晚年返松江革新轧弹纺织之法，江南棉布业因她改写。',
-  '谈允贤':'明代女医。家学渊源、自学成医，著《女医杂言》六十一案，让妇科第一次有了女性自己的笔。',
-  '吕母':'新莽末年起义女首领，史书记载的第一位女性起义者。独子被县宰冤杀，她散尽家财聚众数千，破海曲城诛宰祭子，其后将部众托付义军。',
-  '王昭君':'西汉和亲宫女，明妃。自愿请行出塞嫁呼韩邪单于，「落雁」传说背后，是汉匈之间数十年无战事的太平。',
-  '刘细君':'西汉和亲公主，乌孙公主。远嫁西域的第一位皇室女性，《悲愁歌》里「远托异国」四字，是中国诗史上最早的乡愁之一。',
-  '刘解忧':'西汉和亲公主。在乌孙历嫁三王、生活半个世纪，晚年上疏求归，汉宣帝亲迎入京——她把外交做成了整个人生。',
-  '冯嫽':'西汉第一位女外交家。随解忧公主远赴乌孙，持汉节行西域诸国，史书称「城郭诸国敬信之」。',
-  '西施':'春秋末越国美女，「沉鱼」之首。传说被献于吴宫以乱其政，功成后泛舟五湖——美貌是否真能倾城，史笔始终没给她定论。',
-  '冼夫人':'南朝至隋的岭南女首领。历事三朝唯保境安民，被尊「圣母」，周恩来称她为「中国巾帼英雄第一人」。',
-  '长孙氏':'唐太宗皇后。著《女则》以古鉴今，谏外戚干政、护魏征于盛怒之下，贞观之治的软性基建里有她一功。',
-  '班昭':'东汉史学家。兄班固身后，奉诏续补《汉书》的天文志与八表，又任皇后及诸贵人之师，学者尊称「曹大家」。',
-  '蔡文姬':'汉末才女。乱世被掳入匈奴十二年，曹操以金璧赎归，《胡笳十八拍》与《悲愤诗》把流离写到了骨头上。',
-  '谢道韫':'东晋才女，咏絮之才的出处。一句「未若柳絮因风起」胜尽谢家子弟；晚年遭孙恩之乱，持刀护外孙突围的背影更胜咏絮。',
-  '徐惠':'唐太宗贤妃。四岁诵《论语》《诗经》，长成后上疏谏征伐营缮，言辞切直而得嘉纳，是贞观末年少有的清醒声音。',
-  '左芬':'西晋女文士，左思之妹。以才名入宫而不以色进，以文翰自适，《啄木诗》是她给自己写的注脚。',
-  '宋若昭':'唐代女官，尚宫。与姊妹共著《女论语》，掌宫中记注簿籍数十年，身后以一品礼葬——宫廷女性的天花板。',
-  '冯太后':'北魏文成帝皇后，孝文帝改革的真正前站。两度临朝，推行俸禄制与均田制，把鲜卑王朝推进汉化的深水区。',
-  '刘娥':'北宋章献明肃皇后。由蜀地歌女而至垂帘听政十一年，号令严明、政局不乱；「狸猫换太子」的黑锅，替她背了近千年。',
-  '班婕妤':'西汉女文学家。成帝朝以才德入宫，赵氏姐妹得宠后退居长信宫，《团扇歌》的秋扇见捐，成了后宫失意者的总隐喻。',
-  '卓文君':'西汉才女。夜奔司马相如、当垆卖酒，一首《白头吟》挽回变心的丈夫——爱情里的主动权，两千年前她先拿了。',
-  '虞姬':'项羽侍姬。垓下被围之夜，「大王意气尽，贱妾何聊生」与四面楚歌一起定格；《虞美人》这个词牌，用的是她的名字。',
-  '卫铄':'东晋女书法家，卫夫人。师承钟繇而传笔法于王羲之，《笔阵图》论点画如列兵阵——书圣的第一位老师。',
-  '薛涛':'唐代女诗人。入蜀中幕府酬唱元白，自制薛涛笺风靡一时；「女校书」之名虽未实授，千年里却只属于她。',
-  '鱼玄机':'唐代女冠诗人。「易求无价宝，难得有心郎」写尽她的时代与性情；因笞杀婢女被处决，天才与烈性各留一半注脚。',
-  '花蕊夫人':'五代后蜀贵妃。亡国被掳后一首「十四万人齐解甲，更无一个是男儿」，把数十万守军的溃败骂成千古名句。',
-  '李清照':'宋代词宗。前期写「绿肥红瘦」，后期写「寻寻觅觅」，国破家亡把闺阁词人淬成豪放也能落笔的大家；与夫共撰《金石录》，考据功夫同样了得。',
-  '朱淑真':'南宋女词人，断肠词人。婚姻不谐而诗词愈烈，「宁可抱香枝上老」；身后诗稿多被焚毁，存世者是幸存的锋芒。',
-  '管道升':'元代女书画家，赵孟頫之妻。墨竹、翰墨、词章皆能，一阕《我侬词》以捏泥塑人说透姻缘，艺术史上罕见的夫妻双璧。',
-  '柳如是':'明末秦淮八艳之首。诗书画皆能，明亡时劝夫殉国、自己投水被救，钱谦益降清后她仍暗助反清——气节与才华，在一个「妓」字上顶到了头。',
-  '董小宛':'明末秦淮名姬，后归冒辟疆。善制饮馔糕点，「董糖」传说出自其手；乱离中随夫家颠沛，《影梅庵忆语》里她是白月光。',
-  '黄峨':'明代蜀中才女，杨慎之妻。夫谪滇南三十年，她留守新都以词代书，散曲成就在明代女子中数一数二。',
-  '妇好':'商王武丁王后，中国最早的女统帅。甲骨卜辞里她主持祭祀、领兵上万征伐方国，出土铜钺与墓葬把她的军权坐实成文物。',
-  '花木兰':'北朝乐府《木兰诗》里的女英雄（原型尚有争议）。替父从军十二年，归来不做尚书郎，只求送儿还故乡——「谁说女子不如男」的原产地。',
-  '荀灌':'东晋少年女杰。十三岁率数十壮士夜突围，为被围的宛城搬来救兵，史书把这场解围记在她一个女孩名下。',
-  '平阳昭公主':'唐高祖之女。在长安城外自募七万人「娘子军」，为李渊入京打开门户；死后以军礼下葬，鼓吹羽葆，女性头一份。',
-  '梁红玉':'南宋抗金女将。黄天荡之战亲执桴鼓助韩世忠围困金军四十八日，「击鼓退金兵」从此进了戏文。',
-  '秦良玉':'明末女将，石柱土司。率白杆兵北上勤王数千里，是二十四史将相列传中唯一凭战功单独立传的女将军。',
-  '马秀英':'明太祖皇后，民间唤作大脚马皇后。随朱元璋从乱世走到天下，谏滥杀、护功臣，临终拒药曰「死生有命」——贤后的模子里浇的是义气。',
-  '缇萦':'西汉孝女。父亲淳于意获肉刑，十五岁的她随行上疏汉文帝，愿没入官婢以赎父刑；文帝悯而废肉刑——一封少女的奏疏，改掉千年酷法。',
-  '巴清':'秦代丹砂女商，人称寡妇清。守夫家产业经营丹砂矿而富甲一方，秦始皇筑「怀清台」礼遇——史上最早的女实业家国家级表彰。',
-  '俞大娘':'唐代航运女船主。所造「俞大娘船」载重万石、江海可行，船上生火种菜、妇孺齐全，被《唐国史补》当作业界传奇记了一笔。',
-  '苏小小':'南朝齐钱塘名妓，西泠桥畔的名片。疏财仗义、不恋金帛，「妾乘油壁车，郎骑青骢马」流传千年，慕才亭至今立在西湖边。',
-  '严蕊':'南宋营籍歌妓。被诬下狱数月，受刑而不肯妄攀无辜，「不是爱风尘」一词就是她的自辩口供；岳霖判其从良，一时称快。',
-  '玉真公主':'唐睿宗之女，早年入道。以公主之身住持京中道观，李白、王维皆出入其门——盛唐文人圈里，牵线的手有一只是她的。',
-  '李师师':'北宋汴京名妓。传说周邦彦、宋徽宗皆为座上客，靖康之乱后下落成谜——一个时代的艳名与倾覆，写在同一张名册上。',
-  '聂隐娘':'唐人传奇中的女侠。幼年被尼姑掳去教成刺客，长大后择主而事、终与磨镜少年退隐，是唐人对「自由武人」的全部想象。',
+  '武则天':'中国历史上唯一的正统女皇帝。十四岁入宫为才人，高宗时为皇后、二圣临朝，六十七岁改唐为周登基。执政近半个世纪：首创殿试与武举，发展科举打破关陇垄断，史评「政启开元，治宏贞观」。晚年还政李唐，遗命去帝号，立无字碑任人评说。',
+  '吕雉':'汉高祖皇后。嫁刘邦于微时，曾为人质囚于楚营两年；佐夫定天下后助杀韩信、彭越，惠帝即位后临朝称制，司马迁破例为她立帝王本纪。政出一门而天下晏然——「刑罚罕用，民务稼穑，衣食滋殖」，刚烈与治绩在她身上并存。',
+  '萧绰':'辽朝承天皇太后，契丹名燕燕。景宗体弱多病，事由皇后决之；圣宗十二岁即位，她以太后摄政二十七年：重用汉臣韩德让，整吏治、劝农桑、击退宋军三路北伐，辽的国势在她任内抵达顶点。澶渊之盟订于她的决策，此后宋辽百余年无大战。',
+  '独孤伽罗':'隋文帝皇后，鲜卑贵族出身，十四岁嫁杨坚，誓无异生之子。隋代周后与文帝并称「二圣」，同辇上朝、共决朝政；抑制外戚、罢黜犯法姻亲，首倡废长立幼则是她生前最大的争议。一夫一妻的婚姻坚持在中国帝后史上独一无二，文帝后宫形同虚设。',
+  '邓绥':'东汉和熹皇后，太傅邓禹孙女。十六岁入宫，二十二岁立为皇后；和帝崩后临朝称制十六年。她夜读经传而不怠政：平水旱、理冤狱、命蔡伦监作造纸、遣使通西域，又约束邓氏外戚。临终遗诏减省丧仪，是后汉评价最高的临朝太后——东汉的造纸与历算，都欠她一声多谢。',
+  '钟离春':'战国齐国无盐人，相貌奇丑而深明大略。年四十未嫁，自诣齐宣王，直陈四殆之危：外有秦楚之患、内有奸臣当道、渐台五层劳民伤财、贤者伏匿而谄谀盈朝。宣王幡然拆渐台、罢女乐、退谄谀、进直言，立她为王后，齐国大安。',
+  '窦漪房':'西汉太后，清河人，出身贫寒以良家子选入宫。吕后时误遣代国，因祸得福成为代王姬，随子入继大统为皇后、太后；历文、景、武三朝，笃信黄老之术，连景帝与窦氏宗族都被迫读《老子》。她以个人信仰压制儒学半个世纪，武帝初年的建元改革即因她而夭折。',
+  '辛宪英':'三国魏国智女，辛毗之女。曹爽专权时，其弟辛敞为曹爽参军犹豫是否赴任，宪英断言曹爽必败而职守仍不可废，教他尽职务而不预其难——高平陵之变果然如她所料。又早识钟会入蜀必叛，告诫侄儿羊琇全身而退。史书罕见地为闺阁之智立传。',
+  '张出尘':'隋末唐初奇女子，相传为越国公杨素府中执红拂的歌妓。慧眼识李靖于布衣之中，夜着紫衣戴毡帽易装出府，与之驰马奔太原；途中又遇虬髯客，三人论天下英雄，结「风尘三侠」。红拂夜奔，是唐人传奇里女性主动选择爱情与命运的第一主角。',
+  '上官婉儿':'唐代女官与诗人。祖父上官仪获罪，她襁褓中随母配入掖庭，十四岁因才学为武则天赏识，免其奴婢身份掌管宫中诏命；中宗朝拜昭容，专掌制命，代朝廷品评天下诗文，「称量天下士」。又设修文馆大兴文事，为开元文坛铺了路。',
+  '红线':'唐代传奇中的女侠，潞州节度使薛嵩府中侍女。魏博节度使田承嗣欲并潞州，红线自请前往，一夜往返七百里，取田承嗣枕边金合而还；薛嵩遣使送还，田承嗣惊惧罢兵，一场兵祸消于无形。事成之后她遁迹尘外——唐人「以一己止战」的侠义想象全在她身上。',
+  '文成公主':'唐代宗室女，唐蕃和亲的关键人物。贞观十五年远嫁吐蕃赞普松赞干布，从长安经日月山入藏，携去释迦牟尼像、经卷、工技医书与谷种工匠；入藏后助建寺宇、教习纺织造纸，促成唐蕃「和同为一家」，此后二十年无大战。藏地至今传颂，尊为绿度母化身。',
+  '黄道婆':'宋末元初棉纺织革新家，松江乌泥泾人。少年流落崖州三十余年，向黎族妇女学习棉纺织技艺；元贞年间携技归乡，革新捍、弹、纺、织之具——改单锭手摇纺车为三锭脚踏，教错纱配色、综线挈花，松江布遂衣被天下。乡人立祠祀之，为中国纺织业的祖师婆。',
+  '谈允贤':'明代女医，无锡人，出身医学世家。自幼诵读《难经》《脉诀》，随祖父临证；嫁儒生杨某，因病自诊自治而愈，遂专志医业。五十岁将祖传医术与自身经验整理成《女医杂言》，载医案三十一例全为妇科——女性写女性之病，在中国医学史上是破天荒的一笔。',
+  '吕母':'新莽末年起义女首领，史书记载的第一位女性起义者。独子吕育任县游徼，被县宰借小罪冤杀；吕母散尽家财，以卖酒购兵器的名义聚结贫困少年数百人，又联合流民数千，攻破海曲城，擒县宰祭子。其后她自称将军，将部众交与义军主力——天下大乱的引信，有一半是这位母亲点燃的。',
+  '王昭君':'西汉和亲宫女，名嫱。数岁不得见御，匈奴呼韩邪单于来朝求亲，她自愿请行出塞，号宁胡阏氏。「边城晏闭，牛马布野，三世无犬吠之警」——汉匈数十年的太平是她换来的。「落雁」之貌与出塞的琵琶声，让她成为后世写不尽的题目。',
+  '刘细君':'西汉和亲公主，江都王之女，中国诗史上留名的第一位和亲公主。武帝为联乌孙共击匈奴，封她为公主远嫁昆莫；在乌孙语言不通、又依俗改嫁其孙，郁郁而终，居乌孙五年。所作《悲愁歌》「吾家嫁我兮天一方，远托异国兮乌孙王」，是边塞乡愁诗的源头之一。',
+  '刘解忧':'西汉和亲公主。细君病故后继嫁乌孙，再依俗改嫁两任昆弥，在乌孙生活五十年，生四子二女；其间助乌孙亲汉抗匈，联合汉军大破匈奴，长子为乌孙大昆弥、长女为龟兹王后。晚年上疏「年老土思，愿得归骸骨葬汉地」，宣帝亲迎入京——她把和亲做成了整个人生。',
+  '冯嫽':'西汉第一位女外交家，随解忧公主和亲至乌孙。精史书、习西域诸国语言，持汉节代表公主（后代表朝廷）行赏赐于城郭诸国，诸国敬信之，号曰冯夫人。乌孙内乱时，她受诏驰至镇抚，兵不血刃定其国，其后又代表汉朝立乌孙王——男子执节的疆场，她以女子之身同样走遍。',
+  '西施':'春秋末越国苎萝村人，四大美人之「沉鱼」。越败于吴后，范蠡寻得西施，教以歌舞礼仪三年，进献吴王夫差；夫差为她筑姑苏台与馆娃宫，荒于政事，越国得以十年生聚。吴亡后不知所终：一说随范蠡泛舟五湖，一说沉江。一个符号化的美人，史笔始终没给她自己的声音。',
+  '冼夫人':'南朝梁陈至隋的岭南女首领，俚族首领之女。一生历事梁、陈、隋三代：平侯景之乱、助陈统一、率岭表诸州归隋，「唯用一好心」，岭南得保数十年安靖，其子孙世为南越首领。被岭南尊为圣母，立庙千余，周恩来称她为中国巾帼英雄第一人。',
+  '长孙氏':'唐太宗皇后，十三岁嫁李世民。玄武门之变当日亲慰勉将士；立后以后著《女则》以古鉴今，要求兄长长孙无忌辞让相位以免外戚之祸，太宗欲封她诸子她坚辞。三十六岁病逝，谥文德皇后——「以史为镜」的贞观之治里，有一面镜是她。',
+  '班昭':'东汉史学家与教育家，班彪之女、班固之妹。班固修《汉书》未成而下狱死，和帝诏她续补八表与《天文志》，终成百篇大史；又入东观藏书校书，兼为皇后与诸贵人师，号「曹大家」。另著《女诫》七篇，后世毁誉参半——一人之手，一肩挑着正史的完成与女教的规范。',
+  '蔡文姬':'汉末才女，蔡邕之女，博学有才辩、妙于音律。兴平之乱中被胡骑掳至南匈奴，为左贤王妇十二年，生二子；曹操感念蔡邕无后，以金璧赎归。归汉后凭记忆默写父亲遗书四百余篇，《悲愤诗》与《胡笳十八拍》把流离写到骨头里。',
+  '谢道韫':'东晋才女，王羲之之子王凝之妻。「咏絮之才」出自七岁那年：谢安雪日问白雪何所似，兄答撒盐空中，她答「未若柳絮因风起」。孙恩之乱中夫与诸子皆被害，她持刀突围护住外孙，被孙恩礼送还乡；晚岁寡居会稽，风韵高迈，太守登门求教而叹服。',
+  '徐惠':'唐太宗贤妃，四岁通《论语》《诗经》，八岁能文。因文才入宫，手不释卷，太宗礼遇甚厚。贞观末年兵事频仍、宫室营缮，她上疏谏息兵罢役，言辞切直而太宗嘉纳——帝室暮年少有的清醒声音。太宗崩后哀慕成疾，拒服药饵，年二十四而卒。',
+  '左芬':'西晋女文学家，左思之妹。少好学善文，名声传至宫廷，武帝纳为妃嫔；因容貌不显而以才德见遇，每有方物异宝必诏为赋颂。《离思赋》写深宫骨肉隔绝之痛，后人以为不逊乃兄；《啄木诗》以「无干于人，唯志所欲」自况，是宫廷里难得的清醒。',
+  '宋若昭':'唐代女官，与姊妹四人皆能文，号「五宋」。家不欲以女许人，德宗召入宫试文章皆留宫中号「学士」；其姊著《女论语》，若昭为之注解表上。穆宗拜她为尚宫，掌宫中记注簿籍，历四朝皆被礼遇，死后以一品礼葬——唐代女官制度史上最完整的一生。',
+  '冯太后':'北魏文成帝皇后，北燕皇族之后。二十四岁临朝，献文、孝文两朝称制：定俸禄制整肃贪墨、行均田制与三长制重建基层，诛权臣乙浑——孝文帝汉化改革的每一块地基都是她打的。史称「文明太后」，两次临朝听政前后约二十年。',
+  '刘娥':'北宋章献明肃皇后，出身寒微，善播鼗。由蜀地艺人而至银匠之妻、襄王府婢，终成宋真宗皇后；真宗多病，她以皇后预闻朝政，仁宗十三岁即位后垂帘听政十一年：号令严明，天下信之，世界最早纸币交子的推行也在她治下。史评「有吕武之才，无吕武之恶」。',
+  '班婕妤':'西汉女文学家，班固的祖姑。成帝时以才德选入宫，帝欲同辇游后庭，她引三代末主之戒辞谢；赵飞燕姊妹得宠后遭谮构，自请退居长信宫侍奉太后。《团扇歌》「弃捐箧笥中，恩情中道绝」——秋扇见捐从此成为后宫失意的总隐喻。',
+  '卓文君':'西汉才女，临邛富商卓王孙之女，精通音律。十七岁寡居归家，司马相如于卓府宴上奏《凤求凰》，她夜奔相如；两人归成都家徒四壁，又返临邛当垆卖酒，父不得已分予僮百人钱百万。相如显达后欲纳妾，她作《白头吟》，相如乃止——爱情里的主动权，两千年前她先拿了。',
+  '虞姬':'项羽侍姬，随军征战。垓下被围之夜，四面楚歌，项羽夜起帐中慷慨悲歌「力拔山兮气盖世」；虞姬和歌「大王意气尽，贱妾何聊生」，歌罢自刎于前。后世以她的名字命名词牌《虞美人》——她成了楚汉悲歌里最柔软的注脚。',
+  '卫铄':'东晋女书法家，世称卫夫人。师承钟繇，工楷书，「如插花舞女，低昂美容」；撰《笔阵图》论笔法，以「横如千里阵云、点如高峰坠石」喻点画。书圣王羲之幼年从她学书——中国书法史上最伟大的名字，是从她的笔下启蒙的。',
+  '薛涛':'唐代女诗人，随父宦游入蜀，父亡沦入乐籍。出入幕府历事十一镇，与元稹、白居易、刘禹锡、杜牧等唱和；武元衡曾奏请授其校书郎衔，虽未实授，「女校书」从此专属她。晚年居成都浣花溪，创深红小笺写诗，世称薛涛笺——造纸史上以女子命名的一个品种。',
+  '鱼玄机':'唐代女冠诗人，字幼微。天赋极高而命运陡峭：为李亿妾而被弃，入长安咸宜观为女冠；「自能窥宋玉，何必恨王昌」「易求无价宝，难得有心郎」皆出其手。因笞杀婢女被处死，年约二十六——才华、烈性与时代的挤压，在她的诗与死里同样锋利。',
+  '花蕊夫人':'五代后蜀主孟昶贵妃。工诗词，孟昶为她凿宣华苑、种牡丹四十里；宋灭后蜀，她随孟昶入汴，太祖召见令陈亡国之由，她即席赋诗：「君王城上竖降旗，妾在深宫那得知；十四万人齐解甲，更无一个是男儿。」把数十万守军的不战而溃骂成千古名句。',
+  '李清照':'宋代词宗，号易安居士。十八岁嫁赵明诚，共治金石；前期词写闺阁与离别，「绿肥红瘦」「人比黄花瘦」。靖康之变南渡，夫亡家破文物散失，晚年词风骤变「寻寻觅觅，冷冷清清」。论词有「别是一家」之说，词存仅数十首而推为词宗；「生当作人杰」的豪气常被婉约之名遮住。',
+  '朱淑真':'南宋女词人，号幽栖居士。工诗善画、通音律，而婚姻不谐——所嫁非偶，抑郁终生；诗词愈写愈烈，「宁可抱香枝上老，不随黄叶舞秋风」是她的自誓。身后父母焚其诗稿，十不存一，后人辑为《断肠集》——断肠二字，是存世作品的总标题。',
+  '管道升':'元代女书画家，赵孟頫之妻，封魏国夫人。楷书似其夫，墨竹独步一时，「晴竹新篁」为其创格；仁宗曾命她与赵孟頫、赵雍各书一卷，一家三口墨迹同藏。赵孟頫年五十欲纳妾，她作《我侬词》「把一块泥，捻一个你，塑一个我」，赵读罢大笑而罢——以词护家，千古仅此一例。',
+  '柳如是':'明末秦淮八艳之首，号河东君。幼误坠风尘而志气高华，诗书画皆能，与陈子龙、钱谦益先后论嫁；明亡时劝钱殉节、自己奋身投池被救，钱降清后她留居南京暗中资助反清义军。晚年陈寅恪目盲口述，为她作八十万字的《柳如是别传》——气节与才华，在一个妓字上顶到了头。',
+  '董小宛':'明末秦淮名姬，苏州人。才艺双绝而命薄：归冒辟疆后九年，制董糖、创菜点、品香烹茶，乱离中随夫家颠沛而殁，年二十八。冒辟疆《影梅庵忆语》九卷写她的一生，让她成了明清之际最著名的爱情文本女主角——那个时代的白月光。',
+  '黄峨':'明代女文学家，南京工部尚书之女。二十一岁嫁状元杨慎为继室；杨慎因大礼议两番遭杖、谪戍云南永昌卫三十五年，她留居新都桂湖，以诗词代书寄滇，「雁飞曾不到衡阳，锦字何由寄永昌」。工散曲，缠绵与爽健兼有，明代女子散曲成就能进前三。',
+  '妇好':'商王武丁的王后，中国有文字记载的第一位女统帅。甲骨卜辞中她百余次现身：主持祭天祭祖的卜问、领一万三千人伐羌方，北土方南巴方皆有战功。1976 年其墓出土于殷墟，殉葬铜钺八件、重达九公斤——军权与神权都握在她手里，是考古与文献互证的最早女将。',
+  '花木兰':'北朝乐府《木兰诗》塑造的女英雄（原型与年代尚有争议）。替年迈的父亲从军十二年，万里赴戎机、关山度若飞；归来见天子，辞尚书郎不受，「愿驰千里足，送儿还故乡」。同行十二年的伙伴不知她是女郎——「雄兔脚扑朔，雌兔眼迷离」，让谁说女子不如男有了最早的文学出处。',
+  '荀灌':'东晋少年女杰，荀崧之女。十三岁时宛城被杜曾围困、粮尽援绝，她率勇士数十人夜缒突围，且战且走，求援于南中郎将周访；援军至而围解。史载她「幼有奇节」——一个十三岁女孩的突围救城，被郑重写进了正史列传。',
+  '平阳昭公主':'唐高祖李渊第三女，柴绍之妻。李渊太原起兵时她与夫各自行动，亲赴鄠县散家财、招亡命，聚娘子军七万人会攻长安；此后镇守苇泽关，因她驻兵而得「娘子关」之名。卒后李渊破例以鼓吹羽葆的军礼下葬：「鼓吹，军乐也；公主亲执金鼓，有克定功，宜用大礼。」',
+  '梁红玉':'南宋抗金女将，出身将门后沦京口营籍，与韩世忠结为夫妇。建炎四年黄天荡之战，韩世忠以八千水军困金兀术十万众四十八日，梁红玉亲执桴鼓助战——击鼓退金兵由此进入戏文与年画；后随夫出镇楚州，披荆棘、立军府，与士卒同力役。',
+  '秦良玉':'明末女将，石砫宣抚使马千乘之妻。夫死后代领其职，所部号「白杆兵」——以白蜡树长杆枪成军，山地作战冠绝西南；播州之役、援辽、勤王、守蜀，大小数十战。崇祯帝平台召见、赋诗四首褒之「学就西川八阵图，鸳鸯袖里握兵符」。二十四史将相列传中，她是唯一凭战功单独立传的女将军。',
+  '马秀英':'明太祖皇后，民间称大脚马皇后，郭子兴养女。嫁朱元璋于微时，乱世中亲为将士缝衣炊食；建国后不许寻访马氏亲族封官，铁腕反贪的年代她屡屡劝止滥杀，护下宋濂等功臣。病重拒服药，曰「死生有命，祷祀何益」，遗言愿陛下求贤纳谏、慎终如始。',
+  '缇萦':'西汉孝女，名医淳于意之女。文帝时淳于意获罪当受肉刑押解长安，十五岁的缇萦随父上京，上书天子：死者不可复生而刑者不可复续，愿没入为官婢以赎父刑。文帝悯其孝，下令废除肉刑——一封少女的奏疏，改掉了千年的酷法。',
+  '巴清':'秦代女实业家，巴郡人，人称寡妇清。夫死无子而守业，经营祖传丹砂矿（炼汞与朱砂），擅其利数世、家产不可计数；以财富自卫而不受侵犯，秦始皇筑「怀清台」礼遇——一个寡妇受到帝国最高规格表彰，见于《史记·货殖列传》。史家推测她或曾资助修长城与骊山陵。',
+  '俞大娘':'唐代女船主，见于《唐国史补》。洪州、荆州之间的江运大船号称「俞大娘船」：载重万石，船上生火做饭、种菜养猪，婚丧嫁娶皆在船中进行，操驾之工数百人，如一个浮动的江湖社会。作者李肇为大船立传，而以一女子之名冠一船之名——唐代内河航运的传奇，为她留了一笔。',
+  '苏小小':'南朝齐钱塘名妓，西泠桥畔的文化名片。相传出身官宦而早孤，沦落乐籍而疏财仗义，曾资助书生鲍仁赴考而不留姓名。生平几乎全属传说，唯「妾乘油壁车，郎骑青骢马；何处结同心，西泠松柏下」确凿流传。历代题咏不绝，慕才亭至今立在西湖西泠桥头。',
+  '严蕊':'南宋营籍歌妓，台州人。朱熹巡按台州，与太守唐仲友有隙，因严蕊与之游而系狱，逼她攀诬唐氏；两月之间一再受杖，「岂可妄言以污士大夫，虽死不可诬」。岳霖继任，判其从良，她当场占《卜算子》「不是爱风尘，似被前缘误……若得山花插满头，莫问奴归处」。',
+  '玉真公主':'唐睿宗之女、玄宗之妹，法号无上真。早年丧母，与姊金仙公主同出家入道，睿宗为筑金仙、玉真两观。她以道观为文化沙龙：王维得荐、李白献《玉真仙人词》，盛唐诗人出入其门者众；晚年隐居敬亭山——「相看两不厌」的背后，据说有她的影子。',
+  '李师师':'北宋汴京名妓，东京角妓之首。相传樊楼初见，词人周邦彦躲在床下写出《少年游》「并刀如水，吴盐胜雪」，道君皇帝与名妓词人的三角轶事由此千古流传。靖康之变后下落成谜：或言捐家财助军，或言流落江南，或言遁入道门——一个王朝的艳名与倾覆，写在同一张名册上。',
+  '聂隐娘':'唐人传奇中的女侠，魏博大将聂锋之女。十岁被一尼姑窃去教以剑术，刺人于都市而人莫能见；学成归家，嫁磨镜少年，先奉命刺陈许节度使刘昌裔，因折服其人而转投之，后杀精精儿、退空空儿，最终与夫泛舟江湖不知所终——唐人对「自由武人」的全部想象，都写在这位女刺客身上。',
 };
 
-/* ---------------- 词注词典：题干/选项/人物资料/人物小传中的生僻词 ----------------
- * 命中即自动加「注」标记；词条按长度降序匹配，互不嵌套 */
+/* ---------------- 词注词典 ---------------- */
 const GLOSSARY = {
   '掣肘':'被人从旁牵制、束手束脚，想做事却放不开手脚。',
   '互市':'官府在边境开设的特许集市，中原人与外族在这里做买卖。',
@@ -1160,7 +1342,6 @@ const GLOSSARY = {
   '押衙':'节度使府中的武职属官，类似主帅身边的亲随武官。',
   '丹砂':'朱砂，古代重要的矿物颜料与药材，可炼汞。',
   '咏絮之才':'以「柳絮因风起」咏雪的典故，代指才思敏捷的女子。',
-  /* —— 人物小传专用词条 —— */
   '凿空':'史书对张骞首次打通西域道路的专用说法，意为「开辟空前的通路」。',
   '科举':'通过分科考试选拔官员的制度，隋唐创立、明清鼎盛。',
   '巨子':'墨家学派首领的专称，门徒须绝对服从。',
@@ -1182,7 +1363,6 @@ const GLOSSARY = {
 };
 const GLOSS_KEYS = Object.keys(GLOSSARY).sort((a, b) => b.length - a.length);
 function escHtml(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-/* 给文本加词注标记：返回 { html, terms }；用私用区占位符避免词条互相嵌套 */
 function annotate(text){
   let html = escHtml(text);
   const found = [];
@@ -1198,7 +1378,17 @@ function annotate(text){
   return { html, terms: found.map(f => f.k) };
 }
 
-/* 词注气泡（悬停 / 点击 / 回车均可触发） */
+/* 朱笔点评式高亮 */
+const HLRE = /^[^。！？；：]{4,42}[。！？；：]/;
+function hl(text){
+  const t = String(text);
+  const m = t.match(HLRE);
+  if (!m) return escHtml(t);
+  const head = m[0];
+  return `<em class="hl">${escHtml(head.slice(0, -1))}</em>${escHtml(t.slice(head.length - 1))}`;
+}
+
+/* 词注气泡 */
 let glossOpen = null, glossHideT = 0;
 function showGlossTip(el){
   const tip = $('#glossTip');
@@ -1210,7 +1400,7 @@ function showGlossTip(el){
   const h = tip.offsetHeight || 90;
   let left = r.left + r.width / 2;
   left = Math.min(Math.max(left, w / 2 + 10), window.innerWidth - w / 2 - 10);
-  const top = Math.max(r.top - 10, h + 16); // 别顶出屏幕外
+  const top = Math.max(r.top - 10, h + 16);
   tip.style.left = left + 'px';
   tip.style.top = top + 'px';
   tip.classList.add('show');
@@ -1229,7 +1419,7 @@ function attachGloss(el){
     el.addEventListener('mouseleave', () => { glossHideT = setTimeout(hideGlossTip, 200); });
   }
   el.addEventListener('click', e => {
-    e.preventDefault(); e.stopPropagation(); // 词注在选项里时，点击只看解释、不选答案
+    e.preventDefault(); e.stopPropagation();
     if (glossOpen === el) hideGlossTip(); else showGlossTip(el);
   });
   el.addEventListener('keydown', e => {
@@ -1241,8 +1431,7 @@ document.addEventListener('pointerdown', e => {
   if (glossOpen && !(e.target && e.target.closest && e.target.closest('.gl'))) hideGlossTip();
 }, true);
 
-/* ---------------- 24 道手工基准题（口语版） ----------------
- * 章节共 6 类；每题 4 选项各映射一个维度，整套覆盖全部 8 维 */
+/* ---------------- 24 道手工基准题（口语版） ---------------- */
 const BASE_QUESTIONS = [
   {ch:'⚖️ 决策方式',t:'会开了俩小时，方案还吵不出个结果',o:[
     {t:'行，就这么定——先干起来再说',d:'dec'},{t:'先让一直没吭声的那位把话说完',d:'emp'},
@@ -1318,10 +1507,7 @@ const BASE_QUESTIONS = [
     {t:'按自己喜欢的方式过',d:'ind'},{t:'把手头的事做到底',d:'dut'}]},
 ];
 
-/* ---------------- 历史场景池（口语版） ----------------
- * 决策类 50 景 × 4 选项（依次映射 决断/共情/开创/洞察）
- * 人际类 50 景 × 4 选项（依次映射 表达/经营/独立/担当）
- * 每个场景配一组专属选项（100 组互不共用） */
+/* ---------------- 历史场景池（口语版） ---------------- */
 const DEC_SCENES = [
   {t:'你治下的城被邻国步步紧逼，当年签的盟约眼看就要到期了',o:[{t:'先把军队整顿好，稳住阵脚再说',d:'dec'},{t:'派人去安抚边境的部族和流民，人心不能先乱',d:'emp'},{t:'趁乱往西边发展，找新盟友、开条新商路',d:'pio'},{t:'把历年的盟约卷宗翻个底朝天，摸清对方的底线',d:'ins'}]},
   {t:'汛期快到了，河堤告急，可库里的银子只够修一半',o:[{t:'今天就把方案定下来，先保人多的那一段',d:'dec'},{t:'把乡里老人请来，问问哪段堤护着谁家的祖田',d:'emp'},{t:'试试分段包工的新法子，发动商贾认捐',d:'pio'},{t:'翻出历年的水情记录，找出真正要命的险段',d:'ins'}]},
@@ -1428,20 +1614,18 @@ const INT_SCENES = [
   {t:'天下将乱，故人来劝你一起举大事',o:[{t:'纵论时势，各陈志向',d:'exp'},{t:'约定将来无论谁得志，互不相负',d:'man'},{t:'我的志向在著书，不问鼎有多重',d:'ind'},{t:'守土安民是我的本分，不起妄念',d:'dut'}]},
 ];
 
-/* ---------------- 十种提问角度（口语版，每类 10 句） ---------------- */
+/* ---------------- 十种提问角度 ---------------- */
 const DEC_ANGLES = ['，你会先干哪件事？','，必须马上回应时，你怎么办？','，你更想怎么应对？','，你脑子里的第一反应是？','，这事儿落到你头上，你怎么落子？','，事不容缓，你先做哪一样？','，你会使哪一手？','，掂量来掂量去，你选哪个？','，要是这局归你管，你会？','，你的应对之道是？'];
 const INT_ANGLES = ['，你会怎么办？','，你怎么处理？','，这会儿你的做法是？','，你打算怎么周旋？','，你会先说什么、先做什么？','，你怎么自处？','，你更认同哪种做法？','，换成是你，你会？','，你的第一反应是？','，换作你置身其中，你会怎么走这步棋？'];
 
-/* ---------------- 题库生成：场景 × 角度 = 1000 题 ----------------
- * 同一场景的 10 道衍生题按角度序号做选项旋转，
- * 既避免选项位置偏好带来的偏差，又保证每题四个维度映射完整。 */
+/* ---------------- 题库生成：场景 × 角度 = 1000 题 ---------------- */
 function rotateOpts(scene, angleIdx){
   const off = angleIdx % 4;
   const out = [];
   for (let k = 0; k < 4; k++) out.push(scene.o[(k + off) % 4]);
   return out;
 }
-const BANK = []; // 正式题库：0–499 决策类 / 500–999 人际类
+const BANK = [];
 DEC_SCENES.forEach((s, si) => DEC_ANGLES.forEach((a, ai) => {
   BANK.push({ id: si * 10 + ai, cat:'dec', chapter:'⚖️ 决策方式', stem: s.t + a, opts: rotateOpts(s, ai) });
 }));
@@ -1449,7 +1633,7 @@ INT_SCENES.forEach((s, si) => INT_ANGLES.forEach((a, ai) => {
   BANK.push({ id: 500 + si * 10 + ai, cat:'int', chapter:'🤝 人际协作', stem: s.t + a, opts: rotateOpts(s, ai) });
 }));
 
-/* ---------------- 密码学安全随机（抽题 / 洗牌 / 台词抽取） ---------------- */
+/* ---------------- 密码学安全随机 ---------------- */
 function secureRandomInt(max){
   if (max <= 1) return 0;
   if (window.crypto && crypto.getRandomValues){
@@ -1459,7 +1643,7 @@ function secureRandomInt(max){
     do { crypto.getRandomValues(buf); x = buf[0]; } while (x >= limit);
     return x % max;
   }
-  return Math.floor(Math.random() * max); // 极旧环境兜底
+  return Math.floor(Math.random() * max);
 }
 function shuffle(arr){
   for (let i = arr.length - 1; i > 0; i--){
@@ -1470,43 +1654,112 @@ function shuffle(arr){
 }
 
 /* ---------------- sessionStorage 键 ---------------- */
-const K_USED='sq_used', K_DRAWN='sq_drawn', K_ANS='sq_answers', K_CUR='sq_current', K_RESULT='sq_result', K_PREF='sq_pref';
+const K_USED='sq_used', K_DRAWN='sq_drawn', K_ANS='sq_answers', K_CUR='sq_current', K_RESULT='sq_result', K_PREF='sq_pref',
+      K_SCENES='sq_scenes';   /* 【新增】已用场景（跨轮防“同场景不同问法”重复） */
 const store = {
   get(k, fb){ try{ const v = sessionStorage.getItem(k); return v == null ? fb : JSON.parse(v); }catch(e){ return fb; } },
   set(k, v){ try{ sessionStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
   del(k){ try{ sessionStorage.removeItem(k); }catch(e){} },
 };
 
-/* ---------------- 抽题：决策 12 + 人际 12，避开历史已抽题 ---------------- */
+/* ================================================================
+ * 【修复】抽题引擎 v2 —— 三层防重
+ *   1. 单轮题目索引绝不重复（Set 保险 + 长度校验）
+ *   2. 单轮内同一场景（50 决策 / 50 人际场景槽）最多出现一次
+ *      ——同一场景的 10 个角度句式是不同题，但题干前 90% 相同，
+ *        用户感知即“重复出题”，这是本次问题的主因，必须消除
+ *   3. 跨轮次：优先避开最近用过的场景，用尽 50 个场景后
+ *      才允许场景复用（此时题目索引防重仍生效，绝不出现同一道题）
+ * ================================================================ */
+const sceneOf = id => Math.floor(id / 10);   /* 题号 → 场景槽号（0-99） */
+
+function pickFromScenes(cat, want, usedIds, recentScenes){
+  /* 从 cat（'dec'|'int'）的场景池里挑 want 个「场景互不相同」的题号 */
+  const out = [];
+  const base = cat === 'dec' ? 0 : 500;
+  /* 优先挑最近没用过的场景；若全被用过则退化为全部场景可选 */
+  const allScenes = [];
+  for (let s = 0; s < 50; s++) allScenes.push(base + s * 10);
+  let pool = allScenes.filter(sid => !(recentScenes && recentScenes.has(sceneOf(sid))));
+  if (pool.length < want) pool = allScenes.slice();   /* 场景轮换用尽 → 全量可选 */
+
+  shuffle(pool);
+  const sceneTaken = new Set();
+  for (const sid of pool){
+    if (out.length >= want) break;
+    const sc = sceneOf(sid);
+    if (sceneTaken.has(sc)) continue;                  /* 单轮同场景只取一次 */
+    sceneTaken.add(sc);
+    /* 该场景 10 个角度里挑一个「题目层面」也没抽过的 */
+    const angles = [];
+    for (let a = 0; a < 10; a++){
+      const qid = sid + a;
+      if (!usedIds.has(qid)) angles.push(qid);
+    }
+    if (angles.length){
+      out.push(angles[secureRandomInt(angles.length)]);
+    }else{
+      /* 该场景 10 道题全被抽过 → 从 10 道里任选（极小概率，仅题库逼近耗尽时） */
+      out.push(sid + secureRandomInt(10));
+    }
+  }
+  /* 兜底：极端情况下场景数不足 want（不可能发生，50>12），补齐并去重 */
+  if (out.length < want){
+    for (const qid of shuffle(Array.from({length:500}, (_, i) => base + i))){
+      if (out.length >= want) break;
+      if (!out.includes(qid) && !usedIds.has(qid)) out.push(qid);
+    }
+  }
+  return out;
+}
+
 function drawQuestions(){
+  /* 1) 读取历史已用题索引（题号级防重） */
   let used = store.get(K_USED, []);
   if (!Array.isArray(used)) used = [];
-  const usedSet = new Set(used);
-  const decLeft = [], intLeft = [];
-  for (let i = 0; i < 500; i++){
-    if (!usedSet.has(i)) decLeft.push(i);
-    if (!usedSet.has(500 + i)) intLeft.push(500 + i);
+  const usedIds = new Set(used);
+
+  /* 2) 读取最近用过的场景（场景级防重，保留最近 4 轮 = 48 个场景的记录） */
+  let recentScenes = store.get(K_SCENES, []);
+  if (!Array.isArray(recentScenes)) recentScenes = [];
+  recentScenes = recentScenes.slice(-48);            /* 滚动窗口：最近 48 个场景 */
+  const recentSet = new Set(recentScenes);
+
+  /* 3) 各抽 12 题：单轮场景互不重复 + 题号互不重复 */
+  let decPick = pickFromScenes('dec', 12, usedIds, recentSet);
+  let intPick = pickFromScenes('int', 12, usedIds, recentSet);
+
+  /* 4) 单轮题号唯一性硬校验：万一有重复（理论上不可能），立即修复 */
+  const seen = new Set();
+  const picked = [];
+  for (const qid of [...decPick, ...intPick]){
+    if (!seen.has(qid)){ seen.add(qid); picked.push(qid); }
   }
-  // 剩余题量不足以再抽一轮时，重置历史记录（保证题库可持续复用）
-  if (decLeft.length < 12 || intLeft.length < 12){
-    used = []; decLeft.length = 0; intLeft.length = 0;
-    for (let i = 0; i < 500; i++){ decLeft.push(i); intLeft.push(500 + i); }
+  /* 若极端情况导致不足 24 题（题库耗尽等），回填时仍保证不与已选重复 */
+  if (picked.length < 24){
+    for (let qid = 0; qid < 1000 && picked.length < 24; qid++){
+      if (!seen.has(qid)){ seen.add(qid); picked.push(qid); }
+    }
   }
-  shuffle(decLeft); shuffle(intLeft);
-  const picked = [...decLeft.slice(0, 12), ...intLeft.slice(0, 12)];
-  const mixed = picked.slice(); shuffle(mixed); // 决策与人际混排呈现
-  store.set(K_USED, used.concat(picked)); // 记录已抽题索引，避免下次重复
+
+  const mixed = picked.slice(); shuffle(mixed);       /* 决策与人际混排呈现 */
+
+  /* 5) 原子性写入：先校验再落盘，避免失败状态污染 sq_used */
+  try{
+    store.set(K_USED, used.concat(picked));
+    store.set(K_SCENES, recentScenes.concat(picked.map(sceneOf)));
+  }catch(e){ /* 写入失败不阻断本轮（本轮内存态已正确） */ }
+
   return mixed;
 }
 
 /* ---------------- 全局状态 ---------------- */
-const AUTO_MS = 400;      // 选择后自动进入下一题的延迟
-const FINAL_MS = 700;     // 最后一题答完 → 自动生成档案的延迟
+const AUTO_MS = 400;
+const FINAL_MS = 700;
 const state = { pref:null, questions:[], answers:{}, current:0, dir:1, result:null, autoTimer:0, finishing:false };
 const IS_MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   || (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.platform || ''));
 
-/* ---------------- toast ---------------- */
 let toastTimer = 0;
 function toast(msg, dur = 3200){
   const el = $('#toast');
@@ -1516,7 +1769,6 @@ function toast(msg, dur = 3200){
   toastTimer = setTimeout(() => el.classList.remove('show'), dur);
 }
 
-/* ---------------- 数字滚动 ---------------- */
 function countUp(el, target, dur = 900){
   const finalText = String(target);
   if (REDUCED_MOTION){ el.textContent = finalText; return; }
@@ -1531,12 +1783,11 @@ function countUp(el, target, dur = 900){
   requestAnimationFrame(tick);
 }
 
-/* ---------------- 步骤切换 ---------------- */
 function showStep(name){
   ['home','pref','quiz','result'].forEach(s => $('#' + s).hidden = (s !== name));
   $('#siteHead').hidden = false;
   document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', li.dataset.s === name));
-  document.body.classList.toggle('quiz-on', name === 'quiz'); // 答题时开启氛围层
+  document.body.classList.toggle('quiz-on', name === 'quiz');
   hideGlossTip();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1559,7 +1810,6 @@ function showStep(name){
     input.focus();
     card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
   }
-  // URL 参数 ?code=9900 自动解锁
   try{
     const p = new URLSearchParams(location.search);
     if (p.get('code') === '9900'){ unlock(); return; }
@@ -1587,20 +1837,26 @@ document.querySelectorAll('.pref-opt').forEach(btn => {
 });
 
 /* ================================================================
- * 答题
+ * 答题（【修复】恢复逻辑：校验失败时先清理再抽，不污染防重记录）
  * ================================================================ */
 function prepareQuiz(){
   clearTimeout(state.autoTimer);
   let drawn = store.get(K_DRAWN, null);
-  if (!Array.isArray(drawn) || drawn.length !== 24 || !drawn.every(id => BANK[id])){
-    // 抽取新一轮题目（内部用 sq_used 避免历史重复）
+  const drawnValid = Array.isArray(drawn)
+    && drawn.length === 24
+    && drawn.every(id => Number.isInteger(id) && id >= 0 && id < 1000)
+    && new Set(drawn).size === 24;                     /* 【加固】本轮内无重复题号 */
+
+  if (!drawnValid){
+    /* 【修复】上一轮状态不可信时，先回收作答与轮次数据，再干净地抽新题；
+       sq_used / sq_scenes 的历史防重记录保持不动——它们只增不乱 */
+    store.del(K_ANS); store.del(K_CUR); store.del(K_DRAWN);
+    state.answers = {}; state.current = 0; state.dir = 1;
     drawn = drawQuestions();
     store.set(K_DRAWN, drawn);
-    store.del(K_ANS); store.del(K_CUR);
-    state.answers = {}; state.current = 0; state.dir = 1;
     toast('小提示：题目里带「注」的小词，点一下就能看解释', 3800);
   }else{
-    // 恢复上次未完成的作答
+    /* 恢复上次未完成的作答（状态可信） */
     state.answers = store.get(K_ANS, {});
     if (typeof state.answers !== 'object' || !state.answers) state.answers = {};
     const saved = parseInt(store.get(K_CUR, 0), 10);
@@ -1630,12 +1886,21 @@ function updateNavUI(){
   next.textContent = i === 23 ? '生成档案' : '下一题';
 }
 
+function stampSeal(btn, still){
+  btn.querySelectorAll('.seal-mark').forEach(e => e.remove());
+  const s = document.createElement('span');
+  s.className = 'seal-mark' + (still ? ' still' : '');
+  s.textContent = '定';
+  s.setAttribute('aria-hidden', 'true');
+  btn.appendChild(s);
+}
+
 function renderQuestion(){
   clearTimeout(state.autoTimer);
   hideGlossTip();
   const i = state.current, q = state.questions[i];
   $('#qChapter').textContent = q.chapter;
-  $('#qStem').innerHTML = annotate(q.stem).html; // 题干加词注标记
+  $('#qStem').innerHTML = annotate(q.stem).html;
   const box = $('#qOpts');
   box.innerHTML = '';
   q.opts.forEach((o, oi) => {
@@ -1644,14 +1909,14 @@ function renderQuestion(){
     b.className = 'opt' + (state.answers[i] === oi ? ' sel' : '');
     const body = document.createElement('span'); body.className = 'opt-body';
     const txt = document.createElement('span'); txt.className = 'opt-text';
-    txt.innerHTML = annotate(o.t).html; // 选项加词注标记
+    txt.innerHTML = annotate(o.t).html;
     body.append(txt);
     const dot = document.createElement('span'); dot.className = 'opt-dot';
     b.append(dot, body);
     b.addEventListener('click', () => selectOption(oi));
     box.appendChild(b);
+    if (state.answers[i] === oi) stampSeal(b, true);
   });
-  // 本题「词语小注」面板：汇总题干与选项中出现的全部生词
   const termSeen = new Set(), terms = [];
   [q.stem, ...q.opts.map(o => o.t)].forEach(txt => {
     GLOSS_KEYS.forEach(k => { if (txt.includes(k) && !termSeen.has(k)){ termSeen.add(k); terms.push(k); } });
@@ -1664,7 +1929,7 @@ function renderQuestion(){
   }else{
     gb.hidden = true; gb.innerHTML = '';
   }
-  bindGloss($('#quizCard')); // 绑定词注交互（词注点击不触发选项选择）
+  bindGloss($('#quizCard'));
   updateProgressUI();
   updateNavUI();
   const cardEl = $('#quizCard');
@@ -1676,14 +1941,17 @@ function renderQuestion(){
 
 function selectOption(oi){
   const i = state.current;
-  if (state.answers[i] === oi) return;           // 点击已选项：保持不变
-  const firstPick = state.answers[i] == null;    // 仅「首次作答」自动前进，修改时不强行跳题
+  if (state.answers[i] === oi) return;
+  const firstPick = state.answers[i] == null;
   state.answers[i] = oi;
-  store.set(K_ANS, state.answers);               // 答题状态持久化
-  [...$('#qOpts').children].forEach((el, k) => el.classList.toggle('sel', k === oi));
+  store.set(K_ANS, state.answers);
+  [...$('#qOpts').children].forEach((el, k) => {
+    el.classList.toggle('sel', k === oi);
+    if (k === oi) stampSeal(el, !firstPick);
+    else el.querySelectorAll('.seal-mark').forEach(e => e.remove());
+  });
   updateProgressUI(); updateNavUI();
   if (i === 23){
-    // 最后一题答完（全部 24 题已有答案）→ 自动生成人物档案
     if (firstPick && answeredCount() === 24){
       clearTimeout(state.autoTimer);
       state.autoTimer = setTimeout(() => { finishQuiz(); }, FINAL_MS);
@@ -1711,22 +1979,17 @@ function go(i){
  * 计分与匹配
  * ================================================================ */
 function computeResult(){
-  // 1) 计数：基础分 12，每选中一个映射到该维度的选项 +9
   const counts = {}; DIMS.forEach(d => counts[d.k] = 0);
   state.questions.forEach((q, i) => { counts[q.opts[state.answers[i]].d]++; });
-  // 2) 归一化：映射到 38–98 区间并取整
   const scores = {};
   DIMS.forEach(d => {
     const raw = 12 + counts[d.k] * 9;
     scores[d.k] = Math.min(98, Math.max(38, Math.round(38 + (raw - 12) * 1.2)));
   });
-  // 3) 得分最高的三个维度（共同底色）
   const top3 = DIMS.map(d => ({ k:d.k, name:d.name, v:scores[d.k] }))
     .sort((a, b) => b.v - a.v).slice(0, 3);
-  // 4) 按性别偏好过滤候选人物
   const pool = FIGURES.filter(f =>
     state.pref === 'any' || (state.pref === 'f' ? f.g === 'f' : f.g === 'm'));
-  // 5) 欧氏距离最近邻匹配（同距离随机破平局）
   let best = null, bestD = Infinity;
   for (const f of pool){
     const v = ARCHETYPES[f.a].vec;
@@ -1737,9 +2000,7 @@ function computeResult(){
       bestD = dist; best = f;
     }
   }
-  // 6) 相似度 = clamp(100 − 距离 / 4.8, 76, 97)
   const sim = Math.round(Math.min(97, Math.max(76, 100 - bestD / 4.8)));
-  // 7) 三句台词：人物原台词 1 句 + 原型台词库抽 2 句
   const A = ARCHETYPES[best.a];
   const quotes = [{ t: best.q, by: `—— ${best.n}` }];
   const poolQ = A.quotes.slice();
@@ -1758,7 +2019,6 @@ function finishQuiz(){
     go(missing);
     return;
   }
-  // 「翻阅档案」转场：印章旋转 + 进度条，稍作停留再揭晓结果
   state.finishing = true;
   clearTimeout(state.autoTimer);
   const ov = $('#genOverlay');
@@ -1767,7 +2027,7 @@ function finishQuiz(){
   setTimeout(() => {
     const R = computeResult();
     state.result = R;
-    store.set(K_RESULT, { fid: R.fid, sim: R.sim, scores: R.scores, pref: state.pref }); // 最终结果持久化
+    store.set(K_RESULT, { fid: R.fid, sim: R.sim, scores: R.scores, pref: state.pref });
     renderResult(R);
     showStep('result');
     ov.hidden = true;
@@ -1776,8 +2036,7 @@ function finishQuiz(){
 }
 
 /* ================================================================
- * SVG 图形工具：圆环图（匹配度大环 / 底色小环）
- * ring-front 圆环描线动画由 animateIn() 统一触发
+ * SVG 图形工具：圆环图
  * ================================================================ */
 function ringSVG(id, pct, size, sub){
   const cx = size / 2, cy = size / 2, r = (size - 26) / 2, c = 2 * Math.PI * r;
@@ -1785,13 +2044,13 @@ function ringSVG(id, pct, size, sub){
   const numSize = Math.round(size * .2), subSize = Math.round(size * .072);
   return `<svg viewBox="0 0 ${size} ${size}" width="100%" height="100%" role="img" aria-label="相似度 ${pct}%">
     <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2FA08C"/><stop offset="1" stop-color="#7CC5B5"/></linearGradient></defs>
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(47,160,140,.15)" stroke-width="13"/>
+      <stop offset="0" stop-color="#B13A2A"/><stop offset="1" stop-color="#D8A85B"/></linearGradient></defs>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(177,58,42,.14)" stroke-width="13"/>
     <circle class="ring-front" data-c="${c.toFixed(1)}" data-arc="${arc.toFixed(1)}"
       cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="url(#${id})" stroke-width="13" stroke-linecap="round"
       stroke-dasharray="${arc.toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>
-    <text x="${cx}" y="${cy + (sub ? 2 : 8)}" text-anchor="middle" font-size="${numSize}" font-weight="800" fill="#1E4A42"><tspan class="ring-num" data-v="${pct}">${pct}</tspan><tspan font-size="${Math.round(numSize * .55)}" font-weight="700" fill="#2FA08C">%</tspan></text>
-    ${sub ? `<text x="${cx}" y="${cy + Math.round(numSize * .74)}" text-anchor="middle" font-size="${subSize}" font-weight="700" fill="#7E948D" letter-spacing="4">${sub}</text>` : ''}
+    <text x="${cx}" y="${cy + (sub ? 2 : 8)}" text-anchor="middle" font-size="${numSize}" font-weight="800" fill="#33241C"><tspan class="ring-num" data-v="${pct}">${pct}</tspan><tspan font-size="${Math.round(numSize * .55)}" font-weight="700" fill="#B13A2A">%</tspan></text>
+    ${sub ? `<text x="${cx}" y="${cy + Math.round(numSize * .74)}" text-anchor="middle" font-size="${subSize}" font-weight="700" fill="#96826D" letter-spacing="4">${sub}</text>` : ''}
   </svg>`;
 }
 
@@ -1800,51 +2059,53 @@ function miniRing(id, score){
   const arc = c * score / 100;
   return `<svg viewBox="0 0 ${s} ${s}" class="mini-ring" role="img" aria-label="${score} 分">
     <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2FA08C"/><stop offset="1" stop-color="#7CC5B5"/></linearGradient></defs>
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(47,160,140,.15)" stroke-width="8"/>
+      <stop offset="0" stop-color="#B13A2A"/><stop offset="1" stop-color="#D8A85B"/></linearGradient></defs>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(177,58,42,.14)" stroke-width="8"/>
     <circle class="ring-front" data-c="${c.toFixed(1)}" data-arc="${arc.toFixed(1)}"
       cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="url(#${id})" stroke-width="8" stroke-linecap="round"
       stroke-dasharray="${arc.toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>
-    <text x="${cx}" y="${cy + 9}" text-anchor="middle" font-size="24" font-weight="800" fill="#2FA08C"><tspan class="mini-num" data-v="${score}">${score}</tspan></text>
+    <text x="${cx}" y="${cy + 9}" text-anchor="middle" font-size="24" font-weight="800" fill="#B13A2A"><tspan class="mini-num" data-v="${score}">${score}</tspan></text>
   </svg>`;
 }
 
 /* ================================================================
- * 雷达图：页面用 Chart.js 绘制；CDN 不可用时退回原生 Canvas。
- * 原生绘制 paintNativeRadar 同时供「页面兜底」与「长图导出」共用。
+ * 双雷达
  * ================================================================ */
-let radarChart = null;
-function radarConfig(scores){
+let radarCharts = [];
+function radarConfig(data, style, label){
+  const you = style === 'you';
   return {
     type: 'radar',
     data: {
       labels: DIMS.map(d => d.name),
       datasets: [{
-        label: '得分',
-        data: DIMS.map(d => scores[d.k]),
+        label: you ? '你' : `TA · ${label}`,
+        data,
         fill: true,
-        backgroundColor: 'rgba(47,160,140,.20)',
-        borderColor: '#2FA08C',
-        borderWidth: 2.5,
-        pointBackgroundColor: '#2FA08C',
-        pointBorderColor: '#ffffff',
+        backgroundColor: you ? 'rgba(177,58,42,.18)' : 'rgba(184,147,74,.14)',
+        borderColor: you ? '#B13A2A' : '#B8934A',
+        borderWidth: you ? 2.5 : 2.2,
+        pointBackgroundColor: you ? '#B13A2A' : '#B8934A',
+        pointBorderColor: '#FDF9EE',
         pointBorderWidth: 2,
-        pointRadius: 4.5,
+        pointRadius: you ? 4.5 : 3.8,
         pointHoverRadius: 6,
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      aspectRatio: 1.15,
+      aspectRatio: 1.12,
       animation: REDUCED_MOTION ? false : { duration: 700 },
       layout: { padding: 6 },
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: 'rgba(30,74,66,.92)',
-          titleColor: '#ffffff',
-          bodyColor: '#EAF6F1',
+          backgroundColor: 'rgba(46,30,22,.93)',
+          titleColor: '#F5EDD8',
+          bodyColor: '#EFE2C4',
+          borderColor: 'rgba(216,190,133,.5)',
+          borderWidth: 1,
           padding: 10,
           cornerRadius: 10,
           displayColors: false,
@@ -1856,14 +2117,14 @@ function radarConfig(scores){
           ticks: {
             stepSize: 25,
             display: true,
-            color: '#9AB5AE',
+            color: '#96826D',
             backdropColor: 'transparent',
             font: { size: 10 },
           },
-          grid: { color: 'rgba(47,110,98,.16)' },
-          angleLines: { color: 'rgba(47,110,98,.16)' },
+          grid: { color: you ? 'rgba(107,79,54,.18)' : 'rgba(184,147,74,.28)' },
+          angleLines: { color: you ? 'rgba(107,79,54,.18)' : 'rgba(184,147,74,.28)' },
           pointLabels: {
-            color: '#1E4A42',
+            color: '#33241C',
             font: { size: 14, weight: 700, family: "'PingFang SC','Microsoft YaHei',sans-serif" },
           },
         },
@@ -1872,19 +2133,21 @@ function radarConfig(scores){
   };
 }
 
-function setupRadarChart(scores){
-  const cv = document.getElementById('radarCanvas');
-  if (!cv) return;
-  if (radarChart){ try{ radarChart.destroy(); }catch(e){} radarChart = null; }
+function setupRadarCharts(scores, vec, label){
+  const cvYou = document.getElementById('radarCanvas');
+  const cvTA = document.getElementById('radarCanvasTA');
+  radarCharts.forEach(c => { try{ c.destroy(); }catch(e){} });
+  radarCharts = [];
   if (CHART_OK){
-    radarChart = new Chart(cv.getContext('2d'), radarConfig(scores));
+    if (cvYou) radarCharts.push(new Chart(cvYou.getContext('2d'), radarConfig(DIMS.map(d => scores[d.k]), 'you', '你')));
+    if (cvTA) radarCharts.push(new Chart(cvTA.getContext('2d'), radarConfig(vec, 'ta', label)));
   }else{
-    paintFallbackRadar(cv, scores); // CDN 未加载成功时的原生兜底
+    if (cvYou) paintFallbackRadar(cvYou, DIMS.map(d => scores[d.k]), 'you');
+    if (cvTA) paintFallbackRadar(cvTA, vec, 'ta');
   }
 }
 
-/* 原生兜底：绘制到给定 canvas（页面展示用，带高分屏缩放） */
-function paintFallbackRadar(cv, scores){
+function paintFallbackRadar(cv, data, style){
   const cssW = 440;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   cv.width = Math.round(cssW * dpr);
@@ -1896,14 +2159,15 @@ function paintFallbackRadar(cv, scores){
   cv.style.margin = '0 auto';
   const ctx = cv.getContext('2d');
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  paintNativeRadar(ctx, cssW / 2, cssW / 2, cssW * 0.31, scores, 16);
+  paintNativeRadar(ctx, cssW / 2, cssW / 2, cssW * 0.30, data, 16, style);
 }
 
-/* 原生雷达图核心绘制（网页兜底与长图导出共用）
- * cx/cy 圆心，R 半径，fs 标签字号；8 个顶点自正上方起顺时针排列 */
-function paintNativeRadar(ctx, cx, cy, R, scores, fs){
+function paintNativeRadar(ctx, cx, cy, R, scores, fs, style){
+  const you = style !== 'ta';
+  const C = you
+    ? { line:'#B13A2A', fill:'rgba(177,58,42,.20)', grid:'rgba(107,79,54,.18)', dot:'#B13A2A' }
+    : { line:'#B8934A', fill:'rgba(184,147,74,.14)', grid:'rgba(184,147,74,.30)', dot:'#B8934A' };
   ctx.save();
-  // 网格环：25 分一层，共四层，隔层淡填充
   for (let k = 4; k >= 1; k--){
     ctx.beginPath();
     for (let i = 0; i < 8; i++){
@@ -1913,42 +2177,39 @@ function paintNativeRadar(ctx, cx, cy, R, scores, fs){
       i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
     }
     ctx.closePath();
-    ctx.fillStyle = (k % 2) ? 'rgba(47,160,140,.05)' : 'rgba(47,160,140,.02)';
+    ctx.fillStyle = (k % 2) ? (you ? 'rgba(177,58,42,.045)' : 'rgba(184,147,74,.05)') : 'rgba(0,0,0,0)';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(47,110,98,.18)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.stroke();
   }
-  // 角度轴线
   for (let i = 0; i < 8; i++){
     const a = -Math.PI / 2 + i * Math.PI / 4;
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
-    ctx.strokeStyle = 'rgba(47,110,98,.18)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.stroke();
   }
-  // 数据面
   const pts = DIMS.map((d, i) => {
     const a = -Math.PI / 2 + i * Math.PI / 4;
-    const r = R * scores[d.k] / 100;
+    const r = R * scores[i] / 100;
     return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
   });
   ctx.beginPath();
   pts.forEach((p, i) => { i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); });
   ctx.closePath();
-  ctx.fillStyle = 'rgba(47,160,140,.22)';
+  ctx.fillStyle = C.fill;
   ctx.fill();
-  ctx.strokeStyle = '#2FA08C';
+  ctx.strokeStyle = C.line;
   ctx.lineWidth = Math.max(2, fs * 0.12);
   ctx.lineJoin = 'round';
   ctx.stroke();
   pts.forEach(p => {
     ctx.beginPath();
     ctx.arc(p[0], p[1], Math.max(3.5, fs * 0.22), 0, Math.PI * 2);
-    ctx.fillStyle = '#2FA08C'; ctx.fill();
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1.5, fs * 0.08); ctx.stroke();
+    ctx.fillStyle = C.dot; ctx.fill();
+    ctx.strokeStyle = '#FDF9EE'; ctx.lineWidth = Math.max(1.5, fs * 0.08); ctx.stroke();
   });
-  // 维度标签：按方位选择锚点并整体外推，保证不压住图形
   ctx.font = `700 ${fs}px ${FONT}`;
-  ctx.fillStyle = '#1E4A42';
+  ctx.fillStyle = '#33241C';
   ctx.textBaseline = 'alphabetic';
   DIMS.forEach((d, i) => {
     const a = -Math.PI / 2 + i * Math.PI / 4;
@@ -1956,11 +2217,11 @@ function paintNativeRadar(ctx, cx, cy, R, scores, fs){
     const lx = cx + (R + fs * 0.95) * cosA;
     const ly = cy + (R + fs * 0.95) * sinA;
     let align, dx = 0, dy = fs * 0.36;
-    if (Math.abs(cosA) < 0.35) align = 'center';                 // 正上 / 正下
-    else if (cosA > 0){ align = 'left'; dx = fs * 0.22; }        // 右半侧
-    else { align = 'right'; dx = -fs * 0.22; }                   // 左半侧
-    if (sinA < -0.7) dy = -fs * 0.1;                             // 顶部点：上提
-    else if (sinA > 0.7) dy = fs * 0.9;                          // 底部点：下沉
+    if (Math.abs(cosA) < 0.35) align = 'center';
+    else if (cosA > 0){ align = 'left'; dx = fs * 0.22; }
+    else { align = 'right'; dx = -fs * 0.22; }
+    if (sinA < -0.7) dy = -fs * 0.1;
+    else if (sinA > 0.7) dy = fs * 0.9;
     ctx.textAlign = align;
     ctx.fillText(d.name, lx + dx, ly + dy);
   });
@@ -1968,10 +2229,7 @@ function paintNativeRadar(ctx, cx, cy, R, scores, fs){
   ctx.restore();
 }
 
-/* ---------------- 人物形象图：本地 images/人物名.png（全身像） + 竖版立轴占位兜底 ----------------
- * 图片放入同目录 images/ 下、以人物姓名命名（如 images/李白.png）即可自动启用；
- * 展示采用「立轴装裱」框 + object-fit:contain，全身完整可见。
- * 文件不存在或加载失败时，显示竖排姓名立轴作为占位。 */
+/* ---------------- 人物形象图 ---------------- */
 const AVATAR_URL = name => `images/${name}.png`;
 const avCache = {};
 function loadAvatar(name){
@@ -1983,57 +2241,50 @@ function loadAvatar(name){
     img.onload = () => done({ ok: true, img });
     img.onerror = () => done({ ok: false });
     img.src = AVATAR_URL(name);
-    setTimeout(() => done({ ok: false }), 3000); // 超时兜底
+    setTimeout(() => done({ ok: false }), 3000);
   });
 }
-/* 圆形姓氏小印章（名片 / 立轴占位共用） */
 function drawSeal(ctx, cx, cy, r, name){
   const g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
-  g.addColorStop(0, '#2FA08C'); g.addColorStop(1, '#57BBA3');
+  g.addColorStop(0, '#B13A2A'); g.addColorStop(1, '#8E2B21');
   ctx.save();
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  rr(ctx, cx - r, cy - r, r * 2, r * 2, r * 0.16);
   ctx.fillStyle = g; ctx.fill();
-  ctx.lineWidth = Math.max(2, r * .06);
-  ctx.strokeStyle = 'rgba(255,255,255,.75)';
-  ctx.beginPath(); ctx.arc(cx, cy, r * .87, 0, Math.PI * 2); ctx.stroke();
-  ctx.fillStyle = '#fff';
-  ctx.font = `800 ${Math.round(r * .94)}px ${FONT}`;
+  ctx.strokeStyle = 'rgba(247,236,212,.55)';
+  ctx.lineWidth = Math.max(1.5, r * .07);
+  rr(ctx, cx - r * .8, cy - r * .8, r * 1.6, r * 1.6, r * .1); ctx.stroke();
+  ctx.fillStyle = '#F7ECD4';
+  ctx.font = `700 ${Math.round(r * 1.05)}px ${FONT_KAI}`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(name[0], cx, cy + r * .05);
+  ctx.fillText(name[0], cx, cy + r * .04);
   ctx.restore();
 }
-/* 竖版立轴占位图：浅青底 + 竖排姓名 + 底部姓氏印章（网页展示与长图导出共用） */
 function drawPortraitFallback(ctx, x, y, w, h, name){
   ctx.save();
   const g = ctx.createLinearGradient(x, y, x + w, y + h);
-  g.addColorStop(0, '#F2F9F5'); g.addColorStop(1, '#DFEEE8');
+  g.addColorStop(0, '#F8F1DD'); g.addColorStop(1, '#E8DBB8');
   ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
-  ctx.strokeStyle = 'rgba(47,160,140,.32)'; ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'rgba(184,147,74,.5)'; ctx.lineWidth = 1.5;
   ctx.strokeRect(x + 5, y + 5, w - 10, h - 10);
-  // 顶部小装饰线
-  ctx.strokeStyle = 'rgba(47,160,140,.28)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(184,147,74,.35)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.moveTo(x + w / 2 - 24, y + 24); ctx.lineTo(x + w / 2 + 24, y + 24); ctx.stroke();
-  // 竖排姓名
   const chars = [...name];
   const fs = Math.min(w * 0.32, (h - 150) / Math.max(1, chars.length));
-  ctx.font = `800 ${fs}px ${FONT}`;
-  ctx.fillStyle = 'rgba(47,160,140,.82)';
+  ctx.font = `700 ${fs}px ${FONT_KAI}`;
+  ctx.fillStyle = 'rgba(142,43,33,.85)';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   const gap = fs * 1.18;
   const y0 = y + (h - 118) / 2 - (chars.length - 1) * gap / 2 + 14;
   chars.forEach((c, i) => ctx.fillText(c, x + w / 2, y0 + i * gap));
-  // 底部姓氏印章
   drawSeal(ctx, x + w / 2, y + h - 54, Math.min(30, w * 0.17), name);
   ctx.restore();
 }
-/* 竖版占位 → dataURL（网页 <img> 兜底用） */
 function portraitFallbackDataURL(name, w = 360, h = 480){
   const cv = document.createElement('canvas');
   cv.width = w; cv.height = h;
   drawPortraitFallback(cv.getContext('2d'), 0, 0, w, h, name);
   return cv.toDataURL('image/png');
 }
-/* 图片按 contain 逻辑绘制进指定矩形（等比缩放、居中、不裁切） */
 function drawImageContain(ctx, img, x, y, w, h){
   const iw = img.width, ih = img.height;
   if (!iw || !ih) return;
@@ -2041,14 +2292,45 @@ function drawImageContain(ctx, img, x, y, w, h){
   const dw = iw * s, dh = ih * s;
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
+function drawSpeechBubble(ctx, px, py, pw, ph, quote){
+  ctx.save();
+  ctx.font = `600 19px ${FONT_KAI}`;
+  const maxW = 208;
+  const lines = wrapLines(ctx, `「${quote}」`, maxW - 26);
+  let bw = 0;
+  lines.forEach(l => { bw = Math.max(bw, ctx.measureText(l).width); });
+  bw = Math.min(maxW, bw + 26);
+  const bh = lines.length * 30 + 22;
+  const bx = px + pw - 22;
+  const by = py + 20;
+  ctx.save();
+  ctx.shadowColor = 'rgba(84,56,28,.25)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 5;
+  ctx.fillStyle = 'rgba(253,250,240,.97)';
+  rr(ctx, bx, by, bw, bh, 12); ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(184,147,74,.75)'; ctx.lineWidth = 1.6;
+  rr(ctx, bx, by, bw, bh, 12); ctx.stroke();
+  ctx.save();
+  ctx.translate(bx - 1, by + bh - 16);
+  ctx.rotate(Math.PI / 4);
+  ctx.fillStyle = 'rgba(253,250,240,.97)';
+  ctx.fillRect(-6.5, -6.5, 13, 13);
+  ctx.strokeStyle = 'rgba(184,147,74,.75)';
+  ctx.strokeRect(-6.5, -6.5, 13, 13);
+  ctx.restore();
+  ctx.fillStyle = '#33241C';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.font = `600 19px ${FONT_KAI}`;
+  lines.forEach((ln, i) => ctx.fillText(ln, bx + 13, by + 24 + i * 30));
+  ctx.restore();
+}
 
 /* ================================================================
- * 结果页：滚动渐显 + 元素进入时统一「充能」
+ * 结果页：滚动渐显 + 充能
  * ================================================================ */
 function animateIn(el){
   if (!el || el.dataset.animated) return;
   el.dataset.animated = '1';
-  // 圆环描线生长
   el.querySelectorAll('.ring-front').forEach(rc => {
     const c = +rc.dataset.c, arc = +rc.dataset.arc;
     rc.style.strokeDasharray = `0 ${c}`;
@@ -2057,9 +2339,6 @@ function animateIn(el){
       rc.style.strokeDasharray = `${arc} ${c}`;
     }));
   });
-  // 条形填充 + 数值滚动
-  el.querySelectorAll('.dim-fill').forEach(b => { b.style.width = b.dataset.w + '%'; });
-  el.querySelectorAll('.dim-val').forEach((n, i) => countUp(n, +n.dataset.v, 820 + i * 80));
   el.querySelectorAll('.ring-num').forEach((n, i) => countUp(n, +n.dataset.v, 1100));
   el.querySelectorAll('.mini-num').forEach((n, i) => countUp(n, +n.dataset.v, 850 + i * 130));
 }
@@ -2076,46 +2355,62 @@ function observeReveals(){
 }
 
 /* ================================================================
- * 结果页渲染（六板块 · 图形化 · 含人物科普小传 · 全身像立轴）
+ * 结果页渲染
  * ================================================================ */
 const RANK_TITLES = ['第一底色', '隐藏天赋', '长期优势'];
 function renderResult(R){
-  const f = R.figure, A = R.arch;
+  const f = R.figure, A = R.arch, vec = A.vec;
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const dimsHtml = DIMS.map(d => `
-    <div class="dim-row">
-      <span class="dim-name">${d.name}</span>
-      <div class="dim-track"><div class="dim-fill" data-w="${R.scores[d.k]}"></div></div>
-      <span class="dim-val" data-v="${R.scores[d.k]}">${R.scores[d.k]}</span>
-    </div>`).join('');
+
+  const gaps = DIMS.map((d, i) => ({ name:d.name, u:R.scores[d.k], a:vec[i], gap:Math.abs(R.scores[d.k] - vec[i]) }));
+  const same = gaps.slice().sort((x, y) => x.gap - y.gap).slice(0, 3);
+  const diff = gaps.slice().sort((x, y) => y.gap - x.gap).slice(0, 2);
+  const peers = FIGURES.filter(x => x.a === f.a && x.n !== f.n);
+  const peerShow = peers.slice(0, 12);
+  const eul = buildEulogy(R);
+
   const top3Html = R.top3.map((t, i) => `
     <div class="card mini-card tone-card">
       ${miniRing('tone' + i, t.v)}
       <h4><span class="rk">${RANK_TITLES[i]} · ${t.name}</span>${t.name}之道</h4>
-      <p>${DIMS.find(d => d.k === t.k).desc}</p>
+      <p>${hl(DIMS.find(d => d.k === t.k).desc)}</p>
     </div>`).join('');
   const quotesHtml = R.quotes.map(q => `
     <div class="card quote-card">
       <p class="qt">「${esc(q.t)}」</p>
       <p class="qb">${esc(q.by)}</p>
     </div>`).join('');
-  // 人物身份行与小传均加词注（如「营籍歌妓」「和亲公主」「澶渊之盟」）
+  const sameHtml = same.map(x => `
+    <div class="cmp-item">
+      <div class="cmp-head"><b>${x.name}</b><span>仅差 ${x.gap} 分</span></div>
+      <div class="cmp-track"><i style="width:${x.u}%"></i><u style="left:${x.a}%"></u></div>
+      <div class="cmp-sub"><span>你 ${x.u}</span><span>TA ${x.a}</span></div>
+    </div>`).join('');
+  const diffHtml = diff.map(x => `
+    <div class="cmp-item">
+      <div class="cmp-head"><b>${x.name}</b><span class="big">相差 ${x.gap} 分</span></div>
+      <div class="cmp-track"><i style="width:${x.u}%"></i><u style="left:${x.a}%"></u></div>
+      <div class="cmp-sub"><span>你 ${x.u}</span><span>TA ${x.a}</span></div>
+    </div>`).join('');
+  const peersHtml = peerShow.map(p => `<span class="peer"><b>${esc(p.n)}</b><i>${esc(p.c)}</i></span>`).join('')
+    + (peers.length > 12 ? `<span class="peers-more">……等共 ${peers.length} 位</span>` : '');
   const metaAnn = annotate(`${f.c} · ${f.r} · ${A.label}`);
   const bioAnn = annotate(BIOS[f.n] || '');
 
   $('#result').innerHTML = `
     <div class="card match-hero">
       <svg class="hero-ornament" viewBox="0 0 520 70" fill="none" aria-hidden="true">
-        <path d="M0 70 L60 30 L110 52 L170 20 L230 70 Z" fill="rgba(47,160,140,.12)"/>
-        <path d="M160 70 L230 38 L290 58 L360 26 L430 70 Z" fill="rgba(47,160,140,.18)"/>
-        <path d="M380 70 L440 44 L500 62 L520 50 L520 70 Z" fill="rgba(47,160,140,.10)"/>
-        <circle cx="470" cy="22" r="9" fill="rgba(47,160,140,.25)"/>
-        <path d="M40 18 q14 -12 28 0 q14 12 28 0" stroke="rgba(47,160,140,.30)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M0 70 L54 32 L104 52 L160 22 L214 70 Z" fill="rgba(154,120,70,.15)"/>
+        <path d="M150 70 L214 40 L274 58 L336 28 L398 70 Z" fill="rgba(184,147,74,.22)"/>
+        <path d="M356 70 L412 46 L466 62 L520 52 L520 70 Z" fill="rgba(154,120,70,.12)"/>
+        <circle cx="452" cy="20" r="8" fill="rgba(199,78,59,.65)"/>
+        <path d="M36 18 q13 -11 26 0 q13 11 26 0" stroke="rgba(184,147,74,.7)" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M256 14 q10 -9 20 0 q10 9 20 0" stroke="rgba(184,147,74,.5)" stroke-width="2" stroke-linecap="round"/>
       </svg>
 
       <div class="hero-split">
-        <!-- 左：全身像 · 立轴装裱 -->
         <figure class="scroll-frame">
+          <div class="speech">「${esc(f.q)}」</div>
           <div class="scroll-inner"><img id="figImg" alt="${esc(f.n)} 全身像"></div>
           <figcaption class="scroll-plate">
             <span class="sp-info">
@@ -2125,7 +2420,6 @@ function renderResult(R){
             <span class="sp-seal" aria-hidden="true">${esc(f.n[0])}</span>
           </figcaption>
         </figure>
-        <!-- 右：人物信息 -->
         <div class="hero-info">
           <h2 class="fig-name">${esc(f.n)}</h2>
           <p class="fig-meta">${metaAnn.html}</p>
@@ -2137,42 +2431,71 @@ function renderResult(R){
         </div>
       </div>
 
-      <blockquote class="quote-box">「${esc(f.q)}」<span class="qby">—— ${esc(f.n)} 留下的声音</span></blockquote>
-    </div>
-
-    <div class="section card reveal">
-      <div class="section-head"><span class="no">01</span><h3>人物自画像</h3></div>
-      <p class="section-note">你和 ${esc(f.n)} 相似的，不是经历和身份，而是<b>处理世界的方式</b>。</p>
-      <p class="prose">${A.self}</p>
-      <div class="bio-block">
+      <div class="hero-bio">
         <div class="bio-head">📖 人物小传 · 科普<span>认识一下这位与你相似的人，标「注」的词可点</span></div>
         <p class="bio-text">${bioAnn.html}</p>
       </div>
     </div>
 
-    <div class="section card reveal">
+    <div class="section reveal">
+      <div class="section-head"><span class="no">01</span><h3>人物自画像</h3></div>
+      <div class="card">
+        <p class="section-note">你和 ${esc(f.n)} 相似的，不是经历和身份，而是<b>处理世界的方式</b>。</p>
+        <p class="prose">${hl(A.self)}</p>
+      </div>
+    </div>
+
+    <div class="section reveal">
       <div class="section-head"><span class="no">02</span><h3>八维能力结构</h3></div>
-      <div class="section-note">八个维度的得分，构成你的能力轮廓${CHART_OK ? '（悬停或点按各端点可查看数值）' : ''}：</div>
-      <div class="radar-wrap"><canvas id="radarCanvas" role="img" aria-label="八维能力雷达图"></canvas></div>
-      <div class="dim-legend">${dimsHtml}</div>
+      <div class="card">
+        <p class="section-note">左图为<b>你的轮廓</b>（朱线），右图为 <b>TA · ${A.label} 的原型轨迹</b>（金线）——两相比照，同异自见${CHART_OK ? '（点按雷达端点可查看数值）' : ''}。</p>
+        <div class="chart-duo">
+          <div class="chart-cell">
+            <div class="chart-cap cap-you">你 的 轮 廓</div>
+            <div class="radar-wrap"><canvas id="radarCanvas" role="img" aria-label="你的八维雷达图"></canvas></div>
+          </div>
+          <div class="chart-cell">
+            <div class="chart-cap cap-ta">TA · ${A.label} 之 迹</div>
+            <div class="radar-wrap"><canvas id="radarCanvasTA" role="img" aria-label="TA 原型的八维雷达图"></canvas></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="section reveal">
       <div class="section-head"><span class="no">03</span><h3>你与 TA 的共同底色</h3></div>
-      <div class="grid3">${top3Html}</div>
+      <div class="grid3">
+        ${top3Html}
+        <div class="card mini-card cmp-card">
+          <h4><span class="rk">第四色 · 同与异</span>同与异</h4>
+          <div class="cmp-duo">
+            <div>
+              <div class="cmp-sec">最像的三处</div>
+              ${sameHtml}
+            </div>
+            <div>
+              <div class="cmp-sec warn">最大的不同</div>
+              ${diffHtml}
+              <p class="cmp-note">朱条为你的得分，金色刻度是 TA 的位置——重合即同频，错开即分野。</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="section card reveal">
+    <div class="section reveal">
       <div class="section-head"><span class="no">04</span><h3>现实中的你</h3></div>
-      <p class="prose">${A.real}</p>
+      <div class="card">
+        <p class="prose">${hl(A.real)}</p>
+      </div>
     </div>
 
     <div class="section reveal">
       <div class="section-head"><span class="no">05</span><h3>性格盲点与风险提醒</h3></div>
       <div class="grid3">
-        <div class="card mini-card"><h4>盲点</h4><p>${A.blind}</p></div>
-        <div class="card mini-card risk-card"><h4>风险 · ${R.top3[0].name}过度使用</h4><p>${DIM_RISK[R.top3[0].k]}</p></div>
-        <div class="card mini-card"><h4>建议</h4><p>${A.advice}</p></div>
+        <div class="card mini-card"><h4>盲点</h4><p>${hl(A.blind)}</p></div>
+        <div class="card mini-card risk-card"><h4>风险 · ${R.top3[0].name}过度使用</h4><p>${hl(DIM_RISK[R.top3[0].k])}</p></div>
+        <div class="card mini-card"><h4>建议</h4><p>${hl(A.advice)}</p></div>
       </div>
     </div>
 
@@ -2181,44 +2504,56 @@ function renderResult(R){
       <div class="grid3">${quotesHtml}</div>
     </div>
 
+    <div class="section reveal">
+      <div class="section-head"><span class="no">07</span><h3>同门群像</h3></div>
+      <div class="card mini-card">
+        <h4>气质同源，际遇各殊</h4>
+        <p>与你匹配的 ${esc(f.n)} 之外，档案库里还有 <b>${peers.length}</b> 位「${A.label}」——他们共享同一副原型底盘，却活出了各自的朝代与命运：</p>
+        <div class="peers">${peersHtml}</div>
+      </div>
+    </div>
+
+    <div class="section reveal">
+      <div class="section-head"><span class="no">08</span><h3>史官赞曰</h3></div>
+      <div class="card eulogy-card">
+        <span class="eul-lead">${eul.lead}</span>
+        <p class="eul-text">${escHtml(eul.body)}</p>
+        <span class="eul-seal" aria-hidden="true">赞</span>
+      </div>
+    </div>
+
     <div class="result-actions reveal">
       <button class="btn primary lg" id="btnSave">${IS_MOBILE ? '保存到手机相册' : '下载完整结果图'}</button>
       <button class="btn ghost lg" id="btnAgain">重新测试</button>
     </div>
   `;
 
-  // 全身像：优先本地 images/人物名.png（contain 完整呈现），缺失时以竖版立轴占位
   const img = $('#figImg');
   img.onerror = () => { img.onerror = null; img.src = portraitFallbackDataURL(f.n); };
   img.src = AVATAR_URL(f.n);
 
-  // 雷达图：Chart.js（或原生兜底）
-  setupRadarChart(R.scores);
-
-  // 顶部卡片稍等弹跳动画结束后「充能」（圆环描线 + 数字滚动）
+  setupRadarCharts(R.scores, vec, A.label);
   setTimeout(() => animateIn(document.querySelector('#result .match-hero')), REDUCED_MOTION ? 0 : 620);
-  // 下方板块随滚动渐显并充能
   observeReveals();
-  // 身份行与小传的词注
   bindGloss($('#result'));
 
   $('#btnSave').addEventListener('click', exportResult);
   $('#btnAgain').addEventListener('click', () => {
-    // 清理本轮作答数据；sq_used 保留——它的职责正是让下次抽到不重复的题
-    if (radarChart){ try{ radarChart.destroy(); }catch(e){} radarChart = null; }
+    radarCharts.forEach(c => { try{ c.destroy(); }catch(e){} });
+    radarCharts = [];
     if (revealIO){ revealIO.disconnect(); revealIO = null; }
     store.del(K_DRAWN); store.del(K_ANS); store.del(K_CUR); store.del(K_RESULT);
     state.answers = {}; state.current = 0; state.dir = 1; state.questions = []; state.result = null; state.pref = null;
     showStep('home');
-    toast('已重置。下一轮会从题库里抽你还没见过的题');
+    toast('已重置。下一轮会避开你最近见过的场景重新抽题');
   });
 }
 
 /* ================================================================
- * Canvas 长图导出（宽 1200，高度按内容动态计算，原生绘制）
- * 头部为「立轴装裱全身像（左）+ 人物信息（右）」分栏，与网页一致
+ * Canvas 长图导出
  * ================================================================ */
 const FONT = '"PingFang SC","Microsoft YaHei",sans-serif';
+const FONT_KAI = '"Kaiti SC","STKaiti","KaiTi","Songti SC","SimSun",serif';
 function rr(ctx, x, y, w, h, r){
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -2228,7 +2563,7 @@ function rr(ctx, x, y, w, h, r){
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
-function wrapLines(ctx, text, maxW){ // 中文按字符断行，自动换行
+function wrapLines(ctx, text, maxW){
   const lines = []; let line = '';
   for (const ch of text){
     if (ctx.measureText(line + ch).width > maxW && line){ lines.push(line); line = ch; }
@@ -2245,22 +2580,24 @@ function para(ctx, text, x, yTop, maxW, fontPx, lh, weight, color){
   for (const ln of lines){ ctx.fillText(ln, x, y); y += lh; }
   return yTop + lines.length * lh;
 }
+function leadSplit(text){
+  const m = String(text).match(HLRE);
+  return m ? [m[0], String(text).slice(m[0].length)] : ['', String(text)];
+}
 function canvasBlob(cv){
   return new Promise(res => { try { cv.toBlob(b => res(b), 'image/png'); } catch(e){ res(null); } });
 }
 
-/* 数值圆环（背景环 + 渐变前景弧） */
 function drawRingVal(ctx, cx, cy, r, pct, w){
   ctx.save(); ctx.lineCap = 'round';
-  ctx.lineWidth = w; ctx.strokeStyle = 'rgba(47,160,140,.15)';
+  ctx.lineWidth = w; ctx.strokeStyle = 'rgba(177,58,42,.14)';
   ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
   const g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
-  g.addColorStop(0, '#2FA08C'); g.addColorStop(1, '#7CC5B5');
+  g.addColorStop(0, '#B13A2A'); g.addColorStop(1, '#D8A85B');
   ctx.strokeStyle = g;
   ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct / 100); ctx.stroke();
   ctx.restore();
 }
-/* 居中标签胶囊行 */
 function drawChips(ctx, items, y){
   ctx.font = `600 23px ${FONT}`;
   const gaps = 18;
@@ -2269,11 +2606,11 @@ function drawChips(ctx, items, y){
   let x = (1200 - totalW) / 2;
   items.forEach((c, i) => {
     const w = ws[i];
-    if (c.strong){ ctx.fillStyle = '#2FA08C'; rr(ctx, x, y, w, 46, 23); ctx.fill(); ctx.fillStyle = '#fff'; }
+    if (c.strong){ ctx.fillStyle = '#B13A2A'; rr(ctx, x, y, w, 46, 23); ctx.fill(); ctx.fillStyle = '#FDF6E3'; }
     else{
-      ctx.fillStyle = '#fff'; rr(ctx, x, y, w, 46, 23); ctx.fill();
-      ctx.strokeStyle = '#2FA08C'; ctx.lineWidth = 2; rr(ctx, x, y, w, 46, 23); ctx.stroke();
-      ctx.fillStyle = '#2FA08C';
+      ctx.fillStyle = '#FDF9EE'; rr(ctx, x, y, w, 46, 23); ctx.fill();
+      ctx.strokeStyle = '#B13A2A'; ctx.lineWidth = 2; rr(ctx, x, y, w, 46, 23); ctx.stroke();
+      ctx.fillStyle = '#B13A2A';
     }
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(c.t, x + w / 2, y + 24);
@@ -2282,79 +2619,134 @@ function drawChips(ctx, items, y){
   ctx.textBaseline = 'alphabetic';
   return y + 46;
 }
+function drawCap(ctx, cx, y, text, you){
+  ctx.save();
+  ctx.font = `700 24px ${FONT_KAI}`;
+  const tw = ctx.measureText(text).width;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = you ? '#B13A2A' : '#B8934A';
+  ctx.lineWidth = 4;
+  if (!you) ctx.setLineDash([6, 5]);
+  ctx.beginPath(); ctx.moveTo(cx - tw / 2 - 40, y); ctx.lineTo(cx - tw / 2 - 12, y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + tw / 2 + 12, y); ctx.lineTo(cx + tw / 2 + 40, y); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = you ? '#8E2B21' : '#B8934A';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, cx, y + 1);
+  ctx.textBaseline = 'alphabetic';
+  ctx.restore();
+}
+function cmpTrack(ctx, x, y, w, u, a){
+  ctx.fillStyle = 'rgba(184,147,74,.18)';
+  rr(ctx, x, y, w, 12, 6); ctx.fill();
+  const g = ctx.createLinearGradient(x, 0, x + w, 0);
+  g.addColorStop(0, '#B13A2A'); g.addColorStop(1, '#C74E3B');
+  ctx.fillStyle = g;
+  rr(ctx, x, y, Math.max(12, w * u / 100), 12, 6); ctx.fill();
+  const tx = x + w * a / 100;
+  ctx.fillStyle = '#B8934A';
+  rr(ctx, tx - 2, y - 4, 4, 20, 2); ctx.fill();
+}
 
 function paintReport(ctx, H, R, av){
   const W = 1200, PAD = 70, CW = W - PAD * 2;
-  const f = R.figure, A = R.arch;
+  const f = R.figure, A = R.arch, vec = A.vec;
   const bioText = BIOS[f.n] || '';
-  // 浅青渐变背景（与网页一致）+ 两团极淡光斑
   const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#E9F5F0'); bg.addColorStop(.5, '#F4FAF7'); bg.addColorStop(1, '#E3F1EB');
+  bg.addColorStop(0, '#F5EDD8'); bg.addColorStop(.5, '#FAF5E7'); bg.addColorStop(1, '#EFE3C6');
   ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = 'rgba(47,160,140,.06)';
+  ctx.fillStyle = 'rgba(184,147,74,.07)';
   ctx.beginPath(); ctx.arc(120, 200, 300, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(1090, H - 260, 330, 0, Math.PI * 2); ctx.fill();
 
   const drawCard = (y, h) => {
     ctx.save();
-    ctx.shadowColor = 'rgba(38,110,95,.14)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 12;
-    ctx.fillStyle = 'rgba(255,255,255,.94)';
+    ctx.shadowColor = 'rgba(84,56,28,.16)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 12;
+    ctx.fillStyle = 'rgba(253,249,238,.95)';
     rr(ctx, PAD, y, CW, h, 24); ctx.fill();
     ctx.restore();
-    ctx.strokeStyle = 'rgba(47,160,140,.10)'; ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(184,147,74,.30)'; ctx.lineWidth = 1;
     rr(ctx, PAD, y, CW, h, 24); ctx.stroke();
+    ctx.save();
+    ctx.setLineDash([5, 6]);
+    ctx.strokeStyle = 'rgba(184,147,74,.32)'; ctx.lineWidth = 1;
+    rr(ctx, PAD + 7, y + 7, CW - 14, h - 14, 17); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = 'rgba(184,147,74,.62)';
+    [[PAD + 7, y + 7], [PAD + CW - 7, y + 7], [PAD + 7, y + h - 7], [PAD + CW - 7, y + h - 7]].forEach(([ax, ay]) => {
+      ctx.beginPath(); ctx.arc(ax, ay, 2.6, 0, Math.PI * 2); ctx.fill();
+    });
   };
-  const sectionTitle = (y, no, title) => {
+  const sec = (y, no, title, h) => {
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-    ctx.font = `800 34px ${FONT}`; ctx.fillStyle = 'rgba(47,160,140,.35)';
-    ctx.fillText(no, PAD + 44, y);
-    ctx.font = `700 32px ${FONT}`; ctx.fillStyle = '#1E4A42';
-    ctx.fillText(title, PAD + 44 + 62, y);
+    ctx.font = `800 30px ${FONT_KAI}`; ctx.fillStyle = 'rgba(184,147,74,.95)';
+    ctx.fillText(no, PAD + 46, y + 30);
+    ctx.font = `700 30px ${FONT_KAI}`; ctx.fillStyle = '#33241C';
+    ctx.fillText(title, PAD + 46 + 58, y + 30);
+    ctx.strokeStyle = 'rgba(184,147,74,.32)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(PAD + 46, y + 42); ctx.lineTo(PAD + CW - 46, y + 42); ctx.stroke();
+    const top = y + 58;
+    drawCard(top, h);
+    return top;
   };
 
-  /* —— 头部：标题 + 左右分栏（立轴全身像 / 人物信息） —— */
+  /* —— 头部卡片 —— */
   let y = 100;
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-  ctx.font = `700 24px ${FONT}`; ctx.fillStyle = '#2FA08C';
+  ctx.font = `700 24px ${FONT_KAI}`; ctx.fillStyle = '#8E2B21';
   ctx.fillText('前 世 人 物 志 · 匹 配 档 案', W / 2, y);
-  ctx.strokeStyle = 'rgba(47,160,140,.4)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(184,147,74,.55)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.moveTo(W / 2 - 210, y - 8); ctx.lineTo(W / 2 - 168, y - 8); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(W / 2 + 168, y - 8); ctx.lineTo(W / 2 + 210, y - 8); ctx.stroke();
 
   y += 34;
-  const frameW = 340, frameH = 460, headH = frameH + 64;
+  const frameW = 330, frameH = 500;
+  ctx.font = `400 24px ${FONT}`;
+  const bioLines = bioText ? wrapLines(ctx, bioText, CW - 88 - 52) : [];
+  const bioBoxH = bioLines.length ? 70 + bioLines.length * 40 : 0;
+  const headH = bioBoxH ? 32 + frameH + 24 + bioBoxH + 26 : 32 + frameH + 30;
   drawCard(y, headH);
   const fx = PAD + 44, fy = y + 32;
-  // 立轴装裱外框（双线）
-  ctx.strokeStyle = 'rgba(47,160,140,.38)'; ctx.lineWidth = 2;
-  rr(ctx, fx, fy, frameW, frameH, 10); ctx.stroke();
-  ctx.strokeStyle = 'rgba(47,160,140,.20)'; ctx.lineWidth = 1;
-  rr(ctx, fx + 7, fy + 7, frameW - 14, frameH - 14, 7); ctx.stroke();
-  // 画心：本地全身像（contain 完整呈现）或竖版立轴占位；底部留 56px 名牌区
-  const pxx = fx + 14, pyy = fy + 14, pww = frameW - 28, phh = frameH - 28 - 56;
+  rr(ctx, fx, fy, frameW, frameH, 8);
+  ctx.fillStyle = '#8E2B21'; ctx.fill();
+  ctx.save();
+  rr(ctx, fx, fy, frameW, frameH, 8); ctx.clip();
+  ctx.strokeStyle = 'rgba(216,190,133,.20)'; ctx.lineWidth = 1.2;
+  for (let d = -frameH; d < frameW + frameH; d += 9){
+    ctx.beginPath(); ctx.moveTo(fx + d, fy); ctx.lineTo(fx + d + frameH, fy + frameH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(fx + d, fy + frameH); ctx.lineTo(fx + d + frameH, fy); ctx.stroke();
+  }
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(216,190,133,.6)'; ctx.lineWidth = 1.5;
+  rr(ctx, fx + 7, fy + 7, frameW - 14, frameH - 14, 6); ctx.stroke();
+  const silkX = fx + 15, silkY = fy + 15, silkW = frameW - 30, silkH = frameH - 30;
+  const sg = ctx.createLinearGradient(silkX, silkY, silkX, silkY + silkH);
+  sg.addColorStop(0, '#FAF4E2'); sg.addColorStop(1, '#EFE4C6');
+  ctx.fillStyle = sg;
+  rr(ctx, silkX, silkY, silkW, silkH, 4); ctx.fill();
+  const pxx = silkX + 8, pyy = silkY + 8, pww = silkW - 16;
+  const phh = Math.round(pww * 4 / 3);
   if (av && av.ok){
     drawImageContain(ctx, av.img, pxx, pyy, pww, phh);
   }else{
     drawPortraitFallback(ctx, pxx, pyy, pww, phh, f.n);
   }
-  // 名牌：姓名 + 朝代
+  drawSpeechBubble(ctx, pxx, pyy, pww, phh, f.q);
   ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-  ctx.font = `700 26px ${FONT}`; ctx.fillStyle = '#1E4A42';
-  ctx.fillText(f.n, fx + 18, fy + frameH - 24);
+  ctx.font = `700 25px ${FONT_KAI}`; ctx.fillStyle = '#8E2B21';
+  ctx.fillText(f.n, silkX + 12, silkY + silkH - 22);
   ctx.textAlign = 'right';
-  ctx.font = `400 21px ${FONT}`; ctx.fillStyle = '#7E948D';
-  ctx.fillText(f.c, fx + frameW - 52, fy + frameH - 24);
-  // 名牌右侧姓氏小印章
-  drawSeal(ctx, fx + frameW - 32, fy + frameH - 32, 18, f.n);
+  ctx.font = `400 21px ${FONT}`; ctx.fillStyle = '#96826D';
+  ctx.fillText(f.c, silkX + silkW - 52, silkY + silkH - 22);
+  drawSeal(ctx, silkX + silkW - 28, silkY + silkH - 28, 17, f.n);
 
-  // 右区：姓名 / 朝代身份 / 匹配圆环
   const rx0 = fx + frameW + 56, rw0 = PAD + CW - rx0, rcx = rx0 + rw0 / 2;
   ctx.textAlign = 'center';
-  ctx.font = `800 54px ${FONT}`; ctx.fillStyle = '#1E4A42';
-  ctx.fillText(f.n, rcx, fy + 64);
-  ctx.font = `600 26px ${FONT}`; ctx.fillStyle = '#2FA08C';
-  ctx.fillText(`${f.c} · ${f.r} · ${A.label}`, rcx, fy + 112);
-  const ringC = fy + 248, ringRR = 100;
+  ctx.font = `700 54px ${FONT_KAI}`; ctx.fillStyle = '#33241C';
+  ctx.fillText(f.n, rcx, fy + 72);
+  ctx.font = `600 26px ${FONT}`; ctx.fillStyle = '#B13A2A';
+  ctx.fillText(`${f.c} · ${f.r} · ${A.label}`, rcx, fy + 120);
+  const ringC = fy + 262, ringRR = 100;
   drawRingVal(ctx, rcx, ringC, ringRR, R.sim, 16);
   ctx.font = `800 50px ${FONT}`;
   const numStr = String(R.sim);
@@ -2364,173 +2756,270 @@ function paintReport(ctx, H, R, av){
   const totalW = numW + 10 + pctW;
   const x0 = rcx - totalW / 2;
   ctx.textAlign = 'left';
-  ctx.font = `800 50px ${FONT}`; ctx.fillStyle = '#1E4A42';
+  ctx.font = `800 50px ${FONT}`; ctx.fillStyle = '#33241C';
   ctx.fillText(numStr, x0, ringC + 18);
-  ctx.font = `700 26px ${FONT}`; ctx.fillStyle = '#2FA08C';
+  ctx.font = `700 26px ${FONT}`; ctx.fillStyle = '#B13A2A';
   ctx.fillText('%', x0 + numW + 10, ringC + 18);
   ctx.textAlign = 'center';
-  ctx.font = `700 22px ${FONT}`; ctx.fillStyle = '#7E948D';
+  ctx.font = `700 22px ${FONT}`; ctx.fillStyle = '#96826D';
   ctx.fillText('匹 配 相 似 度', rcx, ringC + ringRR + 44);
+
+  if (bioLines.length){
+    const byy = fy + frameH + 24;
+    ctx.fillStyle = 'rgba(184,147,74,.08)';
+    rr(ctx, PAD + 44, byy, CW - 88, bioBoxH, 14); ctx.fill();
+    ctx.save(); ctx.setLineDash([6, 7]);
+    ctx.strokeStyle = 'rgba(184,147,74,.5)'; ctx.lineWidth = 1.5;
+    rr(ctx, PAD + 44, byy, CW - 88, bioBoxH, 14); ctx.stroke();
+    ctx.restore();
+    ctx.textAlign = 'left';
+    ctx.font = `800 25px ${FONT}`; ctx.fillStyle = '#8E2B21';
+    ctx.fillText('📖 人物小传 · 认识一下这位与你相似的人', PAD + 70, byy + 40);
+    para(ctx, bioText, PAD + 70, byy + 54, CW - 88 - 52, 24, 40, '400', '#6A5747');
+  }
   y += headH + 34;
 
-  // 标签胶囊（全宽居中）
   const chips = [...A.tags.map(t => ({ t, strong: true })), { t: `主导维度 · ${R.top3[0].name}`, strong: false }];
   y = drawChips(ctx, chips, y + 12) + 52;
 
-  // 台词引用卡
-  ctx.font = `600 30px ${FONT}`;
-  const qLines = wrapLines(ctx, `「${f.q}」`, CW - 130);
-  const qH = 56 + qLines.length * 52;
-  drawCard(y, qH);
-  ctx.fillStyle = '#2FA08C'; rr(ctx, PAD + 42, y + 34, 7, qH - 68, 4); ctx.fill();
-  ctx.textAlign = 'left'; ctx.fillStyle = '#1E4A42';
-  let qy = y + 56 + 30;
-  qLines.forEach(ln => { ctx.fillText(ln, PAD + 78, qy); qy += 52; });
-  ctx.textAlign = 'right'; ctx.font = `400 22px ${FONT}`; ctx.fillStyle = '#7E948D';
-  ctx.fillText(`—— ${f.n} 留下的声音`, PAD + CW - 44, y + qH - 30);
-  y += qH + 40;
-
-  /* —— 01 人物自画像 + 人物小传（附「像」字印章角标） —— */
-  ctx.font = `400 26px ${FONT}`;
-  const selfLines = wrapLines(ctx, A.self, CW - 88);
-  const noteLines = wrapLines(ctx, `你和 ${f.n} 相似的，不是经历和身份，而是处理世界的方式。`, CW - 88);
-  ctx.font = `400 24px ${FONT}`;
-  const bioLines = wrapLines(ctx, bioText, CW - 88);
-  const c1h = 96 + noteLines.length * 40 + 20 + selfLines.length * 46 + 44
-            + (bioLines.length ? 54 + bioLines.length * 42 : 0);
-  drawCard(y, c1h);
-  sectionTitle(y + 62, '01', '人物自画像');
-  let ty = para(ctx, `你和 ${f.n} 相似的，不是经历和身份，而是处理世界的方式。`, PAD + 44, y + 100, CW - 88, 25, 40, '600', '#2FA08C');
-  const selfEnd = para(ctx, A.self, PAD + 44, ty + 18, CW - 88, 26, 46, '400', '#1E4A42');
-  if (bioLines.length){
-    // 虚线分隔
-    ctx.save(); ctx.setLineDash([6, 7]);
-    ctx.strokeStyle = 'rgba(47,160,140,.30)'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(PAD + 44, selfEnd + 14); ctx.lineTo(PAD + CW - 44, selfEnd + 14); ctx.stroke();
-    ctx.restore();
-    ctx.textAlign = 'left';
-    ctx.font = `800 25px ${FONT}`; ctx.fillStyle = '#1F7A6A';
-    ctx.fillText('📖 人物小传', PAD + 44, selfEnd + 52);
-    para(ctx, bioText, PAD + 44, selfEnd + 66, CW - 88, 24, 42, '400', '#4F6E66');
+  /* —— 01 人物自画像 —— */
+  {
+    const note1 = `你和 ${f.n} 相似的，不是经历和身份，而是处理世界的方式。`;
+    ctx.font = `400 26px ${FONT}`;
+    const note1L = wrapLines(ctx, note1, CW - 88).length;
+    const [sh, sr] = leadSplit(A.self);
+    const shL = wrapLines(ctx, sh, CW - 88).length;
+    const srL = wrapLines(ctx, sr, CW - 88).length;
+    const h1 = 30 + note1L * 40 + 10 + (shL + srL) * 46 + 28;
+    const t1 = sec(y, '01', '人物自画像', h1);
+    const ty1 = para(ctx, note1, PAD + 44, t1 + 30, CW - 88, 25, 40, '600', '#8E2B21');
+    para(ctx, sh, PAD + 44, ty1 + 12, CW - 88, 26, 46, '700', '#8E2B21');
+    para(ctx, sr, PAD + 44, ty1 + 12 + shL * 46, CW - 88, 26, 46, '400', '#33241C');
+    ctx.save();
+    ctx.translate(PAD + CW - 92, t1 + h1 - 92); ctx.rotate(.06);
+    rr(ctx, -34, -34, 68, 68, 8);
+    ctx.strokeStyle = 'rgba(177,58,42,.45)'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.fillStyle = 'rgba(177,58,42,.45)';
+    ctx.font = `700 32px ${FONT_KAI}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('像', 0, 2);
+    ctx.restore(); ctx.textBaseline = 'alphabetic';
+    y = t1 + h1 + 46;
   }
-  ctx.save();
-  ctx.translate(PAD + CW - 92, y + c1h - 92); ctx.rotate(.06);
-  rr(ctx, -34, -34, 68, 68, 10);
-  ctx.strokeStyle = 'rgba(47,160,140,.55)'; ctx.lineWidth = 2.5; ctx.stroke();
-  ctx.fillStyle = 'rgba(47,160,140,.55)';
-  ctx.font = `700 32px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('像', 0, 2);
-  ctx.restore(); ctx.textBaseline = 'alphabetic';
-  y += c1h + 40;
 
-  /* —— 02 八维能力结构：雷达图（左）+ 紧凑条形（右） —— */
-  const c2h = 570;
-  drawCard(y, c2h);
-  sectionTitle(y + 62, '02', '八维能力结构');
-  paintNativeRadar(ctx, 360, y + 330, 155, R.scores, 24);
-  DIMS.forEach((d, i) => {
-    const ry = y + 142 + i * 54;
-    ctx.textAlign = 'left'; ctx.font = `700 25px ${FONT}`; ctx.fillStyle = '#1E4A42';
-    ctx.fillText(d.name, 620, ry + 9);
-    const tx = 700, tw = 300;
-    ctx.fillStyle = 'rgba(47,160,140,.14)'; rr(ctx, tx, ry - 8, tw, 16, 8); ctx.fill();
-    const fw = Math.max(16, tw * R.scores[d.k] / 100);
-    const g2 = ctx.createLinearGradient(tx, 0, tx + tw, 0);
-    g2.addColorStop(0, '#2FA08C'); g2.addColorStop(1, '#7CC5B5');
-    ctx.fillStyle = g2; rr(ctx, tx, ry - 8, fw, 16, 8); ctx.fill();
-    ctx.textAlign = 'right'; ctx.font = `800 26px ${FONT}`; ctx.fillStyle = '#2FA08C';
-    ctx.fillText(String(R.scores[d.k]), 1086, ry + 10);
-  });
-  y += c2h + 40;
+  /* —— 02 双雷达 —— */
+  {
+    const note2 = `左图为你的轮廓（朱线），右图为 TA · ${A.label} 的原型轨迹（金线）——两相比照，同异自见。`;
+    ctx.font = `400 24px ${FONT}`;
+    const note2L = wrapLines(ctx, note2, CW - 88).length;
+    const h2 = 42 + note2L * 38 + 560;
+    const t2 = sec(y, '02', '八维能力结构', h2);
+    para(ctx, note2, PAD + 44, t2 + 28, CW - 88, 23, 38, '400', '#6A5747');
+    const capY = t2 + 28 + note2L * 38 + 34;
+    drawCap(ctx, 330, capY, '你 的 轮 廓', true);
+    drawCap(ctx, 872, capY, `TA · ${A.label} 之 迹`, false);
+    paintNativeRadar(ctx, 330, capY + 318, 146, DIMS.map(d => R.scores[d.k]), 21, 'you');
+    paintNativeRadar(ctx, 872, capY + 318, 146, vec, 21, 'ta');
+    y = t2 + h2 + 46;
+  }
 
-  /* —— 03 共同底色：小圆环 + 解读 —— */
-  const d3 = R.top3.map(t => ({ ...t, desc: DIMS.find(x => x.k === t.k).desc }));
-  ctx.font = `400 24px ${FONT}`;
-  const d3Lines = d3.map(x => wrapLines(ctx, x.desc, CW - 88));
-  const c3h = 96 + 30 + d3.reduce((s, x, i) => s + 84 + d3Lines[i].length * 42 + 30, 0) + 20;
-  drawCard(y, c3h);
-  sectionTitle(y + 62, '03', '你与 TA 的共同底色');
-  let sy = y + 132;
-  d3.forEach((x, i) => {
-    drawRingVal(ctx, PAD + 44 + 30, sy + 40, 30, x.v, 10);
-    ctx.textAlign = 'left'; ctx.font = `700 26px ${FONT}`; ctx.fillStyle = '#2FA08C';
-    ctx.fillText(`${RANK_TITLES[i]} · ${x.name} ${x.v}`, PAD + 44 + 82, sy + 50);
-    sy = para(ctx, x.desc, PAD + 44, sy + 84, CW - 88, 24, 42, '400', '#4F6E66');
-    sy += 30;
-  });
-  y += c3h + 40;
+  /* —— 03 共同底色（三段 + 第四段「同与异」） —— */
+  {
+    const d3 = R.top3.map(t => ({ ...t, desc: DIMS.find(x => x.k === t.k).desc }));
+    const splits = d3.map(x => leadSplit(x.desc));
+    ctx.font = `400 24px ${FONT}`;
+    const Ls = splits.map(([a, b]) => wrapLines(ctx, a, CW - 88).length + wrapLines(ctx, b, CW - 88).length);
+    const gaps2 = DIMS.map((d, i) => ({ name:d.name, u:R.scores[d.k], a:vec[i], gap:Math.abs(R.scores[d.k] - vec[i]) }));
+    const same2 = gaps2.slice().sort((x, yy) => x.gap - yy.gap).slice(0, 3);
+    const diff2 = gaps2.slice().sort((x, yy) => yy.gap - x.gap).slice(0, 2);
+    const cmpPartH = 54 + 3 * 64 + 34;
+    const h3 = 26 + d3.reduce((s, x, i) => s + 78 + Ls[i] * 42 + 26, 0) + 20 + cmpPartH + 10;
+    const t3 = sec(y, '03', '你与 TA 的共同底色', h3);
+    let sy = t3 + 26;
+    d3.forEach((x, i) => {
+      drawRingVal(ctx, PAD + 44 + 30, sy + 40, 30, x.v, 10);
+      ctx.textAlign = 'left'; ctx.font = `700 26px ${FONT}`; ctx.fillStyle = '#B13A2A';
+      ctx.fillText(`${RANK_TITLES[i]} · ${x.name} ${x.v}`, PAD + 44 + 82, sy + 50);
+      const [la, lb] = splits[i];
+      const laL = wrapLines(ctx, la, CW - 88).length;
+      para(ctx, la, PAD + 44, sy + 78, CW - 88, 24, 42, '700', '#8E2B21');
+      para(ctx, lb, PAD + 44, sy + 78 + laL * 42, CW - 88, 24, 42, '400', '#6A5747');
+      sy += 78 + Ls[i] * 42 + 26;
+    });
+    const colGap = 44;
+    const colW = (CW - 88 - colGap) / 2;
+    const xL = PAD + 44, xR = xL + colW + colGap;
+    ctx.font = `700 24px ${FONT_KAI}`; ctx.fillStyle = '#8E2B21';
+    ctx.fillText('同与异 · 最像的三处', xL, sy + 18);
+    ctx.fillStyle = '#96552D';
+    ctx.fillText('同与异 · 最大的不同', xR, sy + 18);
+    const rowY = sy + 30;
+    same2.forEach((x, i) => {
+      const yy = rowY + i * 64;
+      ctx.textAlign = 'left';
+      ctx.font = `700 22px ${FONT_KAI}`; ctx.fillStyle = '#8E2B21';
+      ctx.fillText(x.name, xL, yy + 4);
+      ctx.font = `600 20px ${FONT}`; ctx.fillStyle = '#33241C';
+      ctx.fillText(`你 ${x.u} · TA ${x.a} —— 仅差 ${x.gap} 分`, xL + 62, yy + 4);
+      cmpTrack(ctx, xL, yy + 14, colW - 10, x.u, x.a);
+    });
+    diff2.forEach((x, i) => {
+      const yy = rowY + i * 64;
+      ctx.textAlign = 'left';
+      ctx.font = `700 22px ${FONT_KAI}`; ctx.fillStyle = '#96552D';
+      ctx.fillText(x.name, xR, yy + 4);
+      ctx.font = `600 20px ${FONT}`; ctx.fillStyle = '#33241C';
+      ctx.fillText(`你 ${x.u} · TA ${x.a} —— 相差 ${x.gap} 分`, xR + 62, yy + 4);
+      cmpTrack(ctx, xR, yy + 14, colW - 10, x.u, x.a);
+    });
+    ctx.font = `400 20px ${FONT}`; ctx.fillStyle = '#96826D'; ctx.textAlign = 'left';
+    ctx.fillText('朱条为你的得分，金色刻度是 TA 的位置——重合即同频，错开即分野。', xL, rowY + 3 * 64 + 12);
+    y = t3 + h3 + 46;
+  }
 
   /* —— 04 现实中的你 —— */
-  ctx.font = `400 26px ${FONT}`;
-  const realLines = wrapLines(ctx, A.real, CW - 88);
-  const c4h = 96 + realLines.length * 46 + 44;
-  drawCard(y, c4h);
-  sectionTitle(y + 62, '04', '现实中的你');
-  para(ctx, A.real, PAD + 44, y + 100, CW - 88, 26, 46, '400', '#1E4A42');
-  y += c4h + 40;
+  {
+    const [rh, rr2] = leadSplit(A.real);
+    ctx.font = `400 26px ${FONT}`;
+    const L4 = wrapLines(ctx, rh, CW - 88).length + wrapLines(ctx, rr2, CW - 88).length;
+    const h4 = 30 + L4 * 46 + 28;
+    const t4 = sec(y, '04', '现实中的你', h4);
+    const rL = wrapLines(ctx, rh, CW - 88).length;
+    para(ctx, rh, PAD + 44, t4 + 30, CW - 88, 26, 46, '700', '#8E2B21');
+    para(ctx, rr2, PAD + 44, t4 + 30 + rL * 46, CW - 88, 26, 46, '400', '#33241C');
+    y = t4 + h4 + 46;
+  }
 
   /* —— 05 盲点 / 风险 / 建议 —— */
-  const items = [
-    ['盲点', A.blind, '#2FA08C'],
-    [`风险 · ${R.top3[0].name}过度使用`, DIM_RISK[R.top3[0].k], '#C0563F'],
-    ['建议', A.advice, '#2FA08C'],
-  ];
-  ctx.font = `400 24px ${FONT}`;
-  const iLines = items.map(x => wrapLines(ctx, x[1], CW - 88));
-  const c5h = 96 + items.reduce((s, x, i) => s + 44 + iLines[i].length * 42 + 30, 0) + 20;
-  drawCard(y, c5h);
-  sectionTitle(y + 62, '05', '性格盲点与风险提醒');
-  let iy = y + 126;
-  items.forEach((x, i) => {
-    ctx.textAlign = 'left'; ctx.font = `700 26px ${FONT}`; ctx.fillStyle = x[2];
-    ctx.fillText(x[0], PAD + 44, iy + 22);
-    iy = para(ctx, x[1], PAD + 44, iy + 40, CW - 88, 24, 42, '400', '#4F6E66');
-    iy += 30;
-  });
-  y += c5h + 40;
+  {
+    const items = [
+      ['盲点', A.blind, '#8E2B21'],
+      [`风险 · ${R.top3[0].name}过度使用`, DIM_RISK[R.top3[0].k], '#96552D'],
+      ['建议', A.advice, '#8E2B21'],
+    ];
+    const splits = items.map(x => leadSplit(x[1]));
+    ctx.font = `400 24px ${FONT}`;
+    const Ls = splits.map(([a, b]) => wrapLines(ctx, a, CW - 88).length + wrapLines(ctx, b, CW - 88).length);
+    const h5 = 26 + items.reduce((s, x, i) => s + 46 + Ls[i] * 42 + 26, 0) + 20;
+    const t5 = sec(y, '05', '性格盲点与风险提醒', h5);
+    let iy = t5 + 26;
+    items.forEach((x, i) => {
+      ctx.textAlign = 'left'; ctx.font = `700 26px ${FONT}`; ctx.fillStyle = x[2];
+      ctx.fillText(x[0], PAD + 44, iy + 22);
+      const [la, lb] = splits[i];
+      const laL = wrapLines(ctx, la, CW - 88).length;
+      para(ctx, la, PAD + 44, iy + 40, CW - 88, 24, 42, '700', '#8E2B21');
+      para(ctx, lb, PAD + 44, iy + 40 + laL * 42, CW - 88, 24, 42, '400', '#6A5747');
+      iy += 46 + Ls[i] * 42 + 26;
+    });
+    y = t5 + h5 + 46;
+  }
 
-  /* —— 06 三句台词（居中排布 + 角标引号，与页面卡片同款） —— */
-  ctx.font = `700 28px ${FONT}`;
-  const tLines = R.quotes.map(q => wrapLines(ctx, `「${q.t}」`, CW - 160));
-  const strides = tLines.map(l => (l.length - 1) * 50 + 134); // 每段台词占位（含段间距）
-  const c6h = 128 + strides.reduce((a, b) => a + b, 0) - 14;
-  drawCard(y, c6h);
-  sectionTitle(y + 62, '06', '你的三句人物台词');
-  let qy3 = y + 128;
-  R.quotes.forEach((q, i) => {
-    // 左上角装饰引号（浅色水印，与网页卡片同款）
-    ctx.textAlign = 'left';
-    ctx.font = `400 42px ${FONT}`;
-    ctx.fillStyle = 'rgba(47,160,140,.20)';
-    ctx.fillText('「', PAD + 50, qy3 + 8);
-    // 台词居中
+  /* —— 06 三句台词 —— */
+  {
+    ctx.font = `700 28px ${FONT_KAI}`;
+    const tLines = R.quotes.map(q => wrapLines(ctx, `「${q.t}」`, CW - 160));
+    const strides = tLines.map(l => (l.length - 1) * 50 + 134);
+    const h6 = 76 + strides.reduce((a, b) => a + b, 0) - 14 + 24;
+    const t6 = sec(y, '06', '你的三句人物台词', h6);
+    let qy3 = t6 + 78;
+    R.quotes.forEach((q, i) => {
+      ctx.textAlign = 'left';
+      ctx.font = `400 42px ${FONT_KAI}`;
+      ctx.fillStyle = 'rgba(177,58,42,.24)';
+      ctx.fillText('「', PAD + 50, qy3 + 8);
+      ctx.textAlign = 'center';
+      ctx.font = `700 28px ${FONT_KAI}`; ctx.fillStyle = '#33241C';
+      let base = qy3 + 38;
+      tLines[i].forEach(ln => { ctx.fillText(ln, W / 2, base); base += 50; });
+      base -= 50;
+      ctx.fillStyle = 'rgba(184,147,74,.55)';
+      rr(ctx, W / 2 - 15, base + 16, 30, 3, 2); ctx.fill();
+      ctx.font = `400 22px ${FONT}`; ctx.fillStyle = '#96826D';
+      ctx.fillText(q.by, W / 2, base + 54);
+      qy3 += strides[i];
+    });
+    y = t6 + h6 + 46;
+  }
+
+  /* —— 07 同门群像 —— */
+  {
+    const peers = FIGURES.filter(x => x.a === f.a && x.n !== f.n);
+    const intro = `与你匹配的 ${f.n} 之外，档案库里还有 ${peers.length} 位「${A.label}」——他们共享同一副原型底盘，却活出了各自的朝代与命运：`;
+    ctx.font = `400 24px ${FONT}`;
+    const introL = wrapLines(ctx, intro, CW - 88).length;
+    const show = peers.slice(0, 12);
+    ctx.font = `700 21px ${FONT}`;
+    const chipGap = 14, chipH = 44;
+    const labels = show.map(p => `${p.n} · ${p.c}`);
+    const cws = labels.map(l => ctx.measureText(l).width + 34);
+    const more = peers.length > 12 ? `……等共 ${peers.length} 位` : '';
+    const moreW = more ? ctx.measureText(more).width + 10 : 0;
+    const rows = [];
+    let cur = [], curW = 0;
+    const maxRowW = CW - 88;
+    cws.forEach((w, i) => {
+      if (curW + w > maxRowW && cur.length){ rows.push(cur); cur = []; curW = 0; }
+      cur.push(i); curW += w + chipGap;
+    });
+    if (more && curW + moreW > maxRowW && cur.length){ rows.push(cur); cur = []; curW = 0; }
+    if (cur.length || more) rows.push(cur);
+    const h7 = 30 + introL * 38 + 20 + rows.length * (chipH + 12) + 22;
+    const t7 = sec(y, '07', '同门群像', h7);
+    para(ctx, intro, PAD + 44, t7 + 28, CW - 88, 23, 38, '400', '#6A5747');
+    let cx = PAD + 44, cy = t7 + 28 + introL * 38 + 24;
+    rows.forEach((row, ri) => {
+      row.forEach(i => {
+        const w = cws[i];
+        ctx.fillStyle = 'rgba(177,58,42,.06)';
+        rr(ctx, cx, cy, w, chipH, chipH / 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(177,58,42,.35)'; ctx.lineWidth = 1.2;
+        rr(ctx, cx, cy, w, chipH, chipH / 2); ctx.stroke();
+        ctx.fillStyle = '#8E2B21'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = `700 21px ${FONT}`;
+        ctx.fillText(labels[i], cx + w / 2, cy + chipH / 2 + 1);
+        cx += w + chipGap;
+      });
+      if (ri === rows.length - 1 && more){
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.font = `400 20px ${FONT}`; ctx.fillStyle = '#96826D';
+        ctx.fillText(more, cx + 6, cy + chipH / 2 + 1);
+      }
+      ctx.textBaseline = 'alphabetic';
+      cx = PAD + 44; cy += chipH + 12;
+    });
+    y = t7 + h7 + 46;
+  }
+
+  /* —— 08 史官赞曰 —— */
+  {
+    const eul = buildEulogy(R);
+    ctx.font = `400 25px ${FONT_KAI}`;
+    const bodyL = wrapLines(ctx, eul.body, CW - 240).length;
+    const h8 = 30 + 44 + 12 + bodyL * 44 + 76 + 24;
+    const t8 = sec(y, '08', '史官赞曰', h8);
     ctx.textAlign = 'center';
-    ctx.font = `700 28px ${FONT}`; ctx.fillStyle = '#1E4A42';
-    let base = qy3 + 38;
-    tLines[i].forEach(ln => { ctx.fillText(ln, W / 2, base); base += 50; });
-    base -= 50; // 最后一行基线
-    // 居中小分隔线 + 居中落款
-    ctx.fillStyle = 'rgba(47,160,140,.32)';
-    rr(ctx, W / 2 - 15, base + 16, 30, 3, 2); ctx.fill();
-    ctx.font = `400 22px ${FONT}`; ctx.fillStyle = '#7E948D';
-    ctx.fillText(q.by, W / 2, base + 54);
-    qy3 += strides[i];
-  });
-  y += c6h + 40;
+    ctx.font = `700 26px ${FONT_KAI}`; ctx.fillStyle = '#B13A2A';
+    ctx.fillText('赞　曰', W / 2, t8 + 48);
+    ctx.font = `400 25px ${FONT_KAI}`; ctx.fillStyle = '#33241C';
+    let ey = t8 + 48 + 32;
+    wrapLines(ctx, eul.body, CW - 240).forEach(ln => { ctx.fillText(ln, W / 2, ey); ey += 44; });
+    drawSeal(ctx, W / 2, ey + 26, 24, '赞');
+    y = t8 + h8 + 46;
+  }
 
-  /* —— 页脚：波浪装饰 + 落款 —— */
+  /* —— 页脚 —— */
   for (let k = 0; k < 3; k++){
     ctx.beginPath();
     ctx.moveTo(W / 2 - 150, y + k * 13);
     ctx.bezierCurveTo(W / 2 - 80, y + k * 13 - 10, W / 2 + 80, y + k * 13 + 10, W / 2 + 150, y + k * 13);
-    ctx.strokeStyle = `rgba(47,160,140,${(.26 - k * .07).toFixed(2)})`;
+    ctx.strokeStyle = `rgba(184,147,74,${(.32 - k * .09).toFixed(2)})`;
     ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
   }
   y += 76;
-  ctx.textAlign = 'center'; ctx.font = `700 24px ${FONT}`; ctx.fillStyle = '#7E948D';
+  ctx.textAlign = 'center'; ctx.font = `700 24px ${FONT_KAI}`; ctx.fillStyle = '#96826D';
   ctx.fillText('前世人物志 · 你像哪位历史人物', W / 2, y);
   y += 38;
-  ctx.font = `400 21px ${FONT}`; ctx.fillStyle = '#8FA69F';
+  ctx.font = `400 21px ${FONT}`; ctx.fillStyle = '#A08B6F';
   ctx.fillText('相似的是处理世界的方式，而非经历与命运', W / 2, y);
   y += 34;
   ctx.fillText(`生成于 ${new Date().toLocaleDateString('zh-CN')}`, W / 2, y);
@@ -2543,9 +3032,8 @@ async function exportResult(){
   if (!R){ toast('还没生成档案呢'); return; }
   toast('正在绘制结果长图…', 2200);
   const av = await loadAvatar(R.figure.n);
-  // 两遍绘制：先按预估高度试画取得真实高度，再以精确高度重画并裁剪
   const build = avv => {
-    let H = 8200;
+    let H = 9000;
     let probe = document.createElement('canvas'); probe.width = 1200; probe.height = H;
     let end = paintReport(probe.getContext('2d'), H, R, avv);
     if (end + 40 > H){
@@ -2561,7 +3049,6 @@ async function exportResult(){
   let cv = build(av);
   let blob = await canvasBlob(cv);
   if (!blob){
-    // 画布可能被本地文件协议污染：退回立轴占位重画一遍
     cv = build({ ok: false });
     blob = await canvasBlob(cv);
   }
@@ -2569,14 +3056,12 @@ async function exportResult(){
   const file = new File([blob], '前世人物志.png', { type: 'image/png' });
 
   if (IS_MOBILE){
-    // 移动端：优先系统分享（File 对象）
     if (navigator.canShare && navigator.canShare({ files: [file] })){
       try{
         await navigator.share({ files: [file], title: '前世人物志', text: '我像哪位历史人物？' });
         return;
       }catch(e){
-        if (e && e.name === 'AbortError') return; // 用户主动取消
-        // 分享失败则落入下方的长按保存兜底
+        if (e && e.name === 'AbortError') return;
       }
     }
     const url = URL.createObjectURL(blob);
@@ -2585,7 +3070,6 @@ async function exportResult(){
     img.src = url;
     $('#shareModal').hidden = false;
   }else{
-    // 桌面端：直接触发下载
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = '前世人物志.png';
@@ -2607,21 +3091,17 @@ async function exportResult(){
   console.assert(BANK.filter(q => q.cat === 'dec').length === 500 && BANK.filter(q => q.cat === 'int').length === 500,
     `[题库] 决策/人际应各 500 题`);
   console.assert(BANK.every(q => q.opts.length === 4), `[题库] 每题应恰有 4 个选项`);
-  // 100 个场景各有独立选项组（组合签名互不相同、互不共用）
   const optGroups = new Set([...DEC_SCENES, ...INT_SCENES].map(s => s.o.map(o => o.t).join('‖')));
   console.assert(optGroups.size === 100, `[题库] 100 个场景应各有独立选项组，实际 ${optGroups.size}`);
   const decDimOk = DEC_SCENES.every(s => new Set(s.o.map(o => o.d)).size === 4 && s.o.every(o => ['dec','emp','pio','ins'].includes(o.d)));
   const intDimOk = INT_SCENES.every(s => new Set(s.o.map(o => o.d)).size === 4 && s.o.every(o => ['exp','man','ind','dut'].includes(o.d)));
   console.assert(decDimOk && intDimOk, `[题库] 场景选项的维度映射应完整正确`);
-  // 8 维均被题库覆盖
   const covered = new Set(BANK.flatMap(q => q.opts.map(o => o.d)));
   console.assert(covered.size === 8, `[维度] 题库应覆盖全部 8 个维度，实际 ${covered.size}`);
-  // 基准题完整性
   console.assert(BASE_QUESTIONS.length === 24, `[基准题] 应为 24 题，实际 ${BASE_QUESTIONS.length}`);
   const baseCovered = new Set(BASE_QUESTIONS.flatMap(q => q.opts.map(o => o.d)));
   console.assert(baseCovered.size === 8, `[基准题] 应覆盖全部 8 维，实际 ${baseCovered.size}`);
   console.assert(BASE_QUESTIONS.every(q => q.opts.length === 4 && q.ch && q.t), `[基准题] 结构应完整`);
-  // 人物库：116 人（男 58 / 女 58），原型有效
   const males = FIGURES.filter(x => x.g === 'm').length;
   const females = FIGURES.filter(x => x.g === 'f').length;
   console.assert(FIGURES.length === 116, `[人物库] 应共 116 人，实际 ${FIGURES.length}`);
@@ -2629,30 +3109,53 @@ async function exportResult(){
   console.assert(females === 58, `[人物库] 女性应 58 人，实际 ${females}`);
   console.assert(FIGURES.every(x => ARCHETYPES[x.a] && x.n && x.c && x.r && x.q && x.g),
     `[人物库] 每人应具备姓名/性别/朝代/身份/有效原型/台词`);
-  // 人物小传：116 位人物全员配齐
-  const noBio = FIGURES.filter(x => !BIOS[x.n] || BIOS[x.n].length < 20).map(x => x.n);
-  console.assert(noBio.length === 0, `[人物小传] 每位人物都应配科普小传，缺失：${noBio.join('、')}`);
+  const noBio = FIGURES.filter(x => !BIOS[x.n] || BIOS[x.n].length < 60).map(x => x.n);
+  console.assert(noBio.length === 0, `[人物小传] 每位人物都应配详细科普小传（≥60字），缺失/过短：${noBio.join('、')}`);
+  console.assert(DIMS.every(d => EUL[d.k] && EUL[d.k].length === 2), `[赞曰] 八维赞语短语应齐备`);
   console.assert(Object.keys(ARCHETYPES).length === 10, `[原型] 应为 10 种，实际 ${Object.keys(ARCHETYPES).length}`);
   console.assert(Object.values(ARCHETYPES).every(a =>
     a.vec.length === 8 && a.vec.every(v => v >= 0 && v <= 100) && a.label && a.tags.length >= 3 &&
     a.self && a.blind && a.real && a.advice && a.quotes.length >= 2),
     `[原型] 向量与文案应完整`);
-  // 每种原型在人物库中至少有一人（保证任何匹配都有归属）
   console.assert(Object.keys(ARCHETYPES).every(k => FIGURES.some(x => x.a === k)),
     `[原型] 每种原型应至少对应一位人物`);
-  // 词注：每个词条应至少出现在题库文本或人物资料/小传中（无死词条）
   const allQText = BANK.map(q => q.stem + q.opts.map(o => o.t).join('')).join('');
   const allFigText = FIGURES.map(x => x.c + x.r + (BIOS[x.n] || '')).join('');
   console.assert(GLOSS_KEYS.every(k => allQText.includes(k) || allFigText.includes(k)),
     `[词注] 每个词条应至少出现在题库或人物资料/小传中，死词条：` +
     GLOSS_KEYS.filter(k => !allQText.includes(k) && !allFigText.includes(k)).join('、'));
+
+  /* 【新增】抽题引擎 v2 的防重性质自检（模拟抽题验证） */
+  (function selfCheckDraw(){
+    const simUsed = new Set(), simScenes = [];
+    let roundFail = 0, sceneFail = 0, dupFail = 0;
+    for (let round = 0; round < 6; round++){          /* 模拟连测 6 轮 */
+      const usedIds = new Set(simUsed);
+      const recent = new Set(simScenes.slice(-48));
+      const dec = pickFromScenes('dec', 12, usedIds, recent);
+      const int = pickFromScenes('int', 12, usedIds, recent);
+      const picked = [...dec, ...int];
+      /* 单轮 24 题题号唯一 */
+      if (new Set(picked).size !== 24) roundFail++;
+      /* 单轮 24 题场景互不相同 */
+      const scs = picked.map(sceneOf);
+      if (new Set(scs).size !== 24) sceneFail++;
+      /* 题号级绝不与历史重复 */
+      if (picked.some(qid => simUsed.has(qid))) dupFail++;
+      picked.forEach(qid => simUsed.add(qid));
+      simScenes.push(...picked.map(sceneOf));
+    }
+    console.assert(roundFail === 0, `[抽题v2] 连测6轮每轮24题应无重复题号，失败轮数 ${roundFail}`);
+    console.assert(sceneFail === 0, `[抽题v2] 每轮内同一场景不应以不同问法重复出现，失败轮数 ${sceneFail}`);
+    console.assert(dupFail === 0, `[抽题v2] 六轮共144题应绝不出现同一道题，失败次数 ${dupFail}`);
+  })();
+
   console.log('%c前世人物志 · 数据自检完成（如有 false 断言请检查上方输出）',
-    'color:#2FA08C;font-weight:bold');
+    'color:#B13A2A;font-weight:bold');
   console.log(`%c雷达图渲染器：${CHART_OK ? 'Chart.js ' + (window.Chart && Chart.version || '') : '原生 Canvas（Chart.js 未加载，已自动兜底）'} · 人物库 ${FIGURES.length} 人（男 58 / 女 58） · 词注词条 ${GLOSS_KEYS.length} 条`,
-    'color:#2FA08C');
+    'color:#B13A2A');
 })();
 
-/* ---------------- 初始化：偏好恢复 ---------------- */
 (function restorePref(){
   const p = store.get(K_PREF, null);
   if (p === 'f' || p === 'm' || p === 'any') state.pref = p;
