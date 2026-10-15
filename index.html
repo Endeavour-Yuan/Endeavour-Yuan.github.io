@@ -1,473 +1,663 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  
-  <meta name="renderer" content="webkit">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="http://example.com">
-  <title>Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:locale" content="en_US">
-<meta property="article:author" content="John Doe">
-<meta name="twitter:card" content="summary">
-  
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  <link rel="stylesheet" type="text/css" href="/./main.0cf68a.css">
-  <style type="text/css">
-  
-    #container.show {
-      background: linear-gradient(200deg,#a0cfe4,#e8c37e);
-    }
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="theme-color" content="#E8E4F2">
+  <title>前世人物志｜你像哪位历史人物</title>
+  <style>
+    :root{--ink:#2D2458;--muted:#8880B0;--primary:#6B5DB8;--accent:#7B68C8;--bg:#E8E4F2;--line:#DDD8EE;--paper:rgba(255,255,255,.9);--soft:#F7F4FD;--shadow:0 4px 20px rgba(107,93,184,.1)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;background:linear-gradient(145deg,#E8E4F2,#EFEAF7 55%,#E4DFEF);color:var(--ink);font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+    button,input{font:inherit}
+    button{color:inherit}
+    h1,h2,p{margin-top:0}
+    .shell{width:100%;max-width:680px;margin:auto;padding:20px 16px 56px}
+    .hidden{display:none!important}
+    .card,.q-header,.q-body,.top-card,.report-section{background:var(--paper);box-shadow:var(--shadow);border:1px solid rgba(107,93,184,.08)}
+    .card{border-radius:24px;padding:24px 22px;margin-bottom:18px}
+    .icon-box{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--primary));display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;margin:14px auto 16px;box-shadow:0 8px 28px rgba(107,93,184,.35)}
+    .hero-title{font-size:26px;font-weight:900;text-align:center;line-height:1.35;margin-bottom:7px}
+    .hero-title em{font-style:normal;color:var(--primary)}
+    .hero-sub{font-size:12px;color:#9180CC;letter-spacing:3px;font-weight:700;text-align:center;margin-bottom:22px}
+    .lead{font-size:14px;color:#615985;line-height:1.8;text-align:center;margin-bottom:20px}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 18px}
+    .stat{background:rgba(255,255,255,.86);border-radius:18px;padding:15px 10px;text-align:center;box-shadow:0 2px 14px rgba(107,93,184,.08);color:#756D9E;font-size:12px}
+    .stat b{display:block;font-size:18px;color:var(--primary);margin-bottom:3px}
+    .info-box{background:rgba(255,255,255,.65);border-left:3px solid var(--primary);border-radius:14px;padding:13px 16px;color:#5D5682;font-size:13px;line-height:1.7;margin-bottom:18px}
+    .eyebrow{font-size:13px;color:var(--primary);font-weight:800;letter-spacing:.08em;margin-bottom:8px}
+    .hint{font-size:13px;color:var(--muted);line-height:1.7}
+    .btn{border:none;border-radius:16px;padding:15px 20px;cursor:pointer;font-weight:800;transition:.15s transform,.15s box-shadow,.15s background}
+    .btn:hover{transform:translateY(-2px)}
+    .btn:focus-visible,.choice:focus-visible,.nav-btn:focus-visible{outline:3px solid rgba(123,104,200,.22);outline-offset:3px}
+    .primary{width:100%;background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;box-shadow:0 8px 24px rgba(107,93,184,.35);font-size:17px;letter-spacing:1px}
+    .ghost{width:100%;background:rgba(255,255,255,.85);border:2px solid var(--line);color:#5A5190}
+    .intro-actions{display:grid;gap:10px}
+    .preference h2{font-size:22px;line-height:1.45;margin-bottom:8px}
+    .choices{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+    .choice{width:100%;border:2px solid #E2DCF5;border-radius:16px;background:var(--soft);padding:16px 18px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.16s all}
+    .choice:hover{border-color:var(--accent);background:rgba(123,104,200,.06);transform:translateX(3px)}
+    .choice.selected{border-color:var(--accent);background:rgba(123,104,200,.1);color:var(--primary);box-shadow:0 0 0 3px rgba(123,104,200,.08)}
+    .choice .letter{width:22px;flex:0 0 22px;color:var(--accent);font-size:18px;font-weight:900;text-align:center}
+    .answer .letter{font-size:0}
+    .answer .letter:before{content:"○";font-size:19px}
+    .answer.selected .letter:before{content:"●"}
+    .gender-mark{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#9180CC,#6B5DB8);font-weight:900;flex:0 0 auto}
+    .choice strong{font-size:15px;display:block}
+    .choice small{display:block;color:#8D86AE;margin-top:4px;font-size:12px;line-height:1.45}
+    .nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px}
+    .nav .btn{width:auto}
+    .nav .btn[disabled],.nav-btn[disabled]{opacity:.35;cursor:not-allowed;transform:none}
+    .q-header{border-radius:20px;padding:16px 20px;margin-bottom:20px}
+    .q-meta{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;margin-bottom:10px}
+    .q-cat{font-size:13px;font-weight:800;color:var(--primary)}
+    .q-count{font-size:13px;color:var(--muted)}
+    .q-pct{font-size:13px;font-weight:800;color:var(--accent)}
+    .progress-track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+    .progress-bar{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:99px;transition:width .38s ease}
+    .q-body{border-radius:24px;padding:28px 24px;margin-bottom:18px;min-height:560px}
+    .q-text{font-size:21px;font-weight:900;line-height:1.45;margin:10px 0 22px}
+    .q-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:22px}
+    .nav-btn{padding:12px 17px;border-radius:14px;border:2px solid var(--line);background:rgba(255,255,255,.86);cursor:pointer;font-size:14px;color:#746C9A}
+    .auto-hint{font-size:12px;color:#9B94C8;flex:1;text-align:center;line-height:1.4;transition:.2s}
+    .auto-hint.active{color:var(--primary);font-weight:700}
+    .result{padding:0}
+    .top-card{border-radius:28px;padding:30px 24px 26px;text-align:center;margin-bottom:18px}
+    .top-sub{font-size:15px;color:var(--accent);font-weight:700;margin-bottom:12px;letter-spacing:1px}
+    .top-icon-emoji{font-size:44px;margin-bottom:5px}
+    .match-pct{font-size:64px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.05}
+    .result-name{font-size:34px;font-weight:900;margin:10px 0 6px}
+    .person-title{font-size:15px;color:#8279AE;margin-bottom:16px;line-height:1.6}
+    .tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+    .tag{background:rgba(107,93,184,.1);color:var(--primary);border:1px solid rgba(107,93,184,.18);border-radius:20px;padding:6px 14px;font-size:14px;font-weight:700}
+    .dominant-chip{display:inline-block;margin:12px 0 0;padding:7px 14px;border-radius:20px;background:#F1EDF9;color:var(--primary);font-size:14px;font-weight:700}
+    .match-reason{background:linear-gradient(135deg,rgba(232,228,242,.8),rgba(237,234,245,.6));border-radius:16px;padding:15px 18px;text-align:left;margin-top:16px;border:1px solid rgba(107,93,184,.1)}
+    .reason-title{font-size:15px;font-weight:800;color:var(--primary);display:block;margin-bottom:8px}
+    .quote{font-size:17px;color:#514A75;line-height:1.85;margin:0}
+    .report-section{border-radius:24px;padding:23px;margin-bottom:18px}
+    .section-title{font-size:19px;font-weight:900;margin-bottom:16px}
+    .bio{font-size:17px;line-height:1.9;color:#514A75}
+    .dimension-grid{display:flex;flex-direction:column;gap:12px}
+    .dim-row{display:grid;grid-template-columns:64px 1fr 34px;align-items:center;gap:10px;font-size:14px;color:#655D8F}
+    .dim-bar{height:8px;background:#F0EDF8;border-radius:99px;overflow:hidden}
+    .dim-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:inherit}
+    .three{display:grid;grid-template-columns:1fr;gap:12px}
+    .note{background:#FAF8FF;border:1px solid #E2DCF5;border-radius:17px;padding:18px 17px;line-height:1.8;color:#625B86;font-size:16px}
+    .note b{display:block;color:var(--ink);margin-bottom:7px;font-size:17px}
+    .share-actions{display:grid;gap:10px;margin:22px 0}
+    .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);width:max-content;max-width:min(520px,calc(100% - 32px));background:#2D2458;color:#fff;padding:11px 18px;border-radius:18px;text-align:center;line-height:1.6;opacity:0;pointer-events:none;transition:.25s;z-index:30}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .save-modal{position:fixed;z-index:80;inset:0;display:flex;align-items:flex-start;justify-content:center;padding:18px;background:rgba(45,36,88,.52);overflow:auto}
+    .save-panel{width:min(680px,100%);margin:auto;background:#fff;border-radius:24px;padding:16px;box-shadow:0 24px 70px rgba(45,36,88,.3)}
+    .save-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+    .save-panel-head h2{margin:0;font-size:20px}
+    .save-close{width:44px;min-height:44px;padding:0;border:0;border-radius:50%;background:#ECE6FA;font-size:24px;cursor:pointer}
+    .save-tip{margin:0 2px 14px;color:#625B86;font-size:14px;line-height:1.7}
+    .save-preview{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:16px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+    .micro{font-size:13px;color:#8D86AE;text-align:center;line-height:1.65}
+    body.locked{overflow:hidden}
+    .app-locked{display:none}
+    .access-gate{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:linear-gradient(145deg,#E8E4F2,#EFEAF7)}
+    .access-card{width:min(460px,100%);background:rgba(255,255,255,.9);border-radius:24px;padding:28px 24px;text-align:center;box-shadow:var(--shadow)}
+    .lock-mark{width:72px;height:72px;border-radius:20px;margin:0 auto 18px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;font-size:32px;box-shadow:0 8px 28px rgba(107,93,184,.35)}
+    .access-card h1{font-size:25px;margin-bottom:8px}
+    .access-card p{color:var(--muted);font-size:13px;line-height:1.7}
+    .access-input{display:block;width:100%;margin:20px auto 14px;padding:14px;border:2px solid var(--line);border-radius:14px;background:#fff;text-align:center;font-size:28px;font-weight:800;letter-spacing:12px;color:var(--primary);outline:0}
+    .access-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(123,104,200,.15)}
+    .access-error{min-height:22px;margin:10px 0 0!important;color:#EF4444!important;font-size:13px;opacity:0}
+    .access-error.show{opacity:1}
+    @media(min-width:640px){.three{grid-template-columns:repeat(3,1fr)}.share-actions{grid-template-columns:1fr 1fr}.intro-actions{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.shell{padding:12px 12px 40px}.card,.q-body{padding:22px 17px}.q-body{min-height:610px}.q-header{padding:15px 16px}.q-meta{gap:7px}.q-text{font-size:19px}.choice{padding:15px 13px}.nav-btn{padding:11px 12px}.auto-hint{font-size:11px}.report-section{padding:23px 18px}.result-name{font-size:32px}.person-title{font-size:15px}.quote,.bio{font-size:17px}.dim-row{grid-template-columns:60px 1fr 32px;font-size:14px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
-  
-
-  
-
-<meta name="generator" content="Hexo 5.3.0"></head>
-
-<body>
-  <div id="container" q-class="show:isCtnShow">
-    <canvas id="anm-canvas" class="anm-canvas"></canvas>
-    <div class="left-col" q-class="show:isShow">
-      
-<div class="overlay" style="background: #4d4d4d"></div>
-<div class="intrude-less">
-	<header id="header" class="inner">
-		<a href="/" class="profilepic">
-			<img src="" class="js-avatar">
-		</a>
-		<hgroup>
-		  <h1 class="header-author"><a href="/"></a></h1>
-		</hgroup>
-		
-
-		<nav class="header-menu">
-			<ul>
-			
-				<li><a href="/">主页</a></li>
-	        
-				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
-	        
-			</ul>
-		</nav>
-		<nav class="header-smart-menu">
-    		
-    			
-    			<a q-on="click: openSlider(e, 'innerArchive')" href="javascript:void(0)">所有文章</a>
-    			
-            
-    			
-    			<a q-on="click: openSlider(e, 'friends')" href="javascript:void(0)">友链</a>
-    			
-            
-    			
-    			<a q-on="click: openSlider(e, 'aboutme')" href="javascript:void(0)">关于我</a>
-    			
-            
-		</nav>
-		<nav class="header-nav">
-			<div class="social">
-				
-					<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-		        
-					<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
-		        
-					<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
-		        
-					<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
-		        
-			</div>
-		</nav>
-	</header>		
-</div>
-
+<base target="_blank">
+</head>
+<body class="locked">
+  <section class="access-gate" id="accessGate">
+    <div class="access-card">
+      <div class="lock-mark">🔐</div>
+      <div class="hero-sub">FIGURE ATLAS · PRIVATE ARCHIVE</div>
+      <h1>访问验证</h1>
+      <p>这是一份有权限的人物档案测试，请输入四位访问码解锁。</p>
+      <input class="access-input" id="accessInput" type="tel" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="••••" aria-label="四位访问码">
+      <button class="btn primary" id="unlockBtn">立即解锁</button>
+      <p class="access-error" id="accessError" aria-live="polite">访问码错误，请重新输入</p>
     </div>
-    <div class="mid-col" q-class="show:isShow,hide:isShow|isFalse">
-      
-<nav id="mobile-nav">
-  	<div class="overlay js-overlay" style="background: #4d4d4d"></div>
-	<div class="btnctn js-mobile-btnctn">
-  		<div class="slider-trigger list" q-on="click: openSlider(e)"><i class="icon icon-sort"></i></div>
-	</div>
-	<div class="intrude-less">
-		<header id="header" class="inner">
-			<div class="profilepic">
-				<img src="" class="js-avatar">
-			</div>
-			<hgroup>
-			  <h1 class="header-author js-header-author"></h1>
-			</hgroup>
-			
-			
-			
-				
-			
-				
-			
-			
-			
-			<nav class="header-nav">
-				<div class="social">
-					
-						<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-			        
-						<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
-			        
-						<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
-			        
-						<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
-			        
-				</div>
-			</nav>
-
-			<nav class="header-menu js-header-menu">
-				<ul style="width: 50%">
-				
-				
-					<li style="width: 50%"><a href="/">主页</a></li>
-		        
-					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
-		        
-				</ul>
-			</nav>
-		</header>				
-	</div>
-	<div class="mobile-mask" style="display:none" q-show="isShow"></div>
-</nav>
-
-      <div id="wrapper" class="body-wrap">
-        <div class="menu-l">
-          <div class="canvas-wrap">
-            <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
-          </div>
-          <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/12/26/hello-world/">Hello World</a>
-    </h1>
-  
-
-        
-        <a href="/2020/12/26/hello-world/" class="archive-article-date">
-  	<time datetime="2020-12-26T14:26:18.490Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/12/26/hello-world/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-  
-
-
-          </div>
-        </div>
+  </section>
+  <main class="shell app-locked" id="appShell">
+    <section class="card intro" id="intro">
+      <div class="icon-box">🏛️</div>
+      <h1 class="hero-title">你与哪位<em>历史人物</em><br>相似？</h1>
+      <div class="hero-sub">FIGURE ATLAS · ANCIENT ARCHIVE</div>
+      <p class="lead">通过一组情境选择，读取你的决断、洞察、表达与担当。系统将从清朝以前的中国历史人物中，为你找出最相似的那一位。</p>
+      <div class="stats">
+        <span class="stat"><b>古代群像</b>历代风云人物</span>
+        <span class="stat"><b>男女皆有</b>多元角色</span>
+        <span class="stat"><b>多维分析</b>性格建模</span>
+        <span class="stat"><b>快速完成</b>即时出档案</span>
       </div>
-      <footer id="footer">
-  <div class="outer">
-    <div id="footer-info">
-    	<div class="footer-left">
-    		&copy; 2020 John Doe
-    	</div>
-      	<div class="footer-right">
-      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
-      	</div>
+      <div class="info-box"><b>测试说明</b><br>没有标准答案，请选择最接近真实自己的反应。答案会直接参与人物能力向量计算。</div>
+      <div class="intro-actions"><button class="btn primary" id="startBtn">开始读取档案</button><button class="btn ghost" id="browseBtn">看看如何匹配</button></div>
+    </section>
+
+    <section class="card preference hidden" id="preference">
+      <div class="icon-box">🧭</div>
+      <div class="hero-sub">第一步 · 档案映射偏好</div>
+      <h2>选择你更有代入感的人物方向</h2>
+      <p class="hint">这只影响最终人物候选范围，不影响答题内容与分数计算。</p>
+      <div class="choices">
+        <button class="choice gender" data-gender="female"><span class="gender-mark">女</span><span><strong>女性人物优先</strong><small>从女性历史人物中寻找最相似的你</small></span></button>
+        <button class="choice gender" data-gender="male"><span class="gender-mark">男</span><span><strong>男性人物优先</strong><small>从男性历史人物中寻找最相似的你</small></span></button>
+        <button class="choice gender" data-gender="all"><span class="gender-mark">皆</span><span><strong>不限性别</strong><small>开放完整人物档案库，纯粹按性格匹配</small></span></button>
+      </div>
+      <div class="nav"><button class="btn ghost" id="prefBack">返回</button><button class="btn primary" id="prefNext" disabled>进入情境测试</button></div>
+    </section>
+
+    <section class="q-header hidden" id="quizChrome">
+      <div class="q-meta">
+        <span class="q-cat" id="stageLabel">⚖️ 决策方式</span>
+        <span class="q-count" id="progressText">1 / 24</span>
+        <span class="q-pct" id="progressPct">4%</span>
+      </div>
+      <div class="progress-track"><i class="progress-bar" id="progressBar"></i></div>
+      <span class="hidden" id="topCount">第 1 / 24</span>
+    </section>
+
+    <section class="q-body hidden" id="question">
+      <div class="eyebrow" id="chapterName">⚖️ 决策方式</div>
+      <h2 class="q-text" id="questionText"></h2>
+      <div class="choices" id="answerList"></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="prevBtn">上一题</button>
+        <div class="auto-hint" id="autoHint">选择后自动进入下一题</div>
+        <button class="nav-btn" id="nextBtn" disabled>下一题</button>
+      </div>
+    </section>
+
+    <section class="result hidden" id="result">
+      <div class="top-card" id="reportHead" data-seal="史">
+        <div class="top-sub">你的历史人物匹配结果</div>
+        <div class="top-icon-emoji">🏛️</div>
+        <div class="match-pct" id="matchRate"></div>
+        <h1 class="result-name" id="resultName"></h1>
+        <div class="person-title" id="resultTitle"></div>
+        <div class="tags" id="resultTags"></div>
+        <div class="dominant-chip" id="dominant"></div>
+        <div class="match-reason"><span class="reason-title">人物心声</span><p class="quote" id="resultQuote"></p></div>
+      </div>
+      <section class="report-section">
+        <div class="section-title">01 · 人物自画像</div><div class="bio" id="portrait"></div>
+      </section>
+      <section class="report-section">
+        <div class="section-title">02 · 八维能力结构</div><div class="dimension-grid" id="dimensionGrid"></div>
+      </section>
+      <section class="report-section">
+        <div class="section-title">03 · 你与 TA 的共同底色</div>
+        <div class="three" id="commonGround"></div>
+      </section>
+      <section class="report-section">
+        <div class="section-title">04 · 现实中的你</div><div class="note"><b>现实互动方式</b><span id="reality"></span></div>
+      </section>
+      <section class="report-section">
+        <div class="section-title">05 · 性格盲点与风险提醒</div>
+        <div class="three"><div class="note"><b>可能的盲点</b><span id="blindspot"></span></div><div class="note"><b>风险提醒</b><span id="risk"></span></div><div class="note"><b>给你的建议</b><span id="advice"></span></div></div>
+      </section>
+      <section class="report-section">
+        <div class="section-title">06 · 你的三句人物台词</div><div class="three" id="lines"></div>
+      </section>
+      <div class="share-actions"><button class="btn primary" id="exportBtn">保存到手机相册</button><button class="btn ghost" id="restartBtn">重新测试</button></div>
+      <p class="micro">本测试用于趣味性自我探索，不构成心理测评或历史评价。</p>
+    </section>
+  </main>
+  <div class="save-modal hidden" id="saveModal" role="dialog" aria-modal="true" aria-labelledby="saveModalTitle">
+    <div class="save-panel">
+      <div class="save-panel-head"><h2 id="saveModalTitle">长按保存到手机相册</h2><button class="save-close" id="saveModalClose" type="button" aria-label="关闭">×</button></div>
+      <p class="save-tip">当前浏览器不支持直接调起系统相册。请长按下方完整结果图，选择“存储到照片/保存到相册”；不会跳转到新的浏览器页面。</p>
+      <img class="save-preview" id="savePreview" alt="历史人物测试完整结果图">
     </div>
   </div>
-</footer>
-    </div>
-    <script>
-	var yiliaConfig = {
-		mathjax: false,
-		isHome: true,
-		isPost: false,
-		isArchive: false,
-		isTag: false,
-		isCategory: false,
-		open_in_new: false,
-		toc_hide_index: true,
-		root: "/",
-		innerArchive: true,
-		showTags: false
-	}
-</script>
+  <div class="toast" id="toast">图片已导出</div>
 
-<script>!function(t){function n(e){if(r[e])return r[e].exports;var i=r[e]={exports:{},id:e,loaded:!1};return t[e].call(i.exports,i,i.exports,n),i.loaded=!0,i.exports}var r={};n.m=t,n.c=r,n.p="./",n(0)}([function(t,n,r){r(195),t.exports=r(191)},function(t,n,r){var e=r(3),i=r(52),o=r(27),u=r(28),c=r(53),f="prototype",a=function(t,n,r){var s,l,h,v,p=t&a.F,d=t&a.G,y=t&a.S,g=t&a.P,b=t&a.B,m=d?e:y?e[n]||(e[n]={}):(e[n]||{})[f],x=d?i:i[n]||(i[n]={}),w=x[f]||(x[f]={});d&&(r=n);for(s in r)l=!p&&m&&void 0!==m[s],h=(l?m:r)[s],v=b&&l?c(h,e):g&&"function"==typeof h?c(Function.call,h):h,m&&u(m,s,h,t&a.U),x[s]!=h&&o(x,s,v),g&&w[s]!=h&&(w[s]=h)};e.core=i,a.F=1,a.G=2,a.S=4,a.P=8,a.B=16,a.W=32,a.U=64,a.R=128,t.exports=a},function(t,n,r){var e=r(6);t.exports=function(t){if(!e(t))throw TypeError(t+" is not an object!");return t}},function(t,n){var r=t.exports="undefined"!=typeof window&&window.Math==Math?window:"undefined"!=typeof self&&self.Math==Math?self:Function("return this")();"number"==typeof __g&&(__g=r)},function(t,n){t.exports=function(t){try{return!!t()}catch(t){return!0}}},function(t,n){var r=t.exports="undefined"!=typeof window&&window.Math==Math?window:"undefined"!=typeof self&&self.Math==Math?self:Function("return this")();"number"==typeof __g&&(__g=r)},function(t,n){t.exports=function(t){return"object"==typeof t?null!==t:"function"==typeof t}},function(t,n,r){var e=r(126)("wks"),i=r(76),o=r(3).Symbol,u="function"==typeof o;(t.exports=function(t){return e[t]||(e[t]=u&&o[t]||(u?o:i)("Symbol."+t))}).store=e},function(t,n){var r={}.hasOwnProperty;t.exports=function(t,n){return r.call(t,n)}},function(t,n,r){var e=r(94),i=r(33);t.exports=function(t){return e(i(t))}},function(t,n,r){t.exports=!r(4)(function(){return 7!=Object.defineProperty({},"a",{get:function(){return 7}}).a})},function(t,n,r){var e=r(2),i=r(167),o=r(50),u=Object.defineProperty;n.f=r(10)?Object.defineProperty:function(t,n,r){if(e(t),n=o(n,!0),e(r),i)try{return u(t,n,r)}catch(t){}if("get"in r||"set"in r)throw TypeError("Accessors not supported!");return"value"in r&&(t[n]=r.value),t}},function(t,n,r){t.exports=!r(18)(function(){return 7!=Object.defineProperty({},"a",{get:function(){return 7}}).a})},function(t,n,r){var e=r(14),i=r(22);t.exports=r(12)?function(t,n,r){return e.f(t,n,i(1,r))}:function(t,n,r){return t[n]=r,t}},function(t,n,r){var e=r(20),i=r(58),o=r(42),u=Object.defineProperty;n.f=r(12)?Object.defineProperty:function(t,n,r){if(e(t),n=o(n,!0),e(r),i)try{return u(t,n,r)}catch(t){}if("get"in r||"set"in r)throw TypeError("Accessors not supported!");return"value"in r&&(t[n]=r.value),t}},function(t,n,r){var e=r(40)("wks"),i=r(23),o=r(5).Symbol,u="function"==typeof o;(t.exports=function(t){return e[t]||(e[t]=u&&o[t]||(u?o:i)("Symbol."+t))}).store=e},function(t,n,r){var e=r(67),i=Math.min;t.exports=function(t){return t>0?i(e(t),9007199254740991):0}},function(t,n,r){var e=r(46);t.exports=function(t){return Object(e(t))}},function(t,n){t.exports=function(t){try{return!!t()}catch(t){return!0}}},function(t,n,r){var e=r(63),i=r(34);t.exports=Object.keys||function(t){return e(t,i)}},function(t,n,r){var e=r(21);t.exports=function(t){if(!e(t))throw TypeError(t+" is not an object!");return t}},function(t,n){t.exports=function(t){return"object"==typeof t?null!==t:"function"==typeof t}},function(t,n){t.exports=function(t,n){return{enumerable:!(1&t),configurable:!(2&t),writable:!(4&t),value:n}}},function(t,n){var r=0,e=Math.random();t.exports=function(t){return"Symbol(".concat(void 0===t?"":t,")_",(++r+e).toString(36))}},function(t,n){var r={}.hasOwnProperty;t.exports=function(t,n){return r.call(t,n)}},function(t,n){var r=t.exports={version:"2.4.0"};"number"==typeof __e&&(__e=r)},function(t,n){t.exports=function(t){if("function"!=typeof t)throw TypeError(t+" is not a function!");return t}},function(t,n,r){var e=r(11),i=r(66);t.exports=r(10)?function(t,n,r){return e.f(t,n,i(1,r))}:function(t,n,r){return t[n]=r,t}},function(t,n,r){var e=r(3),i=r(27),o=r(24),u=r(76)("src"),c="toString",f=Function[c],a=(""+f).split(c);r(52).inspectSource=function(t){return f.call(t)},(t.exports=function(t,n,r,c){var f="function"==typeof r;f&&(o(r,"name")||i(r,"name",n)),t[n]!==r&&(f&&(o(r,u)||i(r,u,t[n]?""+t[n]:a.join(String(n)))),t===e?t[n]=r:c?t[n]?t[n]=r:i(t,n,r):(delete t[n],i(t,n,r)))})(Function.prototype,c,function(){return"function"==typeof this&&this[u]||f.call(this)})},function(t,n,r){var e=r(1),i=r(4),o=r(46),u=function(t,n,r,e){var i=String(o(t)),u="<"+n;return""!==r&&(u+=" "+r+'="'+String(e).replace(/"/g,"&quot;")+'"'),u+">"+i+"</"+n+">"};t.exports=function(t,n){var r={};r[t]=n(u),e(e.P+e.F*i(function(){var n=""[t]('"');return n!==n.toLowerCase()||n.split('"').length>3}),"String",r)}},function(t,n,r){var e=r(115),i=r(46);t.exports=function(t){return e(i(t))}},function(t,n,r){var e=r(116),i=r(66),o=r(30),u=r(50),c=r(24),f=r(167),a=Object.getOwnPropertyDescriptor;n.f=r(10)?a:function(t,n){if(t=o(t),n=u(n,!0),f)try{return a(t,n)}catch(t){}if(c(t,n))return i(!e.f.call(t,n),t[n])}},function(t,n,r){var e=r(24),i=r(17),o=r(145)("IE_PROTO"),u=Object.prototype;t.exports=Object.getPrototypeOf||function(t){return t=i(t),e(t,o)?t[o]:"function"==typeof t.constructor&&t instanceof t.constructor?t.constructor.prototype:t instanceof Object?u:null}},function(t,n){t.exports=function(t){if(void 0==t)throw TypeError("Can't call method on  "+t);return t}},function(t,n){t.exports="constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf".split(",")},function(t,n){t.exports={}},function(t,n){t.exports=!0},function(t,n){n.f={}.propertyIsEnumerable},function(t,n,r){var e=r(14).f,i=r(8),o=r(15)("toStringTag");t.exports=function(t,n,r){t&&!i(t=r?t:t.prototype,o)&&e(t,o,{configurable:!0,value:n})}},function(t,n,r){var e=r(40)("keys"),i=r(23);t.exports=function(t){return e[t]||(e[t]=i(t))}},function(t,n,r){var e=r(5),i="__core-js_shared__",o=e[i]||(e[i]={});t.exports=function(t){return o[t]||(o[t]={})}},function(t,n){var r=Math.ceil,e=Math.floor;t.exports=function(t){return isNaN(t=+t)?0:(t>0?e:r)(t)}},function(t,n,r){var e=r(21);t.exports=function(t,n){if(!e(t))return t;var r,i;if(n&&"function"==typeof(r=t.toString)&&!e(i=r.call(t)))return i;if("function"==typeof(r=t.valueOf)&&!e(i=r.call(t)))return i;if(!n&&"function"==typeof(r=t.toString)&&!e(i=r.call(t)))return i;throw TypeError("Can't convert object to primitive value")}},function(t,n,r){var e=r(5),i=r(25),o=r(36),u=r(44),c=r(14).f;t.exports=function(t){var n=i.Symbol||(i.Symbol=o?{}:e.Symbol||{});"_"==t.charAt(0)||t in n||c(n,t,{value:u.f(t)})}},function(t,n,r){n.f=r(15)},function(t,n){var r={}.toString;t.exports=function(t){return r.call(t).slice(8,-1)}},function(t,n){t.exports=function(t){if(void 0==t)throw TypeError("Can't call method on  "+t);return t}},function(t,n,r){var e=r(4);t.exports=function(t,n){return!!t&&e(function(){n?t.call(null,function(){},1):t.call(null)})}},function(t,n,r){var e=r(53),i=r(115),o=r(17),u=r(16),c=r(203);t.exports=function(t,n){var r=1==t,f=2==t,a=3==t,s=4==t,l=6==t,h=5==t||l,v=n||c;return function(n,c,p){for(var d,y,g=o(n),b=i(g),m=e(c,p,3),x=u(b.length),w=0,S=r?v(n,x):f?v(n,0):void 0;x>w;w++)if((h||w in b)&&(d=b[w],y=m(d,w,g),t))if(r)S[w]=y;else if(y)switch(t){case 3:return!0;case 5:return d;case 6:return w;case 2:S.push(d)}else if(s)return!1;return l?-1:a||s?s:S}}},function(t,n,r){var e=r(1),i=r(52),o=r(4);t.exports=function(t,n){var r=(i.Object||{})[t]||Object[t],u={};u[t]=n(r),e(e.S+e.F*o(function(){r(1)}),"Object",u)}},function(t,n,r){var e=r(6);t.exports=function(t,n){if(!e(t))return t;var r,i;if(n&&"function"==typeof(r=t.toString)&&!e(i=r.call(t)))return i;if("function"==typeof(r=t.valueOf)&&!e(i=r.call(t)))return i;if(!n&&"function"==typeof(r=t.toString)&&!e(i=r.call(t)))return i;throw TypeError("Can't convert object to primitive value")}},function(t,n,r){var e=r(5),i=r(25),o=r(91),u=r(13),c="prototype",f=function(t,n,r){var a,s,l,h=t&f.F,v=t&f.G,p=t&f.S,d=t&f.P,y=t&f.B,g=t&f.W,b=v?i:i[n]||(i[n]={}),m=b[c],x=v?e:p?e[n]:(e[n]||{})[c];v&&(r=n);for(a in r)(s=!h&&x&&void 0!==x[a])&&a in b||(l=s?x[a]:r[a],b[a]=v&&"function"!=typeof x[a]?r[a]:y&&s?o(l,e):g&&x[a]==l?function(t){var n=function(n,r,e){if(this instanceof t){switch(arguments.length){case 0:return new t;case 1:return new t(n);case 2:return new t(n,r)}return new t(n,r,e)}return t.apply(this,arguments)};return n[c]=t[c],n}(l):d&&"function"==typeof l?o(Function.call,l):l,d&&((b.virtual||(b.virtual={}))[a]=l,t&f.R&&m&&!m[a]&&u(m,a,l)))};f.F=1,f.G=2,f.S=4,f.P=8,f.B=16,f.W=32,f.U=64,f.R=128,t.exports=f},function(t,n){var r=t.exports={version:"2.4.0"};"number"==typeof __e&&(__e=r)},function(t,n,r){var e=r(26);t.exports=function(t,n,r){if(e(t),void 0===n)return t;switch(r){case 1:return function(r){return t.call(n,r)};case 2:return function(r,e){return t.call(n,r,e)};case 3:return function(r,e,i){return t.call(n,r,e,i)}}return function(){return t.apply(n,arguments)}}},function(t,n,r){var e=r(183),i=r(1),o=r(126)("metadata"),u=o.store||(o.store=new(r(186))),c=function(t,n,r){var i=u.get(t);if(!i){if(!r)return;u.set(t,i=new e)}var o=i.get(n);if(!o){if(!r)return;i.set(n,o=new e)}return o},f=function(t,n,r){var e=c(n,r,!1);return void 0!==e&&e.has(t)},a=function(t,n,r){var e=c(n,r,!1);return void 0===e?void 0:e.get(t)},s=function(t,n,r,e){c(r,e,!0).set(t,n)},l=function(t,n){var r=c(t,n,!1),e=[];return r&&r.forEach(function(t,n){e.push(n)}),e},h=function(t){return void 0===t||"symbol"==typeof t?t:String(t)},v=function(t){i(i.S,"Reflect",t)};t.exports={store:u,map:c,has:f,get:a,set:s,keys:l,key:h,exp:v}},function(t,n,r){"use strict";if(r(10)){var e=r(69),i=r(3),o=r(4),u=r(1),c=r(127),f=r(152),a=r(53),s=r(68),l=r(66),h=r(27),v=r(73),p=r(67),d=r(16),y=r(75),g=r(50),b=r(24),m=r(180),x=r(114),w=r(6),S=r(17),_=r(137),O=r(70),E=r(32),P=r(71).f,j=r(154),F=r(76),M=r(7),A=r(48),N=r(117),T=r(146),I=r(155),k=r(80),L=r(123),R=r(74),C=r(130),D=r(160),U=r(11),W=r(31),G=U.f,B=W.f,V=i.RangeError,z=i.TypeError,q=i.Uint8Array,K="ArrayBuffer",J="Shared"+K,Y="BYTES_PER_ELEMENT",H="prototype",$=Array[H],X=f.ArrayBuffer,Q=f.DataView,Z=A(0),tt=A(2),nt=A(3),rt=A(4),et=A(5),it=A(6),ot=N(!0),ut=N(!1),ct=I.values,ft=I.keys,at=I.entries,st=$.lastIndexOf,lt=$.reduce,ht=$.reduceRight,vt=$.join,pt=$.sort,dt=$.slice,yt=$.toString,gt=$.toLocaleString,bt=M("iterator"),mt=M("toStringTag"),xt=F("typed_constructor"),wt=F("def_constructor"),St=c.CONSTR,_t=c.TYPED,Ot=c.VIEW,Et="Wrong length!",Pt=A(1,function(t,n){return Tt(T(t,t[wt]),n)}),jt=o(function(){return 1===new q(new Uint16Array([1]).buffer)[0]}),Ft=!!q&&!!q[H].set&&o(function(){new q(1).set({})}),Mt=function(t,n){if(void 0===t)throw z(Et);var r=+t,e=d(t);if(n&&!m(r,e))throw V(Et);return e},At=function(t,n){var r=p(t);if(r<0||r%n)throw V("Wrong offset!");return r},Nt=function(t){if(w(t)&&_t in t)return t;throw z(t+" is not a typed array!")},Tt=function(t,n){if(!(w(t)&&xt in t))throw z("It is not a typed array constructor!");return new t(n)},It=function(t,n){return kt(T(t,t[wt]),n)},kt=function(t,n){for(var r=0,e=n.length,i=Tt(t,e);e>r;)i[r]=n[r++];return i},Lt=function(t,n,r){G(t,n,{get:function(){return this._d[r]}})},Rt=function(t){var n,r,e,i,o,u,c=S(t),f=arguments.length,s=f>1?arguments[1]:void 0,l=void 0!==s,h=j(c);if(void 0!=h&&!_(h)){for(u=h.call(c),e=[],n=0;!(o=u.next()).done;n++)e.push(o.value);c=e}for(l&&f>2&&(s=a(s,arguments[2],2)),n=0,r=d(c.length),i=Tt(this,r);r>n;n++)i[n]=l?s(c[n],n):c[n];return i},Ct=function(){for(var t=0,n=arguments.length,r=Tt(this,n);n>t;)r[t]=arguments[t++];return r},Dt=!!q&&o(function(){gt.call(new q(1))}),Ut=function(){return gt.apply(Dt?dt.call(Nt(this)):Nt(this),arguments)},Wt={copyWithin:function(t,n){return D.call(Nt(this),t,n,arguments.length>2?arguments[2]:void 0)},every:function(t){return rt(Nt(this),t,arguments.length>1?arguments[1]:void 0)},fill:function(t){return C.apply(Nt(this),arguments)},filter:function(t){return It(this,tt(Nt(this),t,arguments.length>1?arguments[1]:void 0))},find:function(t){return et(Nt(this),t,arguments.length>1?arguments[1]:void 0)},findIndex:function(t){return it(Nt(this),t,arguments.length>1?arguments[1]:void 0)},forEach:function(t){Z(Nt(this),t,arguments.length>1?arguments[1]:void 0)},indexOf:function(t){return ut(Nt(this),t,arguments.length>1?arguments[1]:void 0)},includes:function(t){return ot(Nt(this),t,arguments.length>1?arguments[1]:void 0)},join:function(t){return vt.apply(Nt(this),arguments)},lastIndexOf:function(t){return st.apply(Nt(this),arguments)},map:function(t){return Pt(Nt(this),t,arguments.length>1?arguments[1]:void 0)},reduce:function(t){return lt.apply(Nt(this),arguments)},reduceRight:function(t){return ht.apply(Nt(this),arguments)},reverse:function(){for(var t,n=this,r=Nt(n).length,e=Math.floor(r/2),i=0;i<e;)t=n[i],n[i++]=n[--r],n[r]=t;return n},some:function(t){return nt(Nt(this),t,arguments.length>1?arguments[1]:void 0)},sort:function(t){return pt.call(Nt(this),t)},subarray:function(t,n){var r=Nt(this),e=r.length,i=y(t,e);return new(T(r,r[wt]))(r.buffer,r.byteOffset+i*r.BYTES_PER_ELEMENT,d((void 0===n?e:y(n,e))-i))}},Gt=function(t,n){return It(this,dt.call(Nt(this),t,n))},Bt=function(t){Nt(this);var n=At(arguments[1],1),r=this.length,e=S(t),i=d(e.length),o=0;if(i+n>r)throw V(Et);for(;o<i;)this[n+o]=e[o++]},Vt={entries:function(){return at.call(Nt(this))},keys:function(){return ft.call(Nt(this))},values:function(){return ct.call(Nt(this))}},zt=function(t,n){return w(t)&&t[_t]&&"symbol"!=typeof n&&n in t&&String(+n)==String(n)},qt=function(t,n){return zt(t,n=g(n,!0))?l(2,t[n]):B(t,n)},Kt=function(t,n,r){return!(zt(t,n=g(n,!0))&&w(r)&&b(r,"value"))||b(r,"get")||b(r,"set")||r.configurable||b(r,"writable")&&!r.writable||b(r,"enumerable")&&!r.enumerable?G(t,n,r):(t[n]=r.value,t)};St||(W.f=qt,U.f=Kt),u(u.S+u.F*!St,"Object",{getOwnPropertyDescriptor:qt,defineProperty:Kt}),o(function(){yt.call({})})&&(yt=gt=function(){return vt.call(this)});var Jt=v({},Wt);v(Jt,Vt),h(Jt,bt,Vt.values),v(Jt,{slice:Gt,set:Bt,constructor:function(){},toString:yt,toLocaleString:Ut}),Lt(Jt,"buffer","b"),Lt(Jt,"byteOffset","o"),Lt(Jt,"byteLength","l"),Lt(Jt,"length","e"),G(Jt,mt,{get:function(){return this[_t]}}),t.exports=function(t,n,r,f){f=!!f;var a=t+(f?"Clamped":"")+"Array",l="Uint8Array"!=a,v="get"+t,p="set"+t,y=i[a],g=y||{},b=y&&E(y),m=!y||!c.ABV,S={},_=y&&y[H],j=function(t,r){var e=t._d;return e.v[v](r*n+e.o,jt)},F=function(t,r,e){var i=t._d;f&&(e=(e=Math.round(e))<0?0:e>255?255:255&e),i.v[p](r*n+i.o,e,jt)},M=function(t,n){G(t,n,{get:function(){return j(this,n)},set:function(t){return F(this,n,t)},enumerable:!0})};m?(y=r(function(t,r,e,i){s(t,y,a,"_d");var o,u,c,f,l=0,v=0;if(w(r)){if(!(r instanceof X||(f=x(r))==K||f==J))return _t in r?kt(y,r):Rt.call(y,r);o=r,v=At(e,n);var p=r.byteLength;if(void 0===i){if(p%n)throw V(Et);if((u=p-v)<0)throw V(Et)}else if((u=d(i)*n)+v>p)throw V(Et);c=u/n}else c=Mt(r,!0),u=c*n,o=new X(u);for(h(t,"_d",{b:o,o:v,l:u,e:c,v:new Q(o)});l<c;)M(t,l++)}),_=y[H]=O(Jt),h(_,"constructor",y)):L(function(t){new y(null),new y(t)},!0)||(y=r(function(t,r,e,i){s(t,y,a);var o;return w(r)?r instanceof X||(o=x(r))==K||o==J?void 0!==i?new g(r,At(e,n),i):void 0!==e?new g(r,At(e,n)):new g(r):_t in r?kt(y,r):Rt.call(y,r):new g(Mt(r,l))}),Z(b!==Function.prototype?P(g).concat(P(b)):P(g),function(t){t in y||h(y,t,g[t])}),y[H]=_,e||(_.constructor=y));var A=_[bt],N=!!A&&("values"==A.name||void 0==A.name),T=Vt.values;h(y,xt,!0),h(_,_t,a),h(_,Ot,!0),h(_,wt,y),(f?new y(1)[mt]==a:mt in _)||G(_,mt,{get:function(){return a}}),S[a]=y,u(u.G+u.W+u.F*(y!=g),S),u(u.S,a,{BYTES_PER_ELEMENT:n,from:Rt,of:Ct}),Y in _||h(_,Y,n),u(u.P,a,Wt),R(a),u(u.P+u.F*Ft,a,{set:Bt}),u(u.P+u.F*!N,a,Vt),u(u.P+u.F*(_.toString!=yt),a,{toString:yt}),u(u.P+u.F*o(function(){new y(1).slice()}),a,{slice:Gt}),u(u.P+u.F*(o(function(){return[1,2].toLocaleString()!=new y([1,2]).toLocaleString()})||!o(function(){_.toLocaleString.call([1,2])})),a,{toLocaleString:Ut}),k[a]=N?A:T,e||N||h(_,bt,T)}}else t.exports=function(){}},function(t,n){var r={}.toString;t.exports=function(t){return r.call(t).slice(8,-1)}},function(t,n,r){var e=r(21),i=r(5).document,o=e(i)&&e(i.createElement);t.exports=function(t){return o?i.createElement(t):{}}},function(t,n,r){t.exports=!r(12)&&!r(18)(function(){return 7!=Object.defineProperty(r(57)("div"),"a",{get:function(){return 7}}).a})},function(t,n,r){"use strict";var e=r(36),i=r(51),o=r(64),u=r(13),c=r(8),f=r(35),a=r(96),s=r(38),l=r(103),h=r(15)("iterator"),v=!([].keys&&"next"in[].keys()),p="keys",d="values",y=function(){return this};t.exports=function(t,n,r,g,b,m,x){a(r,n,g);var w,S,_,O=function(t){if(!v&&t in F)return F[t];switch(t){case p:case d:return function(){return new r(this,t)}}return function(){return new r(this,t)}},E=n+" Iterator",P=b==d,j=!1,F=t.prototype,M=F[h]||F["@@iterator"]||b&&F[b],A=M||O(b),N=b?P?O("entries"):A:void 0,T="Array"==n?F.entries||M:M;if(T&&(_=l(T.call(new t)))!==Object.prototype&&(s(_,E,!0),e||c(_,h)||u(_,h,y)),P&&M&&M.name!==d&&(j=!0,A=function(){return M.call(this)}),e&&!x||!v&&!j&&F[h]||u(F,h,A),f[n]=A,f[E]=y,b)if(w={values:P?A:O(d),keys:m?A:O(p),entries:N},x)for(S in w)S in F||o(F,S,w[S]);else i(i.P+i.F*(v||j),n,w);return w}},function(t,n,r){var e=r(20),i=r(100),o=r(34),u=r(39)("IE_PROTO"),c=function(){},f="prototype",a=function(){var t,n=r(57)("iframe"),e=o.length;for(n.style.display="none",r(93).appendChild(n),n.src="javascript:",t=n.contentWindow.document,t.open(),t.write("<script>document.F=Object<\/script>"),t.close(),a=t.F;e--;)delete a[f][o[e]];return a()};t.exports=Object.create||function(t,n){var r;return null!==t?(c[f]=e(t),r=new c,c[f]=null,r[u]=t):r=a(),void 0===n?r:i(r,n)}},function(t,n,r){var e=r(63),i=r(34).concat("length","prototype");n.f=Object.getOwnPropertyNames||function(t){return e(t,i)}},function(t,n){n.f=Object.getOwnPropertySymbols},function(t,n,r){var e=r(8),i=r(9),o=r(90)(!1),u=r(39)("IE_PROTO");t.exports=function(t,n){var r,c=i(t),f=0,a=[];for(r in c)r!=u&&e(c,r)&&a.push(r);for(;n.length>f;)e(c,r=n[f++])&&(~o(a,r)||a.push(r));return a}},function(t,n,r){t.exports=r(13)},function(t,n,r){var e=r(76)("meta"),i=r(6),o=r(24),u=r(11).f,c=0,f=Object.isExtensible||function(){return!0},a=!r(4)(function(){return f(Object.preventExtensions({}))}),s=function(t){u(t,e,{value:{i:"O"+ ++c,w:{}}})},l=function(t,n){if(!i(t))return"symbol"==typeof t?t:("string"==typeof t?"S":"P")+t;if(!o(t,e)){if(!f(t))return"F";if(!n)return"E";s(t)}return t[e].i},h=function(t,n){if(!o(t,e)){if(!f(t))return!0;if(!n)return!1;s(t)}return t[e].w},v=function(t){return a&&p.NEED&&f(t)&&!o(t,e)&&s(t),t},p=t.exports={KEY:e,NEED:!1,fastKey:l,getWeak:h,onFreeze:v}},function(t,n){t.exports=function(t,n){return{enumerable:!(1&t),configurable:!(2&t),writable:!(4&t),value:n}}},function(t,n){var r=Math.ceil,e=Math.floor;t.exports=function(t){return isNaN(t=+t)?0:(t>0?e:r)(t)}},function(t,n){t.exports=function(t,n,r,e){if(!(t instanceof n)||void 0!==e&&e in t)throw TypeError(r+": incorrect invocation!");return t}},function(t,n){t.exports=!1},function(t,n,r){var e=r(2),i=r(173),o=r(133),u=r(145)("IE_PROTO"),c=function(){},f="prototype",a=function(){var t,n=r(132)("iframe"),e=o.length;for(n.style.display="none",r(135).appendChild(n),n.src="javascript:",t=n.contentWindow.document,t.open(),t.write("<script>document.F=Object<\/script>"),t.close(),a=t.F;e--;)delete a[f][o[e]];return a()};t.exports=Object.create||function(t,n){var r;return null!==t?(c[f]=e(t),r=new c,c[f]=null,r[u]=t):r=a(),void 0===n?r:i(r,n)}},function(t,n,r){var e=r(175),i=r(133).concat("length","prototype");n.f=Object.getOwnPropertyNames||function(t){return e(t,i)}},function(t,n,r){var e=r(175),i=r(133);t.exports=Object.keys||function(t){return e(t,i)}},function(t,n,r){var e=r(28);t.exports=function(t,n,r){for(var i in n)e(t,i,n[i],r);return t}},function(t,n,r){"use strict";var e=r(3),i=r(11),o=r(10),u=r(7)("species");t.exports=function(t){var n=e[t];o&&n&&!n[u]&&i.f(n,u,{configurable:!0,get:function(){return this}})}},function(t,n,r){var e=r(67),i=Math.max,o=Math.min;t.exports=function(t,n){return t=e(t),t<0?i(t+n,0):o(t,n)}},function(t,n){var r=0,e=Math.random();t.exports=function(t){return"Symbol(".concat(void 0===t?"":t,")_",(++r+e).toString(36))}},function(t,n,r){var e=r(33);t.exports=function(t){return Object(e(t))}},function(t,n,r){var e=r(7)("unscopables"),i=Array.prototype;void 0==i[e]&&r(27)(i,e,{}),t.exports=function(t){i[e][t]=!0}},function(t,n,r){var e=r(53),i=r(169),o=r(137),u=r(2),c=r(16),f=r(154),a={},s={},n=t.exports=function(t,n,r,l,h){var v,p,d,y,g=h?function(){return t}:f(t),b=e(r,l,n?2:1),m=0;if("function"!=typeof g)throw TypeError(t+" is not iterable!");if(o(g)){for(v=c(t.length);v>m;m++)if((y=n?b(u(p=t[m])[0],p[1]):b(t[m]))===a||y===s)return y}else for(d=g.call(t);!(p=d.next()).done;)if((y=i(d,b,p.value,n))===a||y===s)return y};n.BREAK=a,n.RETURN=s},function(t,n){t.exports={}},function(t,n,r){var e=r(11).f,i=r(24),o=r(7)("toStringTag");t.exports=function(t,n,r){t&&!i(t=r?t:t.prototype,o)&&e(t,o,{configurable:!0,value:n})}},function(t,n,r){var e=r(1),i=r(46),o=r(4),u=r(150),c="["+u+"]",f="​",a=RegExp("^"+c+c+"*"),s=RegExp(c+c+"*$"),l=function(t,n,r){var i={},c=o(function(){return!!u[t]()||f[t]()!=f}),a=i[t]=c?n(h):u[t];r&&(i[r]=a),e(e.P+e.F*c,"String",i)},h=l.trim=function(t,n){return t=String(i(t)),1&n&&(t=t.replace(a,"")),2&n&&(t=t.replace(s,"")),t};t.exports=l},function(t,n,r){t.exports={default:r(86),__esModule:!0}},function(t,n,r){t.exports={default:r(87),__esModule:!0}},function(t,n,r){"use strict";function e(t){return t&&t.__esModule?t:{default:t}}n.__esModule=!0;var i=r(84),o=e(i),u=r(83),c=e(u),f="function"==typeof c.default&&"symbol"==typeof o.default?function(t){return typeof t}:function(t){return t&&"function"==typeof c.default&&t.constructor===c.default&&t!==c.default.prototype?"symbol":typeof t};n.default="function"==typeof c.default&&"symbol"===f(o.default)?function(t){return void 0===t?"undefined":f(t)}:function(t){return t&&"function"==typeof c.default&&t.constructor===c.default&&t!==c.default.prototype?"symbol":void 0===t?"undefined":f(t)}},function(t,n,r){r(110),r(108),r(111),r(112),t.exports=r(25).Symbol},function(t,n,r){r(109),r(113),t.exports=r(44).f("iterator")},function(t,n){t.exports=function(t){if("function"!=typeof t)throw TypeError(t+" is not a function!");return t}},function(t,n){t.exports=function(){}},function(t,n,r){var e=r(9),i=r(106),o=r(105);t.exports=function(t){return function(n,r,u){var c,f=e(n),a=i(f.length),s=o(u,a);if(t&&r!=r){for(;a>s;)if((c=f[s++])!=c)return!0}else for(;a>s;s++)if((t||s in f)&&f[s]===r)return t||s||0;return!t&&-1}}},function(t,n,r){var e=r(88);t.exports=function(t,n,r){if(e(t),void 0===n)return t;switch(r){case 1:return function(r){return t.call(n,r)};case 2:return function(r,e){return t.call(n,r,e)};case 3:return function(r,e,i){return t.call(n,r,e,i)}}return function(){return t.apply(n,arguments)}}},function(t,n,r){var e=r(19),i=r(62),o=r(37);t.exports=function(t){var n=e(t),r=i.f;if(r)for(var u,c=r(t),f=o.f,a=0;c.length>a;)f.call(t,u=c[a++])&&n.push(u);return n}},function(t,n,r){t.exports=r(5).document&&document.documentElement},function(t,n,r){var e=r(56);t.exports=Object("z").propertyIsEnumerable(0)?Object:function(t){return"String"==e(t)?t.split(""):Object(t)}},function(t,n,r){var e=r(56);t.exports=Array.isArray||function(t){return"Array"==e(t)}},function(t,n,r){"use strict";var e=r(60),i=r(22),o=r(38),u={};r(13)(u,r(15)("iterator"),function(){return this}),t.exports=function(t,n,r){t.prototype=e(u,{next:i(1,r)}),o(t,n+" Iterator")}},function(t,n){t.exports=function(t,n){return{value:n,done:!!t}}},function(t,n,r){var e=r(19),i=r(9);t.exports=function(t,n){for(var r,o=i(t),u=e(o),c=u.length,f=0;c>f;)if(o[r=u[f++]]===n)return r}},function(t,n,r){var e=r(23)("meta"),i=r(21),o=r(8),u=r(14).f,c=0,f=Object.isExtensible||function(){return!0},a=!r(18)(function(){return f(Object.preventExtensions({}))}),s=function(t){u(t,e,{value:{i:"O"+ ++c,w:{}}})},l=function(t,n){if(!i(t))return"symbol"==typeof t?t:("string"==typeof t?"S":"P")+t;if(!o(t,e)){if(!f(t))return"F";if(!n)return"E";s(t)}return t[e].i},h=function(t,n){if(!o(t,e)){if(!f(t))return!0;if(!n)return!1;s(t)}return t[e].w},v=function(t){return a&&p.NEED&&f(t)&&!o(t,e)&&s(t),t},p=t.exports={KEY:e,NEED:!1,fastKey:l,getWeak:h,onFreeze:v}},function(t,n,r){var e=r(14),i=r(20),o=r(19);t.exports=r(12)?Object.defineProperties:function(t,n){i(t);for(var r,u=o(n),c=u.length,f=0;c>f;)e.f(t,r=u[f++],n[r]);return t}},function(t,n,r){var e=r(37),i=r(22),o=r(9),u=r(42),c=r(8),f=r(58),a=Object.getOwnPropertyDescriptor;n.f=r(12)?a:function(t,n){if(t=o(t),n=u(n,!0),f)try{return a(t,n)}catch(t){}if(c(t,n))return i(!e.f.call(t,n),t[n])}},function(t,n,r){var e=r(9),i=r(61).f,o={}.toString,u="object"==typeof window&&window&&Object.getOwnPropertyNames?Object.getOwnPropertyNames(window):[],c=function(t){try{return i(t)}catch(t){return u.slice()}};t.exports.f=function(t){return u&&"[object Window]"==o.call(t)?c(t):i(e(t))}},function(t,n,r){var e=r(8),i=r(77),o=r(39)("IE_PROTO"),u=Object.prototype;t.exports=Object.getPrototypeOf||function(t){return t=i(t),e(t,o)?t[o]:"function"==typeof t.constructor&&t instanceof t.constructor?t.constructor.prototype:t instanceof Object?u:null}},function(t,n,r){var e=r(41),i=r(33);t.exports=function(t){return function(n,r){var o,u,c=String(i(n)),f=e(r),a=c.length;return f<0||f>=a?t?"":void 0:(o=c.charCodeAt(f),o<55296||o>56319||f+1===a||(u=c.charCodeAt(f+1))<56320||u>57343?t?c.charAt(f):o:t?c.slice(f,f+2):u-56320+(o-55296<<10)+65536)}}},function(t,n,r){var e=r(41),i=Math.max,o=Math.min;t.exports=function(t,n){return t=e(t),t<0?i(t+n,0):o(t,n)}},function(t,n,r){var e=r(41),i=Math.min;t.exports=function(t){return t>0?i(e(t),9007199254740991):0}},function(t,n,r){"use strict";var e=r(89),i=r(97),o=r(35),u=r(9);t.exports=r(59)(Array,"Array",function(t,n){this._t=u(t),this._i=0,this._k=n},function(){var t=this._t,n=this._k,r=this._i++;return!t||r>=t.length?(this._t=void 0,i(1)):"keys"==n?i(0,r):"values"==n?i(0,t[r]):i(0,[r,t[r]])},"values"),o.Arguments=o.Array,e("keys"),e("values"),e("entries")},function(t,n){},function(t,n,r){"use strict";var e=r(104)(!0);r(59)(String,"String",function(t){this._t=String(t),this._i=0},function(){var t,n=this._t,r=this._i;return r>=n.length?{value:void 0,done:!0}:(t=e(n,r),this._i+=t.length,{value:t,done:!1})})},function(t,n,r){"use strict";var e=r(5),i=r(8),o=r(12),u=r(51),c=r(64),f=r(99).KEY,a=r(18),s=r(40),l=r(38),h=r(23),v=r(15),p=r(44),d=r(43),y=r(98),g=r(92),b=r(95),m=r(20),x=r(9),w=r(42),S=r(22),_=r(60),O=r(102),E=r(101),P=r(14),j=r(19),F=E.f,M=P.f,A=O.f,N=e.Symbol,T=e.JSON,I=T&&T.stringify,k="prototype",L=v("_hidden"),R=v("toPrimitive"),C={}.propertyIsEnumerable,D=s("symbol-registry"),U=s("symbols"),W=s("op-symbols"),G=Object[k],B="function"==typeof N,V=e.QObject,z=!V||!V[k]||!V[k].findChild,q=o&&a(function(){return 7!=_(M({},"a",{get:function(){return M(this,"a",{value:7}).a}})).a})?function(t,n,r){var e=F(G,n);e&&delete G[n],M(t,n,r),e&&t!==G&&M(G,n,e)}:M,K=function(t){var n=U[t]=_(N[k]);return n._k=t,n},J=B&&"symbol"==typeof N.iterator?function(t){return"symbol"==typeof t}:function(t){return t instanceof N},Y=function(t,n,r){return t===G&&Y(W,n,r),m(t),n=w(n,!0),m(r),i(U,n)?(r.enumerable?(i(t,L)&&t[L][n]&&(t[L][n]=!1),r=_(r,{enumerable:S(0,!1)})):(i(t,L)||M(t,L,S(1,{})),t[L][n]=!0),q(t,n,r)):M(t,n,r)},H=function(t,n){m(t);for(var r,e=g(n=x(n)),i=0,o=e.length;o>i;)Y(t,r=e[i++],n[r]);return t},$=function(t,n){return void 0===n?_(t):H(_(t),n)},X=function(t){var n=C.call(this,t=w(t,!0));return!(this===G&&i(U,t)&&!i(W,t))&&(!(n||!i(this,t)||!i(U,t)||i(this,L)&&this[L][t])||n)},Q=function(t,n){if(t=x(t),n=w(n,!0),t!==G||!i(U,n)||i(W,n)){var r=F(t,n);return!r||!i(U,n)||i(t,L)&&t[L][n]||(r.enumerable=!0),r}},Z=function(t){for(var n,r=A(x(t)),e=[],o=0;r.length>o;)i(U,n=r[o++])||n==L||n==f||e.push(n);return e},tt=function(t){for(var n,r=t===G,e=A(r?W:x(t)),o=[],u=0;e.length>u;)!i(U,n=e[u++])||r&&!i(G,n)||o.push(U[n]);return o};B||(N=function(){if(this instanceof N)throw TypeError("Symbol is not a constructor!");var t=h(arguments.length>0?arguments[0]:void 0),n=function(r){this===G&&n.call(W,r),i(this,L)&&i(this[L],t)&&(this[L][t]=!1),q(this,t,S(1,r))};return o&&z&&q(G,t,{configurable:!0,set:n}),K(t)},c(N[k],"toString",function(){return this._k}),E.f=Q,P.f=Y,r(61).f=O.f=Z,r(37).f=X,r(62).f=tt,o&&!r(36)&&c(G,"propertyIsEnumerable",X,!0),p.f=function(t){return K(v(t))}),u(u.G+u.W+u.F*!B,{Symbol:N});for(var nt="hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables".split(","),rt=0;nt.length>rt;)v(nt[rt++]);for(var nt=j(v.store),rt=0;nt.length>rt;)d(nt[rt++]);u(u.S+u.F*!B,"Symbol",{for:function(t){return i(D,t+="")?D[t]:D[t]=N(t)},keyFor:function(t){if(J(t))return y(D,t);throw TypeError(t+" is not a symbol!")},useSetter:function(){z=!0},useSimple:function(){z=!1}}),u(u.S+u.F*!B,"Object",{create:$,defineProperty:Y,defineProperties:H,getOwnPropertyDescriptor:Q,getOwnPropertyNames:Z,getOwnPropertySymbols:tt}),T&&u(u.S+u.F*(!B||a(function(){var t=N();return"[null]"!=I([t])||"{}"!=I({a:t})||"{}"!=I(Object(t))})),"JSON",{stringify:function(t){if(void 0!==t&&!J(t)){for(var n,r,e=[t],i=1;arguments.length>i;)e.push(arguments[i++]);return n=e[1],"function"==typeof n&&(r=n),!r&&b(n)||(n=function(t,n){if(r&&(n=r.call(this,t,n)),!J(n))return n}),e[1]=n,I.apply(T,e)}}}),N[k][R]||r(13)(N[k],R,N[k].valueOf),l(N,"Symbol"),l(Math,"Math",!0),l(e.JSON,"JSON",!0)},function(t,n,r){r(43)("asyncIterator")},function(t,n,r){r(43)("observable")},function(t,n,r){r(107);for(var e=r(5),i=r(13),o=r(35),u=r(15)("toStringTag"),c=["NodeList","DOMTokenList","MediaList","StyleSheetList","CSSRuleList"],f=0;f<5;f++){var a=c[f],s=e[a],l=s&&s.prototype;l&&!l[u]&&i(l,u,a),o[a]=o.Array}},function(t,n,r){var e=r(45),i=r(7)("toStringTag"),o="Arguments"==e(function(){return arguments}()),u=function(t,n){try{return t[n]}catch(t){}};t.exports=function(t){var n,r,c;return void 0===t?"Undefined":null===t?"Null":"string"==typeof(r=u(n=Object(t),i))?r:o?e(n):"Object"==(c=e(n))&&"function"==typeof n.callee?"Arguments":c}},function(t,n,r){var e=r(45);t.exports=Object("z").propertyIsEnumerable(0)?Object:function(t){return"String"==e(t)?t.split(""):Object(t)}},function(t,n){n.f={}.propertyIsEnumerable},function(t,n,r){var e=r(30),i=r(16),o=r(75);t.exports=function(t){return function(n,r,u){var c,f=e(n),a=i(f.length),s=o(u,a);if(t&&r!=r){for(;a>s;)if((c=f[s++])!=c)return!0}else for(;a>s;s++)if((t||s in f)&&f[s]===r)return t||s||0;return!t&&-1}}},function(t,n,r){"use strict";var e=r(3),i=r(1),o=r(28),u=r(73),c=r(65),f=r(79),a=r(68),s=r(6),l=r(4),h=r(123),v=r(81),p=r(136);t.exports=function(t,n,r,d,y,g){var b=e[t],m=b,x=y?"set":"add",w=m&&m.prototype,S={},_=function(t){var n=w[t];o(w,t,"delete"==t?function(t){return!(g&&!s(t))&&n.call(this,0===t?0:t)}:"has"==t?function(t){return!(g&&!s(t))&&n.call(this,0===t?0:t)}:"get"==t?function(t){return g&&!s(t)?void 0:n.call(this,0===t?0:t)}:"add"==t?function(t){return n.call(this,0===t?0:t),this}:function(t,r){return n.call(this,0===t?0:t,r),this})};if("function"==typeof m&&(g||w.forEach&&!l(function(){(new m).entries().next()}))){var O=new m,E=O[x](g?{}:-0,1)!=O,P=l(function(){O.has(1)}),j=h(function(t){new m(t)}),F=!g&&l(function(){for(var t=new m,n=5;n--;)t[x](n,n);return!t.has(-0)});j||(m=n(function(n,r){a(n,m,t);var e=p(new b,n,m);return void 0!=r&&f(r,y,e[x],e),e}),m.prototype=w,w.constructor=m),(P||F)&&(_("delete"),_("has"),y&&_("get")),(F||E)&&_(x),g&&w.clear&&delete w.clear}else m=d.getConstructor(n,t,y,x),u(m.prototype,r),c.NEED=!0;return v(m,t),S[t]=m,i(i.G+i.W+i.F*(m!=b),S),g||d.setStrong(m,t,y),m}},function(t,n,r){"use strict";var e=r(27),i=r(28),o=r(4),u=r(46),c=r(7);t.exports=function(t,n,r){var f=c(t),a=r(u,f,""[t]),s=a[0],l=a[1];o(function(){var n={};return n[f]=function(){return 7},7!=""[t](n)})&&(i(String.prototype,t,s),e(RegExp.prototype,f,2==n?function(t,n){return l.call(t,this,n)}:function(t){return l.call(t,this)}))}
-},function(t,n,r){"use strict";var e=r(2);t.exports=function(){var t=e(this),n="";return t.global&&(n+="g"),t.ignoreCase&&(n+="i"),t.multiline&&(n+="m"),t.unicode&&(n+="u"),t.sticky&&(n+="y"),n}},function(t,n){t.exports=function(t,n,r){var e=void 0===r;switch(n.length){case 0:return e?t():t.call(r);case 1:return e?t(n[0]):t.call(r,n[0]);case 2:return e?t(n[0],n[1]):t.call(r,n[0],n[1]);case 3:return e?t(n[0],n[1],n[2]):t.call(r,n[0],n[1],n[2]);case 4:return e?t(n[0],n[1],n[2],n[3]):t.call(r,n[0],n[1],n[2],n[3])}return t.apply(r,n)}},function(t,n,r){var e=r(6),i=r(45),o=r(7)("match");t.exports=function(t){var n;return e(t)&&(void 0!==(n=t[o])?!!n:"RegExp"==i(t))}},function(t,n,r){var e=r(7)("iterator"),i=!1;try{var o=[7][e]();o.return=function(){i=!0},Array.from(o,function(){throw 2})}catch(t){}t.exports=function(t,n){if(!n&&!i)return!1;var r=!1;try{var o=[7],u=o[e]();u.next=function(){return{done:r=!0}},o[e]=function(){return u},t(o)}catch(t){}return r}},function(t,n,r){t.exports=r(69)||!r(4)(function(){var t=Math.random();__defineSetter__.call(null,t,function(){}),delete r(3)[t]})},function(t,n){n.f=Object.getOwnPropertySymbols},function(t,n,r){var e=r(3),i="__core-js_shared__",o=e[i]||(e[i]={});t.exports=function(t){return o[t]||(o[t]={})}},function(t,n,r){for(var e,i=r(3),o=r(27),u=r(76),c=u("typed_array"),f=u("view"),a=!(!i.ArrayBuffer||!i.DataView),s=a,l=0,h="Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,Float32Array,Float64Array".split(",");l<9;)(e=i[h[l++]])?(o(e.prototype,c,!0),o(e.prototype,f,!0)):s=!1;t.exports={ABV:a,CONSTR:s,TYPED:c,VIEW:f}},function(t,n){"use strict";var r={versions:function(){var t=window.navigator.userAgent;return{trident:t.indexOf("Trident")>-1,presto:t.indexOf("Presto")>-1,webKit:t.indexOf("AppleWebKit")>-1,gecko:t.indexOf("Gecko")>-1&&-1==t.indexOf("KHTML"),mobile:!!t.match(/AppleWebKit.*Mobile.*/),ios:!!t.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),android:t.indexOf("Android")>-1||t.indexOf("Linux")>-1,iPhone:t.indexOf("iPhone")>-1||t.indexOf("Mac")>-1,iPad:t.indexOf("iPad")>-1,webApp:-1==t.indexOf("Safari"),weixin:-1==t.indexOf("MicroMessenger")}}()};t.exports=r},function(t,n,r){"use strict";var e=r(85),i=function(t){return t&&t.__esModule?t:{default:t}}(e),o=function(){function t(t,n,e){return n||e?String.fromCharCode(n||e):r[t]||t}function n(t){return e[t]}var r={"&quot;":'"',"&lt;":"<","&gt;":">","&amp;":"&","&nbsp;":" "},e={};for(var u in r)e[r[u]]=u;return r["&apos;"]="'",e["'"]="&#39;",{encode:function(t){return t?(""+t).replace(/['<> "&]/g,n).replace(/\r?\n/g,"<br/>").replace(/\s/g,"&nbsp;"):""},decode:function(n){return n?(""+n).replace(/<br\s*\/?>/gi,"\n").replace(/&quot;|&lt;|&gt;|&amp;|&nbsp;|&apos;|&#(\d+);|&#(\d+)/g,t).replace(/\u00a0/g," "):""},encodeBase16:function(t){if(!t)return t;t+="";for(var n=[],r=0,e=t.length;e>r;r++)n.push(t.charCodeAt(r).toString(16).toUpperCase());return n.join("")},encodeBase16forJSON:function(t){if(!t)return t;t=t.replace(/[\u4E00-\u9FBF]/gi,function(t){return escape(t).replace("%u","\\u")});for(var n=[],r=0,e=t.length;e>r;r++)n.push(t.charCodeAt(r).toString(16).toUpperCase());return n.join("")},decodeBase16:function(t){if(!t)return t;t+="";for(var n=[],r=0,e=t.length;e>r;r+=2)n.push(String.fromCharCode("0x"+t.slice(r,r+2)));return n.join("")},encodeObject:function(t){if(t instanceof Array)for(var n=0,r=t.length;r>n;n++)t[n]=o.encodeObject(t[n]);else if("object"==(void 0===t?"undefined":(0,i.default)(t)))for(var e in t)t[e]=o.encodeObject(t[e]);else if("string"==typeof t)return o.encode(t);return t},loadScript:function(t){var n=document.createElement("script");document.getElementsByTagName("body")[0].appendChild(n),n.setAttribute("src",t)},addLoadEvent:function(t){var n=window.onload;"function"!=typeof window.onload?window.onload=t:window.onload=function(){n(),t()}}}}();t.exports=o},function(t,n,r){"use strict";var e=r(17),i=r(75),o=r(16);t.exports=function(t){for(var n=e(this),r=o(n.length),u=arguments.length,c=i(u>1?arguments[1]:void 0,r),f=u>2?arguments[2]:void 0,a=void 0===f?r:i(f,r);a>c;)n[c++]=t;return n}},function(t,n,r){"use strict";var e=r(11),i=r(66);t.exports=function(t,n,r){n in t?e.f(t,n,i(0,r)):t[n]=r}},function(t,n,r){var e=r(6),i=r(3).document,o=e(i)&&e(i.createElement);t.exports=function(t){return o?i.createElement(t):{}}},function(t,n){t.exports="constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf".split(",")},function(t,n,r){var e=r(7)("match");t.exports=function(t){var n=/./;try{"/./"[t](n)}catch(r){try{return n[e]=!1,!"/./"[t](n)}catch(t){}}return!0}},function(t,n,r){t.exports=r(3).document&&document.documentElement},function(t,n,r){var e=r(6),i=r(144).set;t.exports=function(t,n,r){var o,u=n.constructor;return u!==r&&"function"==typeof u&&(o=u.prototype)!==r.prototype&&e(o)&&i&&i(t,o),t}},function(t,n,r){var e=r(80),i=r(7)("iterator"),o=Array.prototype;t.exports=function(t){return void 0!==t&&(e.Array===t||o[i]===t)}},function(t,n,r){var e=r(45);t.exports=Array.isArray||function(t){return"Array"==e(t)}},function(t,n,r){"use strict";var e=r(70),i=r(66),o=r(81),u={};r(27)(u,r(7)("iterator"),function(){return this}),t.exports=function(t,n,r){t.prototype=e(u,{next:i(1,r)}),o(t,n+" Iterator")}},function(t,n,r){"use strict";var e=r(69),i=r(1),o=r(28),u=r(27),c=r(24),f=r(80),a=r(139),s=r(81),l=r(32),h=r(7)("iterator"),v=!([].keys&&"next"in[].keys()),p="keys",d="values",y=function(){return this};t.exports=function(t,n,r,g,b,m,x){a(r,n,g);var w,S,_,O=function(t){if(!v&&t in F)return F[t];switch(t){case p:case d:return function(){return new r(this,t)}}return function(){return new r(this,t)}},E=n+" Iterator",P=b==d,j=!1,F=t.prototype,M=F[h]||F["@@iterator"]||b&&F[b],A=M||O(b),N=b?P?O("entries"):A:void 0,T="Array"==n?F.entries||M:M;if(T&&(_=l(T.call(new t)))!==Object.prototype&&(s(_,E,!0),e||c(_,h)||u(_,h,y)),P&&M&&M.name!==d&&(j=!0,A=function(){return M.call(this)}),e&&!x||!v&&!j&&F[h]||u(F,h,A),f[n]=A,f[E]=y,b)if(w={values:P?A:O(d),keys:m?A:O(p),entries:N},x)for(S in w)S in F||o(F,S,w[S]);else i(i.P+i.F*(v||j),n,w);return w}},function(t,n){var r=Math.expm1;t.exports=!r||r(10)>22025.465794806718||r(10)<22025.465794806718||-2e-17!=r(-2e-17)?function(t){return 0==(t=+t)?t:t>-1e-6&&t<1e-6?t+t*t/2:Math.exp(t)-1}:r},function(t,n){t.exports=Math.sign||function(t){return 0==(t=+t)||t!=t?t:t<0?-1:1}},function(t,n,r){var e=r(3),i=r(151).set,o=e.MutationObserver||e.WebKitMutationObserver,u=e.process,c=e.Promise,f="process"==r(45)(u);t.exports=function(){var t,n,r,a=function(){var e,i;for(f&&(e=u.domain)&&e.exit();t;){i=t.fn,t=t.next;try{i()}catch(e){throw t?r():n=void 0,e}}n=void 0,e&&e.enter()};if(f)r=function(){u.nextTick(a)};else if(o){var s=!0,l=document.createTextNode("");new o(a).observe(l,{characterData:!0}),r=function(){l.data=s=!s}}else if(c&&c.resolve){var h=c.resolve();r=function(){h.then(a)}}else r=function(){i.call(e,a)};return function(e){var i={fn:e,next:void 0};n&&(n.next=i),t||(t=i,r()),n=i}}},function(t,n,r){var e=r(6),i=r(2),o=function(t,n){if(i(t),!e(n)&&null!==n)throw TypeError(n+": can't set as prototype!")};t.exports={set:Object.setPrototypeOf||("__proto__"in{}?function(t,n,e){try{e=r(53)(Function.call,r(31).f(Object.prototype,"__proto__").set,2),e(t,[]),n=!(t instanceof Array)}catch(t){n=!0}return function(t,r){return o(t,r),n?t.__proto__=r:e(t,r),t}}({},!1):void 0),check:o}},function(t,n,r){var e=r(126)("keys"),i=r(76);t.exports=function(t){return e[t]||(e[t]=i(t))}},function(t,n,r){var e=r(2),i=r(26),o=r(7)("species");t.exports=function(t,n){var r,u=e(t).constructor;return void 0===u||void 0==(r=e(u)[o])?n:i(r)}},function(t,n,r){var e=r(67),i=r(46);t.exports=function(t){return function(n,r){var o,u,c=String(i(n)),f=e(r),a=c.length;return f<0||f>=a?t?"":void 0:(o=c.charCodeAt(f),o<55296||o>56319||f+1===a||(u=c.charCodeAt(f+1))<56320||u>57343?t?c.charAt(f):o:t?c.slice(f,f+2):u-56320+(o-55296<<10)+65536)}}},function(t,n,r){var e=r(122),i=r(46);t.exports=function(t,n,r){if(e(n))throw TypeError("String#"+r+" doesn't accept regex!");return String(i(t))}},function(t,n,r){"use strict";var e=r(67),i=r(46);t.exports=function(t){var n=String(i(this)),r="",o=e(t);if(o<0||o==1/0)throw RangeError("Count can't be negative");for(;o>0;(o>>>=1)&&(n+=n))1&o&&(r+=n);return r}},function(t,n){t.exports="\t\n\v\f\r   ᠎             　\u2028\u2029\ufeff"},function(t,n,r){var e,i,o,u=r(53),c=r(121),f=r(135),a=r(132),s=r(3),l=s.process,h=s.setImmediate,v=s.clearImmediate,p=s.MessageChannel,d=0,y={},g="onreadystatechange",b=function(){var t=+this;if(y.hasOwnProperty(t)){var n=y[t];delete y[t],n()}},m=function(t){b.call(t.data)};h&&v||(h=function(t){for(var n=[],r=1;arguments.length>r;)n.push(arguments[r++]);return y[++d]=function(){c("function"==typeof t?t:Function(t),n)},e(d),d},v=function(t){delete y[t]},"process"==r(45)(l)?e=function(t){l.nextTick(u(b,t,1))}:p?(i=new p,o=i.port2,i.port1.onmessage=m,e=u(o.postMessage,o,1)):s.addEventListener&&"function"==typeof postMessage&&!s.importScripts?(e=function(t){s.postMessage(t+"","*")},s.addEventListener("message",m,!1)):e=g in a("script")?function(t){f.appendChild(a("script"))[g]=function(){f.removeChild(this),b.call(t)}}:function(t){setTimeout(u(b,t,1),0)}),t.exports={set:h,clear:v}},function(t,n,r){"use strict";var e=r(3),i=r(10),o=r(69),u=r(127),c=r(27),f=r(73),a=r(4),s=r(68),l=r(67),h=r(16),v=r(71).f,p=r(11).f,d=r(130),y=r(81),g="ArrayBuffer",b="DataView",m="prototype",x="Wrong length!",w="Wrong index!",S=e[g],_=e[b],O=e.Math,E=e.RangeError,P=e.Infinity,j=S,F=O.abs,M=O.pow,A=O.floor,N=O.log,T=O.LN2,I="buffer",k="byteLength",L="byteOffset",R=i?"_b":I,C=i?"_l":k,D=i?"_o":L,U=function(t,n,r){var e,i,o,u=Array(r),c=8*r-n-1,f=(1<<c)-1,a=f>>1,s=23===n?M(2,-24)-M(2,-77):0,l=0,h=t<0||0===t&&1/t<0?1:0;for(t=F(t),t!=t||t===P?(i=t!=t?1:0,e=f):(e=A(N(t)/T),t*(o=M(2,-e))<1&&(e--,o*=2),t+=e+a>=1?s/o:s*M(2,1-a),t*o>=2&&(e++,o/=2),e+a>=f?(i=0,e=f):e+a>=1?(i=(t*o-1)*M(2,n),e+=a):(i=t*M(2,a-1)*M(2,n),e=0));n>=8;u[l++]=255&i,i/=256,n-=8);for(e=e<<n|i,c+=n;c>0;u[l++]=255&e,e/=256,c-=8);return u[--l]|=128*h,u},W=function(t,n,r){var e,i=8*r-n-1,o=(1<<i)-1,u=o>>1,c=i-7,f=r-1,a=t[f--],s=127&a;for(a>>=7;c>0;s=256*s+t[f],f--,c-=8);for(e=s&(1<<-c)-1,s>>=-c,c+=n;c>0;e=256*e+t[f],f--,c-=8);if(0===s)s=1-u;else{if(s===o)return e?NaN:a?-P:P;e+=M(2,n),s-=u}return(a?-1:1)*e*M(2,s-n)},G=function(t){return t[3]<<24|t[2]<<16|t[1]<<8|t[0]},B=function(t){return[255&t]},V=function(t){return[255&t,t>>8&255]},z=function(t){return[255&t,t>>8&255,t>>16&255,t>>24&255]},q=function(t){return U(t,52,8)},K=function(t){return U(t,23,4)},J=function(t,n,r){p(t[m],n,{get:function(){return this[r]}})},Y=function(t,n,r,e){var i=+r,o=l(i);if(i!=o||o<0||o+n>t[C])throw E(w);var u=t[R]._b,c=o+t[D],f=u.slice(c,c+n);return e?f:f.reverse()},H=function(t,n,r,e,i,o){var u=+r,c=l(u);if(u!=c||c<0||c+n>t[C])throw E(w);for(var f=t[R]._b,a=c+t[D],s=e(+i),h=0;h<n;h++)f[a+h]=s[o?h:n-h-1]},$=function(t,n){s(t,S,g);var r=+n,e=h(r);if(r!=e)throw E(x);return e};if(u.ABV){if(!a(function(){new S})||!a(function(){new S(.5)})){S=function(t){return new j($(this,t))};for(var X,Q=S[m]=j[m],Z=v(j),tt=0;Z.length>tt;)(X=Z[tt++])in S||c(S,X,j[X]);o||(Q.constructor=S)}var nt=new _(new S(2)),rt=_[m].setInt8;nt.setInt8(0,2147483648),nt.setInt8(1,2147483649),!nt.getInt8(0)&&nt.getInt8(1)||f(_[m],{setInt8:function(t,n){rt.call(this,t,n<<24>>24)},setUint8:function(t,n){rt.call(this,t,n<<24>>24)}},!0)}else S=function(t){var n=$(this,t);this._b=d.call(Array(n),0),this[C]=n},_=function(t,n,r){s(this,_,b),s(t,S,b);var e=t[C],i=l(n);if(i<0||i>e)throw E("Wrong offset!");if(r=void 0===r?e-i:h(r),i+r>e)throw E(x);this[R]=t,this[D]=i,this[C]=r},i&&(J(S,k,"_l"),J(_,I,"_b"),J(_,k,"_l"),J(_,L,"_o")),f(_[m],{getInt8:function(t){return Y(this,1,t)[0]<<24>>24},getUint8:function(t){return Y(this,1,t)[0]},getInt16:function(t){var n=Y(this,2,t,arguments[1]);return(n[1]<<8|n[0])<<16>>16},getUint16:function(t){var n=Y(this,2,t,arguments[1]);return n[1]<<8|n[0]},getInt32:function(t){return G(Y(this,4,t,arguments[1]))},getUint32:function(t){return G(Y(this,4,t,arguments[1]))>>>0},getFloat32:function(t){return W(Y(this,4,t,arguments[1]),23,4)},getFloat64:function(t){return W(Y(this,8,t,arguments[1]),52,8)},setInt8:function(t,n){H(this,1,t,B,n)},setUint8:function(t,n){H(this,1,t,B,n)},setInt16:function(t,n){H(this,2,t,V,n,arguments[2])},setUint16:function(t,n){H(this,2,t,V,n,arguments[2])},setInt32:function(t,n){H(this,4,t,z,n,arguments[2])},setUint32:function(t,n){H(this,4,t,z,n,arguments[2])},setFloat32:function(t,n){H(this,4,t,K,n,arguments[2])},setFloat64:function(t,n){H(this,8,t,q,n,arguments[2])}});y(S,g),y(_,b),c(_[m],u.VIEW,!0),n[g]=S,n[b]=_},function(t,n,r){var e=r(3),i=r(52),o=r(69),u=r(182),c=r(11).f;t.exports=function(t){var n=i.Symbol||(i.Symbol=o?{}:e.Symbol||{});"_"==t.charAt(0)||t in n||c(n,t,{value:u.f(t)})}},function(t,n,r){var e=r(114),i=r(7)("iterator"),o=r(80);t.exports=r(52).getIteratorMethod=function(t){if(void 0!=t)return t[i]||t["@@iterator"]||o[e(t)]}},function(t,n,r){"use strict";var e=r(78),i=r(170),o=r(80),u=r(30);t.exports=r(140)(Array,"Array",function(t,n){this._t=u(t),this._i=0,this._k=n},function(){var t=this._t,n=this._k,r=this._i++;return!t||r>=t.length?(this._t=void 0,i(1)):"keys"==n?i(0,r):"values"==n?i(0,t[r]):i(0,[r,t[r]])},"values"),o.Arguments=o.Array,e("keys"),e("values"),e("entries")},function(t,n){function r(t,n){t.classList?t.classList.add(n):t.className+=" "+n}t.exports=r},function(t,n){function r(t,n){if(t.classList)t.classList.remove(n);else{var r=new RegExp("(^|\\b)"+n.split(" ").join("|")+"(\\b|$)","gi");t.className=t.className.replace(r," ")}}t.exports=r},function(t,n){function r(){throw new Error("setTimeout has not been defined")}function e(){throw new Error("clearTimeout has not been defined")}function i(t){if(s===setTimeout)return setTimeout(t,0);if((s===r||!s)&&setTimeout)return s=setTimeout,setTimeout(t,0);try{return s(t,0)}catch(n){try{return s.call(null,t,0)}catch(n){return s.call(this,t,0)}}}function o(t){if(l===clearTimeout)return clearTimeout(t);if((l===e||!l)&&clearTimeout)return l=clearTimeout,clearTimeout(t);try{return l(t)}catch(n){try{return l.call(null,t)}catch(n){return l.call(this,t)}}}function u(){d&&v&&(d=!1,v.length?p=v.concat(p):y=-1,p.length&&c())}function c(){if(!d){var t=i(u);d=!0;for(var n=p.length;n;){for(v=p,p=[];++y<n;)v&&v[y].run();y=-1,n=p.length}v=null,d=!1,o(t)}}function f(t,n){this.fun=t,this.array=n}function a(){}var s,l,h=t.exports={};!function(){try{s="function"==typeof setTimeout?setTimeout:r}catch(t){s=r}try{l="function"==typeof clearTimeout?clearTimeout:e}catch(t){l=e}}();var v,p=[],d=!1,y=-1;h.nextTick=function(t){var n=new Array(arguments.length-1);if(arguments.length>1)for(var r=1;r<arguments.length;r++)n[r-1]=arguments[r];p.push(new f(t,n)),1!==p.length||d||i(c)},f.prototype.run=function(){this.fun.apply(null,this.array)},h.title="browser",h.browser=!0,h.env={},h.argv=[],h.version="",h.versions={},h.on=a,h.addListener=a,h.once=a,h.off=a,h.removeListener=a,h.removeAllListeners=a,h.emit=a,h.prependListener=a,h.prependOnceListener=a,h.listeners=function(t){return[]},h.binding=function(t){throw new Error("process.binding is not supported")},h.cwd=function(){return"/"},h.chdir=function(t){throw new Error("process.chdir is not supported")},h.umask=function(){return 0}},function(t,n,r){var e=r(45);t.exports=function(t,n){if("number"!=typeof t&&"Number"!=e(t))throw TypeError(n);return+t}},function(t,n,r){"use strict";var e=r(17),i=r(75),o=r(16);t.exports=[].copyWithin||function(t,n){var r=e(this),u=o(r.length),c=i(t,u),f=i(n,u),a=arguments.length>2?arguments[2]:void 0,s=Math.min((void 0===a?u:i(a,u))-f,u-c),l=1;for(f<c&&c<f+s&&(l=-1,f+=s-1,c+=s-1);s-- >0;)f in r?r[c]=r[f]:delete r[c],c+=l,f+=l;return r}},function(t,n,r){var e=r(79);t.exports=function(t,n){var r=[];return e(t,!1,r.push,r,n),r}},function(t,n,r){var e=r(26),i=r(17),o=r(115),u=r(16);t.exports=function(t,n,r,c,f){e(n);var a=i(t),s=o(a),l=u(a.length),h=f?l-1:0,v=f?-1:1;if(r<2)for(;;){if(h in s){c=s[h],h+=v;break}if(h+=v,f?h<0:l<=h)throw TypeError("Reduce of empty array with no initial value")}for(;f?h>=0:l>h;h+=v)h in s&&(c=n(c,s[h],h,a));return c}},function(t,n,r){"use strict";var e=r(26),i=r(6),o=r(121),u=[].slice,c={},f=function(t,n,r){if(!(n in c)){for(var e=[],i=0;i<n;i++)e[i]="a["+i+"]";c[n]=Function("F,a","return new F("+e.join(",")+")")}return c[n](t,r)};t.exports=Function.bind||function(t){var n=e(this),r=u.call(arguments,1),c=function(){var e=r.concat(u.call(arguments));return this instanceof c?f(n,e.length,e):o(n,e,t)};return i(n.prototype)&&(c.prototype=n.prototype),c}},function(t,n,r){"use strict";var e=r(11).f,i=r(70),o=r(73),u=r(53),c=r(68),f=r(46),a=r(79),s=r(140),l=r(170),h=r(74),v=r(10),p=r(65).fastKey,d=v?"_s":"size",y=function(t,n){var r,e=p(n);if("F"!==e)return t._i[e];for(r=t._f;r;r=r.n)if(r.k==n)return r};t.exports={getConstructor:function(t,n,r,s){var l=t(function(t,e){c(t,l,n,"_i"),t._i=i(null),t._f=void 0,t._l=void 0,t[d]=0,void 0!=e&&a(e,r,t[s],t)});return o(l.prototype,{clear:function(){for(var t=this,n=t._i,r=t._f;r;r=r.n)r.r=!0,r.p&&(r.p=r.p.n=void 0),delete n[r.i];t._f=t._l=void 0,t[d]=0},delete:function(t){var n=this,r=y(n,t);if(r){var e=r.n,i=r.p;delete n._i[r.i],r.r=!0,i&&(i.n=e),e&&(e.p=i),n._f==r&&(n._f=e),n._l==r&&(n._l=i),n[d]--}return!!r},forEach:function(t){c(this,l,"forEach");for(var n,r=u(t,arguments.length>1?arguments[1]:void 0,3);n=n?n.n:this._f;)for(r(n.v,n.k,this);n&&n.r;)n=n.p},has:function(t){return!!y(this,t)}}),v&&e(l.prototype,"size",{get:function(){return f(this[d])}}),l},def:function(t,n,r){var e,i,o=y(t,n);return o?o.v=r:(t._l=o={i:i=p(n,!0),k:n,v:r,p:e=t._l,n:void 0,r:!1},t._f||(t._f=o),e&&(e.n=o),t[d]++,"F"!==i&&(t._i[i]=o)),t},getEntry:y,setStrong:function(t,n,r){s(t,n,function(t,n){this._t=t,this._k=n,this._l=void 0},function(){for(var t=this,n=t._k,r=t._l;r&&r.r;)r=r.p;return t._t&&(t._l=r=r?r.n:t._t._f)?"keys"==n?l(0,r.k):"values"==n?l(0,r.v):l(0,[r.k,r.v]):(t._t=void 0,l(1))},r?"entries":"values",!r,!0),h(n)}}},function(t,n,r){var e=r(114),i=r(161);t.exports=function(t){return function(){if(e(this)!=t)throw TypeError(t+"#toJSON isn't generic");return i(this)}}},function(t,n,r){"use strict";var e=r(73),i=r(65).getWeak,o=r(2),u=r(6),c=r(68),f=r(79),a=r(48),s=r(24),l=a(5),h=a(6),v=0,p=function(t){return t._l||(t._l=new d)},d=function(){this.a=[]},y=function(t,n){return l(t.a,function(t){return t[0]===n})};d.prototype={get:function(t){var n=y(this,t);if(n)return n[1]},has:function(t){return!!y(this,t)},set:function(t,n){var r=y(this,t);r?r[1]=n:this.a.push([t,n])},delete:function(t){var n=h(this.a,function(n){return n[0]===t});return~n&&this.a.splice(n,1),!!~n}},t.exports={getConstructor:function(t,n,r,o){var a=t(function(t,e){c(t,a,n,"_i"),t._i=v++,t._l=void 0,void 0!=e&&f(e,r,t[o],t)});return e(a.prototype,{delete:function(t){if(!u(t))return!1;var n=i(t);return!0===n?p(this).delete(t):n&&s(n,this._i)&&delete n[this._i]},has:function(t){if(!u(t))return!1;var n=i(t);return!0===n?p(this).has(t):n&&s(n,this._i)}}),a},def:function(t,n,r){var e=i(o(n),!0);return!0===e?p(t).set(n,r):e[t._i]=r,t},ufstore:p}},function(t,n,r){t.exports=!r(10)&&!r(4)(function(){return 7!=Object.defineProperty(r(132)("div"),"a",{get:function(){return 7}}).a})},function(t,n,r){var e=r(6),i=Math.floor;t.exports=function(t){return!e(t)&&isFinite(t)&&i(t)===t}},function(t,n,r){var e=r(2);t.exports=function(t,n,r,i){try{return i?n(e(r)[0],r[1]):n(r)}catch(n){var o=t.return;throw void 0!==o&&e(o.call(t)),n}}},function(t,n){t.exports=function(t,n){return{value:n,done:!!t}}},function(t,n){t.exports=Math.log1p||function(t){return(t=+t)>-1e-8&&t<1e-8?t-t*t/2:Math.log(1+t)}},function(t,n,r){"use strict";var e=r(72),i=r(125),o=r(116),u=r(17),c=r(115),f=Object.assign;t.exports=!f||r(4)(function(){var t={},n={},r=Symbol(),e="abcdefghijklmnopqrst";return t[r]=7,e.split("").forEach(function(t){n[t]=t}),7!=f({},t)[r]||Object.keys(f({},n)).join("")!=e})?function(t,n){for(var r=u(t),f=arguments.length,a=1,s=i.f,l=o.f;f>a;)for(var h,v=c(arguments[a++]),p=s?e(v).concat(s(v)):e(v),d=p.length,y=0;d>y;)l.call(v,h=p[y++])&&(r[h]=v[h]);return r}:f},function(t,n,r){var e=r(11),i=r(2),o=r(72);t.exports=r(10)?Object.defineProperties:function(t,n){i(t);for(var r,u=o(n),c=u.length,f=0;c>f;)e.f(t,r=u[f++],n[r]);return t}},function(t,n,r){var e=r(30),i=r(71).f,o={}.toString,u="object"==typeof window&&window&&Object.getOwnPropertyNames?Object.getOwnPropertyNames(window):[],c=function(t){try{return i(t)}catch(t){return u.slice()}};t.exports.f=function(t){return u&&"[object Window]"==o.call(t)?c(t):i(e(t))}},function(t,n,r){var e=r(24),i=r(30),o=r(117)(!1),u=r(145)("IE_PROTO");t.exports=function(t,n){var r,c=i(t),f=0,a=[];for(r in c)r!=u&&e(c,r)&&a.push(r);for(;n.length>f;)e(c,r=n[f++])&&(~o(a,r)||a.push(r));return a}},function(t,n,r){var e=r(72),i=r(30),o=r(116).f;t.exports=function(t){return function(n){for(var r,u=i(n),c=e(u),f=c.length,a=0,s=[];f>a;)o.call(u,r=c[a++])&&s.push(t?[r,u[r]]:u[r]);return s}}},function(t,n,r){var e=r(71),i=r(125),o=r(2),u=r(3).Reflect;t.exports=u&&u.ownKeys||function(t){var n=e.f(o(t)),r=i.f;return r?n.concat(r(t)):n}},function(t,n,r){var e=r(3).parseFloat,i=r(82).trim;t.exports=1/e(r(150)+"-0")!=-1/0?function(t){var n=i(String(t),3),r=e(n);return 0===r&&"-"==n.charAt(0)?-0:r}:e},function(t,n,r){var e=r(3).parseInt,i=r(82).trim,o=r(150),u=/^[\-+]?0[xX]/;t.exports=8!==e(o+"08")||22!==e(o+"0x16")?function(t,n){var r=i(String(t),3);return e(r,n>>>0||(u.test(r)?16:10))}:e},function(t,n){t.exports=Object.is||function(t,n){return t===n?0!==t||1/t==1/n:t!=t&&n!=n}},function(t,n,r){var e=r(16),i=r(149),o=r(46);t.exports=function(t,n,r,u){var c=String(o(t)),f=c.length,a=void 0===r?" ":String(r),s=e(n);if(s<=f||""==a)return c;var l=s-f,h=i.call(a,Math.ceil(l/a.length));return h.length>l&&(h=h.slice(0,l)),u?h+c:c+h}},function(t,n,r){n.f=r(7)},function(t,n,r){"use strict";var e=r(164);t.exports=r(118)("Map",function(t){return function(){return t(this,arguments.length>0?arguments[0]:void 0)}},{get:function(t){var n=e.getEntry(this,t);return n&&n.v},set:function(t,n){return e.def(this,0===t?0:t,n)}},e,!0)},function(t,n,r){r(10)&&"g"!=/./g.flags&&r(11).f(RegExp.prototype,"flags",{configurable:!0,get:r(120)})},function(t,n,r){"use strict";var e=r(164);t.exports=r(118)("Set",function(t){return function(){return t(this,arguments.length>0?arguments[0]:void 0)}},{add:function(t){return e.def(this,t=0===t?0:t,t)}},e)},function(t,n,r){"use strict";var e,i=r(48)(0),o=r(28),u=r(65),c=r(172),f=r(166),a=r(6),s=u.getWeak,l=Object.isExtensible,h=f.ufstore,v={},p=function(t){return function(){return t(this,arguments.length>0?arguments[0]:void 0)}},d={get:function(t){if(a(t)){var n=s(t);return!0===n?h(this).get(t):n?n[this._i]:void 0}},set:function(t,n){return f.def(this,t,n)}},y=t.exports=r(118)("WeakMap",p,d,f,!0,!0);7!=(new y).set((Object.freeze||Object)(v),7).get(v)&&(e=f.getConstructor(p),c(e.prototype,d),u.NEED=!0,i(["delete","has","get","set"],function(t){var n=y.prototype,r=n[t];o(n,t,function(n,i){if(a(n)&&!l(n)){this._f||(this._f=new e);var o=this._f[t](n,i);return"set"==t?this:o}return r.call(this,n,i)})}))},,,,function(t,n){"use strict";function r(){var t=document.querySelector("#page-nav");if(t&&!document.querySelector("#page-nav .extend.prev")&&(t.innerHTML='<a class="extend prev disabled" rel="prev">&laquo; Prev</a>'+t.innerHTML),t&&!document.querySelector("#page-nav .extend.next")&&(t.innerHTML=t.innerHTML+'<a class="extend next disabled" rel="next">Next &raquo;</a>'),yiliaConfig&&yiliaConfig.open_in_new){document.querySelectorAll(".article-entry a:not(.article-more-a)").forEach(function(t){var n=t.getAttribute("target");n&&""!==n||t.setAttribute("target","_blank")})}if(yiliaConfig&&yiliaConfig.toc_hide_index){document.querySelectorAll(".toc-number").forEach(function(t){t.style.display="none"})}var n=document.querySelector("#js-aboutme");n&&0!==n.length&&(n.innerHTML=n.innerText)}t.exports={init:r}},function(t,n,r){"use strict";function e(t){return t&&t.__esModule?t:{default:t}}function i(t,n){var r=/\/|index.html/g;return t.replace(r,"")===n.replace(r,"")}function o(){for(var t=document.querySelectorAll(".js-header-menu li a"),n=window.location.pathname,r=0,e=t.length;r<e;r++){var o=t[r];i(n,o.getAttribute("href"))&&(0,h.default)(o,"active")}}function u(t){for(var n=t.offsetLeft,r=t.offsetParent;null!==r;)n+=r.offsetLeft,r=r.offsetParent;return n}function c(t){for(var n=t.offsetTop,r=t.offsetParent;null!==r;)n+=r.offsetTop,r=r.offsetParent;return n}function f(t,n,r,e,i){var o=u(t),f=c(t)-n;if(f-r<=i){var a=t.$newDom;a||(a=t.cloneNode(!0),(0,d.default)(t,a),t.$newDom=a,a.style.position="fixed",a.style.top=(r||f)+"px",a.style.left=o+"px",a.style.zIndex=e||2,a.style.width="100%",a.style.color="#fff"),a.style.visibility="visible",t.style.visibility="hidden"}else{t.style.visibility="visible";var s=t.$newDom;s&&(s.style.visibility="hidden")}}function a(){var t=document.querySelector(".js-overlay"),n=document.querySelector(".js-header-menu");f(t,document.body.scrollTop,-63,2,0),f(n,document.body.scrollTop,1,3,0)}function s(){document.querySelector("#container").addEventListener("scroll",function(t){a()}),window.addEventListener("scroll",function(t){a()}),a()}var l=r(156),h=e(l),v=r(157),p=(e(v),r(382)),d=e(p),y=r(128),g=e(y),b=r(190),m=e(b),x=r(129);(function(){g.default.versions.mobile&&window.screen.width<800&&(o(),s())})(),(0,x.addLoadEvent)(function(){m.default.init()}),t.exports={}},,,,function(t,n,r){(function(t){"use strict";function n(t,n,r){t[n]||Object[e](t,n,{writable:!0,configurable:!0,value:r})}if(r(381),r(391),r(198),t._babelPolyfill)throw new Error("only one instance of babel-polyfill is allowed");t._babelPolyfill=!0;var e="defineProperty";n(String.prototype,"padLeft","".padStart),n(String.prototype,"padRight","".padEnd),"pop,reverse,shift,keys,values,entries,indexOf,every,some,forEach,map,filter,find,findIndex,includes,join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill".split(",").forEach(function(t){[][t]&&n(Array,t,Function.call.bind([][t]))})}).call(n,function(){return this}())},,,function(t,n,r){r(210),t.exports=r(52).RegExp.escape},,,,function(t,n,r){var e=r(6),i=r(138),o=r(7)("species");t.exports=function(t){var n;return i(t)&&(n=t.constructor,"function"!=typeof n||n!==Array&&!i(n.prototype)||(n=void 0),e(n)&&null===(n=n[o])&&(n=void 0)),void 0===n?Array:n}},function(t,n,r){var e=r(202);t.exports=function(t,n){return new(e(t))(n)}},function(t,n,r){"use strict";var e=r(2),i=r(50),o="number";t.exports=function(t){if("string"!==t&&t!==o&&"default"!==t)throw TypeError("Incorrect hint");return i(e(this),t!=o)}},function(t,n,r){var e=r(72),i=r(125),o=r(116);t.exports=function(t){var n=e(t),r=i.f;if(r)for(var u,c=r(t),f=o.f,a=0;c.length>a;)f.call(t,u=c[a++])&&n.push(u);return n}},function(t,n,r){var e=r(72),i=r(30);t.exports=function(t,n){for(var r,o=i(t),u=e(o),c=u.length,f=0;c>f;)if(o[r=u[f++]]===n)return r}},function(t,n,r){"use strict";var e=r(208),i=r(121),o=r(26);t.exports=function(){for(var t=o(this),n=arguments.length,r=Array(n),u=0,c=e._,f=!1;n>u;)(r[u]=arguments[u++])===c&&(f=!0);return function(){var e,o=this,u=arguments.length,a=0,s=0;if(!f&&!u)return i(t,r,o);if(e=r.slice(),f)for(;n>a;a++)e[a]===c&&(e[a]=arguments[s++]);for(;u>s;)e.push(arguments[s++]);return i(t,e,o)}}},function(t,n,r){t.exports=r(3)},function(t,n){t.exports=function(t,n){var r=n===Object(n)?function(t){return n[t]}:n;return function(n){return String(n).replace(t,r)}}},function(t,n,r){var e=r(1),i=r(209)(/[\\^$*+?.()|[\]{}]/g,"\\$&");e(e.S,"RegExp",{escape:function(t){return i(t)}})},function(t,n,r){var e=r(1);e(e.P,"Array",{copyWithin:r(160)}),r(78)("copyWithin")},function(t,n,r){"use strict";var e=r(1),i=r(48)(4);e(e.P+e.F*!r(47)([].every,!0),"Array",{every:function(t){return i(this,t,arguments[1])}})},function(t,n,r){var e=r(1);e(e.P,"Array",{fill:r(130)}),r(78)("fill")},function(t,n,r){"use strict";var e=r(1),i=r(48)(2);e(e.P+e.F*!r(47)([].filter,!0),"Array",{filter:function(t){return i(this,t,arguments[1])}})},function(t,n,r){"use strict";var e=r(1),i=r(48)(6),o="findIndex",u=!0;o in[]&&Array(1)[o](function(){u=!1}),e(e.P+e.F*u,"Array",{findIndex:function(t){return i(this,t,arguments.length>1?arguments[1]:void 0)}}),r(78)(o)},function(t,n,r){"use strict";var e=r(1),i=r(48)(5),o="find",u=!0;o in[]&&Array(1)[o](function(){u=!1}),e(e.P+e.F*u,"Array",{find:function(t){return i(this,t,arguments.length>1?arguments[1]:void 0)}}),r(78)(o)},function(t,n,r){"use strict";var e=r(1),i=r(48)(0),o=r(47)([].forEach,!0);e(e.P+e.F*!o,"Array",{forEach:function(t){return i(this,t,arguments[1])}})},function(t,n,r){"use strict";var e=r(53),i=r(1),o=r(17),u=r(169),c=r(137),f=r(16),a=r(131),s=r(154);i(i.S+i.F*!r(123)(function(t){Array.from(t)}),"Array",{from:function(t){var n,r,i,l,h=o(t),v="function"==typeof this?this:Array,p=arguments.length,d=p>1?arguments[1]:void 0,y=void 0!==d,g=0,b=s(h);if(y&&(d=e(d,p>2?arguments[2]:void 0,2)),void 0==b||v==Array&&c(b))for(n=f(h.length),r=new v(n);n>g;g++)a(r,g,y?d(h[g],g):h[g]);else for(l=b.call(h),r=new v;!(i=l.next()).done;g++)a(r,g,y?u(l,d,[i.value,g],!0):i.value);return r.length=g,r}})},function(t,n,r){"use strict";var e=r(1),i=r(117)(!1),o=[].indexOf,u=!!o&&1/[1].indexOf(1,-0)<0;e(e.P+e.F*(u||!r(47)(o)),"Array",{indexOf:function(t){return u?o.apply(this,arguments)||0:i(this,t,arguments[1])}})},function(t,n,r){var e=r(1);e(e.S,"Array",{isArray:r(138)})},function(t,n,r){"use strict";var e=r(1),i=r(30),o=[].join;e(e.P+e.F*(r(115)!=Object||!r(47)(o)),"Array",{join:function(t){return o.call(i(this),void 0===t?",":t)}})},function(t,n,r){"use strict";var e=r(1),i=r(30),o=r(67),u=r(16),c=[].lastIndexOf,f=!!c&&1/[1].lastIndexOf(1,-0)<0;e(e.P+e.F*(f||!r(47)(c)),"Array",{lastIndexOf:function(t){if(f)return c.apply(this,arguments)||0;var n=i(this),r=u(n.length),e=r-1;for(arguments.length>1&&(e=Math.min(e,o(arguments[1]))),e<0&&(e=r+e);e>=0;e--)if(e in n&&n[e]===t)return e||0;return-1}})},function(t,n,r){"use strict";var e=r(1),i=r(48)(1);e(e.P+e.F*!r(47)([].map,!0),"Array",{map:function(t){return i(this,t,arguments[1])}})},function(t,n,r){"use strict";var e=r(1),i=r(131);e(e.S+e.F*r(4)(function(){function t(){}return!(Array.of.call(t)instanceof t)}),"Array",{of:function(){for(var t=0,n=arguments.length,r=new("function"==typeof this?this:Array)(n);n>t;)i(r,t,arguments[t++]);return r.length=n,r}})},function(t,n,r){"use strict";var e=r(1),i=r(162);e(e.P+e.F*!r(47)([].reduceRight,!0),"Array",{reduceRight:function(t){return i(this,t,arguments.length,arguments[1],!0)}})},function(t,n,r){"use strict";var e=r(1),i=r(162);e(e.P+e.F*!r(47)([].reduce,!0),"Array",{reduce:function(t){return i(this,t,arguments.length,arguments[1],!1)}})},function(t,n,r){"use strict";var e=r(1),i=r(135),o=r(45),u=r(75),c=r(16),f=[].slice;e(e.P+e.F*r(4)(function(){i&&f.call(i)}),"Array",{slice:function(t,n){var r=c(this.length),e=o(this);if(n=void 0===n?r:n,"Array"==e)return f.call(this,t,n);for(var i=u(t,r),a=u(n,r),s=c(a-i),l=Array(s),h=0;h<s;h++)l[h]="String"==e?this.charAt(i+h):this[i+h];return l}})},function(t,n,r){"use strict";var e=r(1),i=r(48)(3);e(e.P+e.F*!r(47)([].some,!0),"Array",{some:function(t){return i(this,t,arguments[1])}})},function(t,n,r){"use strict";var e=r(1),i=r(26),o=r(17),u=r(4),c=[].sort,f=[1,2,3];e(e.P+e.F*(u(function(){f.sort(void 0)})||!u(function(){f.sort(null)})||!r(47)(c)),"Array",{sort:function(t){return void 0===t?c.call(o(this)):c.call(o(this),i(t))}})},function(t,n,r){r(74)("Array")},function(t,n,r){var e=r(1);e(e.S,"Date",{now:function(){return(new Date).getTime()}})},function(t,n,r){"use strict";var e=r(1),i=r(4),o=Date.prototype.getTime,u=function(t){return t>9?t:"0"+t};e(e.P+e.F*(i(function(){return"0385-07-25T07:06:39.999Z"!=new Date(-5e13-1).toISOString()})||!i(function(){new Date(NaN).toISOString()})),"Date",{toISOString:function(){
-if(!isFinite(o.call(this)))throw RangeError("Invalid time value");var t=this,n=t.getUTCFullYear(),r=t.getUTCMilliseconds(),e=n<0?"-":n>9999?"+":"";return e+("00000"+Math.abs(n)).slice(e?-6:-4)+"-"+u(t.getUTCMonth()+1)+"-"+u(t.getUTCDate())+"T"+u(t.getUTCHours())+":"+u(t.getUTCMinutes())+":"+u(t.getUTCSeconds())+"."+(r>99?r:"0"+u(r))+"Z"}})},function(t,n,r){"use strict";var e=r(1),i=r(17),o=r(50);e(e.P+e.F*r(4)(function(){return null!==new Date(NaN).toJSON()||1!==Date.prototype.toJSON.call({toISOString:function(){return 1}})}),"Date",{toJSON:function(t){var n=i(this),r=o(n);return"number"!=typeof r||isFinite(r)?n.toISOString():null}})},function(t,n,r){var e=r(7)("toPrimitive"),i=Date.prototype;e in i||r(27)(i,e,r(204))},function(t,n,r){var e=Date.prototype,i="Invalid Date",o="toString",u=e[o],c=e.getTime;new Date(NaN)+""!=i&&r(28)(e,o,function(){var t=c.call(this);return t===t?u.call(this):i})},function(t,n,r){var e=r(1);e(e.P,"Function",{bind:r(163)})},function(t,n,r){"use strict";var e=r(6),i=r(32),o=r(7)("hasInstance"),u=Function.prototype;o in u||r(11).f(u,o,{value:function(t){if("function"!=typeof this||!e(t))return!1;if(!e(this.prototype))return t instanceof this;for(;t=i(t);)if(this.prototype===t)return!0;return!1}})},function(t,n,r){var e=r(11).f,i=r(66),o=r(24),u=Function.prototype,c="name",f=Object.isExtensible||function(){return!0};c in u||r(10)&&e(u,c,{configurable:!0,get:function(){try{var t=this,n=(""+t).match(/^\s*function ([^ (]*)/)[1];return o(t,c)||!f(t)||e(t,c,i(5,n)),n}catch(t){return""}}})},function(t,n,r){var e=r(1),i=r(171),o=Math.sqrt,u=Math.acosh;e(e.S+e.F*!(u&&710==Math.floor(u(Number.MAX_VALUE))&&u(1/0)==1/0),"Math",{acosh:function(t){return(t=+t)<1?NaN:t>94906265.62425156?Math.log(t)+Math.LN2:i(t-1+o(t-1)*o(t+1))}})},function(t,n,r){function e(t){return isFinite(t=+t)&&0!=t?t<0?-e(-t):Math.log(t+Math.sqrt(t*t+1)):t}var i=r(1),o=Math.asinh;i(i.S+i.F*!(o&&1/o(0)>0),"Math",{asinh:e})},function(t,n,r){var e=r(1),i=Math.atanh;e(e.S+e.F*!(i&&1/i(-0)<0),"Math",{atanh:function(t){return 0==(t=+t)?t:Math.log((1+t)/(1-t))/2}})},function(t,n,r){var e=r(1),i=r(142);e(e.S,"Math",{cbrt:function(t){return i(t=+t)*Math.pow(Math.abs(t),1/3)}})},function(t,n,r){var e=r(1);e(e.S,"Math",{clz32:function(t){return(t>>>=0)?31-Math.floor(Math.log(t+.5)*Math.LOG2E):32}})},function(t,n,r){var e=r(1),i=Math.exp;e(e.S,"Math",{cosh:function(t){return(i(t=+t)+i(-t))/2}})},function(t,n,r){var e=r(1),i=r(141);e(e.S+e.F*(i!=Math.expm1),"Math",{expm1:i})},function(t,n,r){var e=r(1),i=r(142),o=Math.pow,u=o(2,-52),c=o(2,-23),f=o(2,127)*(2-c),a=o(2,-126),s=function(t){return t+1/u-1/u};e(e.S,"Math",{fround:function(t){var n,r,e=Math.abs(t),o=i(t);return e<a?o*s(e/a/c)*a*c:(n=(1+c/u)*e,r=n-(n-e),r>f||r!=r?o*(1/0):o*r)}})},function(t,n,r){var e=r(1),i=Math.abs;e(e.S,"Math",{hypot:function(t,n){for(var r,e,o=0,u=0,c=arguments.length,f=0;u<c;)r=i(arguments[u++]),f<r?(e=f/r,o=o*e*e+1,f=r):r>0?(e=r/f,o+=e*e):o+=r;return f===1/0?1/0:f*Math.sqrt(o)}})},function(t,n,r){var e=r(1),i=Math.imul;e(e.S+e.F*r(4)(function(){return-5!=i(4294967295,5)||2!=i.length}),"Math",{imul:function(t,n){var r=65535,e=+t,i=+n,o=r&e,u=r&i;return 0|o*u+((r&e>>>16)*u+o*(r&i>>>16)<<16>>>0)}})},function(t,n,r){var e=r(1);e(e.S,"Math",{log10:function(t){return Math.log(t)/Math.LN10}})},function(t,n,r){var e=r(1);e(e.S,"Math",{log1p:r(171)})},function(t,n,r){var e=r(1);e(e.S,"Math",{log2:function(t){return Math.log(t)/Math.LN2}})},function(t,n,r){var e=r(1);e(e.S,"Math",{sign:r(142)})},function(t,n,r){var e=r(1),i=r(141),o=Math.exp;e(e.S+e.F*r(4)(function(){return-2e-17!=!Math.sinh(-2e-17)}),"Math",{sinh:function(t){return Math.abs(t=+t)<1?(i(t)-i(-t))/2:(o(t-1)-o(-t-1))*(Math.E/2)}})},function(t,n,r){var e=r(1),i=r(141),o=Math.exp;e(e.S,"Math",{tanh:function(t){var n=i(t=+t),r=i(-t);return n==1/0?1:r==1/0?-1:(n-r)/(o(t)+o(-t))}})},function(t,n,r){var e=r(1);e(e.S,"Math",{trunc:function(t){return(t>0?Math.floor:Math.ceil)(t)}})},function(t,n,r){"use strict";var e=r(3),i=r(24),o=r(45),u=r(136),c=r(50),f=r(4),a=r(71).f,s=r(31).f,l=r(11).f,h=r(82).trim,v="Number",p=e[v],d=p,y=p.prototype,g=o(r(70)(y))==v,b="trim"in String.prototype,m=function(t){var n=c(t,!1);if("string"==typeof n&&n.length>2){n=b?n.trim():h(n,3);var r,e,i,o=n.charCodeAt(0);if(43===o||45===o){if(88===(r=n.charCodeAt(2))||120===r)return NaN}else if(48===o){switch(n.charCodeAt(1)){case 66:case 98:e=2,i=49;break;case 79:case 111:e=8,i=55;break;default:return+n}for(var u,f=n.slice(2),a=0,s=f.length;a<s;a++)if((u=f.charCodeAt(a))<48||u>i)return NaN;return parseInt(f,e)}}return+n};if(!p(" 0o1")||!p("0b1")||p("+0x1")){p=function(t){var n=arguments.length<1?0:t,r=this;return r instanceof p&&(g?f(function(){y.valueOf.call(r)}):o(r)!=v)?u(new d(m(n)),r,p):m(n)};for(var x,w=r(10)?a(d):"MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY,EPSILON,isFinite,isInteger,isNaN,isSafeInteger,MAX_SAFE_INTEGER,MIN_SAFE_INTEGER,parseFloat,parseInt,isInteger".split(","),S=0;w.length>S;S++)i(d,x=w[S])&&!i(p,x)&&l(p,x,s(d,x));p.prototype=y,y.constructor=p,r(28)(e,v,p)}},function(t,n,r){var e=r(1);e(e.S,"Number",{EPSILON:Math.pow(2,-52)})},function(t,n,r){var e=r(1),i=r(3).isFinite;e(e.S,"Number",{isFinite:function(t){return"number"==typeof t&&i(t)}})},function(t,n,r){var e=r(1);e(e.S,"Number",{isInteger:r(168)})},function(t,n,r){var e=r(1);e(e.S,"Number",{isNaN:function(t){return t!=t}})},function(t,n,r){var e=r(1),i=r(168),o=Math.abs;e(e.S,"Number",{isSafeInteger:function(t){return i(t)&&o(t)<=9007199254740991}})},function(t,n,r){var e=r(1);e(e.S,"Number",{MAX_SAFE_INTEGER:9007199254740991})},function(t,n,r){var e=r(1);e(e.S,"Number",{MIN_SAFE_INTEGER:-9007199254740991})},function(t,n,r){var e=r(1),i=r(178);e(e.S+e.F*(Number.parseFloat!=i),"Number",{parseFloat:i})},function(t,n,r){var e=r(1),i=r(179);e(e.S+e.F*(Number.parseInt!=i),"Number",{parseInt:i})},function(t,n,r){"use strict";var e=r(1),i=r(67),o=r(159),u=r(149),c=1..toFixed,f=Math.floor,a=[0,0,0,0,0,0],s="Number.toFixed: incorrect invocation!",l="0",h=function(t,n){for(var r=-1,e=n;++r<6;)e+=t*a[r],a[r]=e%1e7,e=f(e/1e7)},v=function(t){for(var n=6,r=0;--n>=0;)r+=a[n],a[n]=f(r/t),r=r%t*1e7},p=function(){for(var t=6,n="";--t>=0;)if(""!==n||0===t||0!==a[t]){var r=String(a[t]);n=""===n?r:n+u.call(l,7-r.length)+r}return n},d=function(t,n,r){return 0===n?r:n%2==1?d(t,n-1,r*t):d(t*t,n/2,r)},y=function(t){for(var n=0,r=t;r>=4096;)n+=12,r/=4096;for(;r>=2;)n+=1,r/=2;return n};e(e.P+e.F*(!!c&&("0.000"!==8e-5.toFixed(3)||"1"!==.9.toFixed(0)||"1.25"!==1.255.toFixed(2)||"1000000000000000128"!==(0xde0b6b3a7640080).toFixed(0))||!r(4)(function(){c.call({})})),"Number",{toFixed:function(t){var n,r,e,c,f=o(this,s),a=i(t),g="",b=l;if(a<0||a>20)throw RangeError(s);if(f!=f)return"NaN";if(f<=-1e21||f>=1e21)return String(f);if(f<0&&(g="-",f=-f),f>1e-21)if(n=y(f*d(2,69,1))-69,r=n<0?f*d(2,-n,1):f/d(2,n,1),r*=4503599627370496,(n=52-n)>0){for(h(0,r),e=a;e>=7;)h(1e7,0),e-=7;for(h(d(10,e,1),0),e=n-1;e>=23;)v(1<<23),e-=23;v(1<<e),h(1,1),v(2),b=p()}else h(0,r),h(1<<-n,0),b=p()+u.call(l,a);return a>0?(c=b.length,b=g+(c<=a?"0."+u.call(l,a-c)+b:b.slice(0,c-a)+"."+b.slice(c-a))):b=g+b,b}})},function(t,n,r){"use strict";var e=r(1),i=r(4),o=r(159),u=1..toPrecision;e(e.P+e.F*(i(function(){return"1"!==u.call(1,void 0)})||!i(function(){u.call({})})),"Number",{toPrecision:function(t){var n=o(this,"Number#toPrecision: incorrect invocation!");return void 0===t?u.call(n):u.call(n,t)}})},function(t,n,r){var e=r(1);e(e.S+e.F,"Object",{assign:r(172)})},function(t,n,r){var e=r(1);e(e.S,"Object",{create:r(70)})},function(t,n,r){var e=r(1);e(e.S+e.F*!r(10),"Object",{defineProperties:r(173)})},function(t,n,r){var e=r(1);e(e.S+e.F*!r(10),"Object",{defineProperty:r(11).f})},function(t,n,r){var e=r(6),i=r(65).onFreeze;r(49)("freeze",function(t){return function(n){return t&&e(n)?t(i(n)):n}})},function(t,n,r){var e=r(30),i=r(31).f;r(49)("getOwnPropertyDescriptor",function(){return function(t,n){return i(e(t),n)}})},function(t,n,r){r(49)("getOwnPropertyNames",function(){return r(174).f})},function(t,n,r){var e=r(17),i=r(32);r(49)("getPrototypeOf",function(){return function(t){return i(e(t))}})},function(t,n,r){var e=r(6);r(49)("isExtensible",function(t){return function(n){return!!e(n)&&(!t||t(n))}})},function(t,n,r){var e=r(6);r(49)("isFrozen",function(t){return function(n){return!e(n)||!!t&&t(n)}})},function(t,n,r){var e=r(6);r(49)("isSealed",function(t){return function(n){return!e(n)||!!t&&t(n)}})},function(t,n,r){var e=r(1);e(e.S,"Object",{is:r(180)})},function(t,n,r){var e=r(17),i=r(72);r(49)("keys",function(){return function(t){return i(e(t))}})},function(t,n,r){var e=r(6),i=r(65).onFreeze;r(49)("preventExtensions",function(t){return function(n){return t&&e(n)?t(i(n)):n}})},function(t,n,r){var e=r(6),i=r(65).onFreeze;r(49)("seal",function(t){return function(n){return t&&e(n)?t(i(n)):n}})},function(t,n,r){var e=r(1);e(e.S,"Object",{setPrototypeOf:r(144).set})},function(t,n,r){"use strict";var e=r(114),i={};i[r(7)("toStringTag")]="z",i+""!="[object z]"&&r(28)(Object.prototype,"toString",function(){return"[object "+e(this)+"]"},!0)},function(t,n,r){var e=r(1),i=r(178);e(e.G+e.F*(parseFloat!=i),{parseFloat:i})},function(t,n,r){var e=r(1),i=r(179);e(e.G+e.F*(parseInt!=i),{parseInt:i})},function(t,n,r){"use strict";var e,i,o,u=r(69),c=r(3),f=r(53),a=r(114),s=r(1),l=r(6),h=r(26),v=r(68),p=r(79),d=r(146),y=r(151).set,g=r(143)(),b="Promise",m=c.TypeError,x=c.process,w=c[b],x=c.process,S="process"==a(x),_=function(){},O=!!function(){try{var t=w.resolve(1),n=(t.constructor={})[r(7)("species")]=function(t){t(_,_)};return(S||"function"==typeof PromiseRejectionEvent)&&t.then(_)instanceof n}catch(t){}}(),E=function(t,n){return t===n||t===w&&n===o},P=function(t){var n;return!(!l(t)||"function"!=typeof(n=t.then))&&n},j=function(t){return E(w,t)?new F(t):new i(t)},F=i=function(t){var n,r;this.promise=new t(function(t,e){if(void 0!==n||void 0!==r)throw m("Bad Promise constructor");n=t,r=e}),this.resolve=h(n),this.reject=h(r)},M=function(t){try{t()}catch(t){return{error:t}}},A=function(t,n){if(!t._n){t._n=!0;var r=t._c;g(function(){for(var e=t._v,i=1==t._s,o=0;r.length>o;)!function(n){var r,o,u=i?n.ok:n.fail,c=n.resolve,f=n.reject,a=n.domain;try{u?(i||(2==t._h&&I(t),t._h=1),!0===u?r=e:(a&&a.enter(),r=u(e),a&&a.exit()),r===n.promise?f(m("Promise-chain cycle")):(o=P(r))?o.call(r,c,f):c(r)):f(e)}catch(t){f(t)}}(r[o++]);t._c=[],t._n=!1,n&&!t._h&&N(t)})}},N=function(t){y.call(c,function(){var n,r,e,i=t._v;if(T(t)&&(n=M(function(){S?x.emit("unhandledRejection",i,t):(r=c.onunhandledrejection)?r({promise:t,reason:i}):(e=c.console)&&e.error&&e.error("Unhandled promise rejection",i)}),t._h=S||T(t)?2:1),t._a=void 0,n)throw n.error})},T=function(t){if(1==t._h)return!1;for(var n,r=t._a||t._c,e=0;r.length>e;)if(n=r[e++],n.fail||!T(n.promise))return!1;return!0},I=function(t){y.call(c,function(){var n;S?x.emit("rejectionHandled",t):(n=c.onrejectionhandled)&&n({promise:t,reason:t._v})})},k=function(t){var n=this;n._d||(n._d=!0,n=n._w||n,n._v=t,n._s=2,n._a||(n._a=n._c.slice()),A(n,!0))},L=function(t){var n,r=this;if(!r._d){r._d=!0,r=r._w||r;try{if(r===t)throw m("Promise can't be resolved itself");(n=P(t))?g(function(){var e={_w:r,_d:!1};try{n.call(t,f(L,e,1),f(k,e,1))}catch(t){k.call(e,t)}}):(r._v=t,r._s=1,A(r,!1))}catch(t){k.call({_w:r,_d:!1},t)}}};O||(w=function(t){v(this,w,b,"_h"),h(t),e.call(this);try{t(f(L,this,1),f(k,this,1))}catch(t){k.call(this,t)}},e=function(t){this._c=[],this._a=void 0,this._s=0,this._d=!1,this._v=void 0,this._h=0,this._n=!1},e.prototype=r(73)(w.prototype,{then:function(t,n){var r=j(d(this,w));return r.ok="function"!=typeof t||t,r.fail="function"==typeof n&&n,r.domain=S?x.domain:void 0,this._c.push(r),this._a&&this._a.push(r),this._s&&A(this,!1),r.promise},catch:function(t){return this.then(void 0,t)}}),F=function(){var t=new e;this.promise=t,this.resolve=f(L,t,1),this.reject=f(k,t,1)}),s(s.G+s.W+s.F*!O,{Promise:w}),r(81)(w,b),r(74)(b),o=r(52)[b],s(s.S+s.F*!O,b,{reject:function(t){var n=j(this);return(0,n.reject)(t),n.promise}}),s(s.S+s.F*(u||!O),b,{resolve:function(t){if(t instanceof w&&E(t.constructor,this))return t;var n=j(this);return(0,n.resolve)(t),n.promise}}),s(s.S+s.F*!(O&&r(123)(function(t){w.all(t).catch(_)})),b,{all:function(t){var n=this,r=j(n),e=r.resolve,i=r.reject,o=M(function(){var r=[],o=0,u=1;p(t,!1,function(t){var c=o++,f=!1;r.push(void 0),u++,n.resolve(t).then(function(t){f||(f=!0,r[c]=t,--u||e(r))},i)}),--u||e(r)});return o&&i(o.error),r.promise},race:function(t){var n=this,r=j(n),e=r.reject,i=M(function(){p(t,!1,function(t){n.resolve(t).then(r.resolve,e)})});return i&&e(i.error),r.promise}})},function(t,n,r){var e=r(1),i=r(26),o=r(2),u=(r(3).Reflect||{}).apply,c=Function.apply;e(e.S+e.F*!r(4)(function(){u(function(){})}),"Reflect",{apply:function(t,n,r){var e=i(t),f=o(r);return u?u(e,n,f):c.call(e,n,f)}})},function(t,n,r){var e=r(1),i=r(70),o=r(26),u=r(2),c=r(6),f=r(4),a=r(163),s=(r(3).Reflect||{}).construct,l=f(function(){function t(){}return!(s(function(){},[],t)instanceof t)}),h=!f(function(){s(function(){})});e(e.S+e.F*(l||h),"Reflect",{construct:function(t,n){o(t),u(n);var r=arguments.length<3?t:o(arguments[2]);if(h&&!l)return s(t,n,r);if(t==r){switch(n.length){case 0:return new t;case 1:return new t(n[0]);case 2:return new t(n[0],n[1]);case 3:return new t(n[0],n[1],n[2]);case 4:return new t(n[0],n[1],n[2],n[3])}var e=[null];return e.push.apply(e,n),new(a.apply(t,e))}var f=r.prototype,v=i(c(f)?f:Object.prototype),p=Function.apply.call(t,v,n);return c(p)?p:v}})},function(t,n,r){var e=r(11),i=r(1),o=r(2),u=r(50);i(i.S+i.F*r(4)(function(){Reflect.defineProperty(e.f({},1,{value:1}),1,{value:2})}),"Reflect",{defineProperty:function(t,n,r){o(t),n=u(n,!0),o(r);try{return e.f(t,n,r),!0}catch(t){return!1}}})},function(t,n,r){var e=r(1),i=r(31).f,o=r(2);e(e.S,"Reflect",{deleteProperty:function(t,n){var r=i(o(t),n);return!(r&&!r.configurable)&&delete t[n]}})},function(t,n,r){"use strict";var e=r(1),i=r(2),o=function(t){this._t=i(t),this._i=0;var n,r=this._k=[];for(n in t)r.push(n)};r(139)(o,"Object",function(){var t,n=this,r=n._k;do{if(n._i>=r.length)return{value:void 0,done:!0}}while(!((t=r[n._i++])in n._t));return{value:t,done:!1}}),e(e.S,"Reflect",{enumerate:function(t){return new o(t)}})},function(t,n,r){var e=r(31),i=r(1),o=r(2);i(i.S,"Reflect",{getOwnPropertyDescriptor:function(t,n){return e.f(o(t),n)}})},function(t,n,r){var e=r(1),i=r(32),o=r(2);e(e.S,"Reflect",{getPrototypeOf:function(t){return i(o(t))}})},function(t,n,r){function e(t,n){var r,c,s=arguments.length<3?t:arguments[2];return a(t)===s?t[n]:(r=i.f(t,n))?u(r,"value")?r.value:void 0!==r.get?r.get.call(s):void 0:f(c=o(t))?e(c,n,s):void 0}var i=r(31),o=r(32),u=r(24),c=r(1),f=r(6),a=r(2);c(c.S,"Reflect",{get:e})},function(t,n,r){var e=r(1);e(e.S,"Reflect",{has:function(t,n){return n in t}})},function(t,n,r){var e=r(1),i=r(2),o=Object.isExtensible;e(e.S,"Reflect",{isExtensible:function(t){return i(t),!o||o(t)}})},function(t,n,r){var e=r(1);e(e.S,"Reflect",{ownKeys:r(177)})},function(t,n,r){var e=r(1),i=r(2),o=Object.preventExtensions;e(e.S,"Reflect",{preventExtensions:function(t){i(t);try{return o&&o(t),!0}catch(t){return!1}}})},function(t,n,r){var e=r(1),i=r(144);i&&e(e.S,"Reflect",{setPrototypeOf:function(t,n){i.check(t,n);try{return i.set(t,n),!0}catch(t){return!1}}})},function(t,n,r){function e(t,n,r){var f,h,v=arguments.length<4?t:arguments[3],p=o.f(s(t),n);if(!p){if(l(h=u(t)))return e(h,n,r,v);p=a(0)}return c(p,"value")?!(!1===p.writable||!l(v)||(f=o.f(v,n)||a(0),f.value=r,i.f(v,n,f),0)):void 0!==p.set&&(p.set.call(v,r),!0)}var i=r(11),o=r(31),u=r(32),c=r(24),f=r(1),a=r(66),s=r(2),l=r(6);f(f.S,"Reflect",{set:e})},function(t,n,r){var e=r(3),i=r(136),o=r(11).f,u=r(71).f,c=r(122),f=r(120),a=e.RegExp,s=a,l=a.prototype,h=/a/g,v=/a/g,p=new a(h)!==h;if(r(10)&&(!p||r(4)(function(){return v[r(7)("match")]=!1,a(h)!=h||a(v)==v||"/a/i"!=a(h,"i")}))){a=function(t,n){var r=this instanceof a,e=c(t),o=void 0===n;return!r&&e&&t.constructor===a&&o?t:i(p?new s(e&&!o?t.source:t,n):s((e=t instanceof a)?t.source:t,e&&o?f.call(t):n),r?this:l,a)};for(var d=u(s),y=0;d.length>y;)!function(t){t in a||o(a,t,{configurable:!0,get:function(){return s[t]},set:function(n){s[t]=n}})}(d[y++]);l.constructor=a,a.prototype=l,r(28)(e,"RegExp",a)}r(74)("RegExp")},function(t,n,r){r(119)("match",1,function(t,n,r){return[function(r){"use strict";var e=t(this),i=void 0==r?void 0:r[n];return void 0!==i?i.call(r,e):new RegExp(r)[n](String(e))},r]})},function(t,n,r){r(119)("replace",2,function(t,n,r){return[function(e,i){"use strict";var o=t(this),u=void 0==e?void 0:e[n];return void 0!==u?u.call(e,o,i):r.call(String(o),e,i)},r]})},function(t,n,r){r(119)("search",1,function(t,n,r){return[function(r){"use strict";var e=t(this),i=void 0==r?void 0:r[n];return void 0!==i?i.call(r,e):new RegExp(r)[n](String(e))},r]})},function(t,n,r){r(119)("split",2,function(t,n,e){"use strict";var i=r(122),o=e,u=[].push,c="split",f="length",a="lastIndex";if("c"=="abbc"[c](/(b)*/)[1]||4!="test"[c](/(?:)/,-1)[f]||2!="ab"[c](/(?:ab)*/)[f]||4!="."[c](/(.?)(.?)/)[f]||"."[c](/()()/)[f]>1||""[c](/.?/)[f]){var s=void 0===/()??/.exec("")[1];e=function(t,n){var r=String(this);if(void 0===t&&0===n)return[];if(!i(t))return o.call(r,t,n);var e,c,l,h,v,p=[],d=(t.ignoreCase?"i":"")+(t.multiline?"m":"")+(t.unicode?"u":"")+(t.sticky?"y":""),y=0,g=void 0===n?4294967295:n>>>0,b=new RegExp(t.source,d+"g");for(s||(e=new RegExp("^"+b.source+"$(?!\\s)",d));(c=b.exec(r))&&!((l=c.index+c[0][f])>y&&(p.push(r.slice(y,c.index)),!s&&c[f]>1&&c[0].replace(e,function(){for(v=1;v<arguments[f]-2;v++)void 0===arguments[v]&&(c[v]=void 0)}),c[f]>1&&c.index<r[f]&&u.apply(p,c.slice(1)),h=c[0][f],y=l,p[f]>=g));)b[a]===c.index&&b[a]++;return y===r[f]?!h&&b.test("")||p.push(""):p.push(r.slice(y)),p[f]>g?p.slice(0,g):p}}else"0"[c](void 0,0)[f]&&(e=function(t,n){return void 0===t&&0===n?[]:o.call(this,t,n)});return[function(r,i){var o=t(this),u=void 0==r?void 0:r[n];return void 0!==u?u.call(r,o,i):e.call(String(o),r,i)},e]})},function(t,n,r){"use strict";r(184);var e=r(2),i=r(120),o=r(10),u="toString",c=/./[u],f=function(t){r(28)(RegExp.prototype,u,t,!0)};r(4)(function(){return"/a/b"!=c.call({source:"a",flags:"b"})})?f(function(){var t=e(this);return"/".concat(t.source,"/","flags"in t?t.flags:!o&&t instanceof RegExp?i.call(t):void 0)}):c.name!=u&&f(function(){return c.call(this)})},function(t,n,r){"use strict";r(29)("anchor",function(t){return function(n){return t(this,"a","name",n)}})},function(t,n,r){"use strict";r(29)("big",function(t){return function(){return t(this,"big","","")}})},function(t,n,r){"use strict";r(29)("blink",function(t){return function(){return t(this,"blink","","")}})},function(t,n,r){"use strict";r(29)("bold",function(t){return function(){return t(this,"b","","")}})},function(t,n,r){"use strict";var e=r(1),i=r(147)(!1);e(e.P,"String",{codePointAt:function(t){return i(this,t)}})},function(t,n,r){"use strict";var e=r(1),i=r(16),o=r(148),u="endsWith",c=""[u];e(e.P+e.F*r(134)(u),"String",{endsWith:function(t){var n=o(this,t,u),r=arguments.length>1?arguments[1]:void 0,e=i(n.length),f=void 0===r?e:Math.min(i(r),e),a=String(t);return c?c.call(n,a,f):n.slice(f-a.length,f)===a}})},function(t,n,r){"use strict";r(29)("fixed",function(t){return function(){return t(this,"tt","","")}})},function(t,n,r){"use strict";r(29)("fontcolor",function(t){return function(n){return t(this,"font","color",n)}})},function(t,n,r){"use strict";r(29)("fontsize",function(t){return function(n){return t(this,"font","size",n)}})},function(t,n,r){var e=r(1),i=r(75),o=String.fromCharCode,u=String.fromCodePoint;e(e.S+e.F*(!!u&&1!=u.length),"String",{fromCodePoint:function(t){for(var n,r=[],e=arguments.length,u=0;e>u;){if(n=+arguments[u++],i(n,1114111)!==n)throw RangeError(n+" is not a valid code point");r.push(n<65536?o(n):o(55296+((n-=65536)>>10),n%1024+56320))}return r.join("")}})},function(t,n,r){"use strict";var e=r(1),i=r(148),o="includes";e(e.P+e.F*r(134)(o),"String",{includes:function(t){return!!~i(this,t,o).indexOf(t,arguments.length>1?arguments[1]:void 0)}})},function(t,n,r){"use strict";r(29)("italics",function(t){return function(){return t(this,"i","","")}})},function(t,n,r){"use strict";var e=r(147)(!0);r(140)(String,"String",function(t){this._t=String(t),this._i=0},function(){var t,n=this._t,r=this._i;return r>=n.length?{value:void 0,done:!0}:(t=e(n,r),this._i+=t.length,{value:t,done:!1})})},function(t,n,r){"use strict";r(29)("link",function(t){return function(n){return t(this,"a","href",n)}})},function(t,n,r){var e=r(1),i=r(30),o=r(16);e(e.S,"String",{raw:function(t){for(var n=i(t.raw),r=o(n.length),e=arguments.length,u=[],c=0;r>c;)u.push(String(n[c++])),c<e&&u.push(String(arguments[c]));return u.join("")}})},function(t,n,r){var e=r(1);e(e.P,"String",{repeat:r(149)})},function(t,n,r){"use strict";r(29)("small",function(t){return function(){return t(this,"small","","")}})},function(t,n,r){"use strict";var e=r(1),i=r(16),o=r(148),u="startsWith",c=""[u];e(e.P+e.F*r(134)(u),"String",{startsWith:function(t){var n=o(this,t,u),r=i(Math.min(arguments.length>1?arguments[1]:void 0,n.length)),e=String(t);return c?c.call(n,e,r):n.slice(r,r+e.length)===e}})},function(t,n,r){"use strict";r(29)("strike",function(t){return function(){return t(this,"strike","","")}})},function(t,n,r){"use strict";r(29)("sub",function(t){return function(){return t(this,"sub","","")}})},function(t,n,r){"use strict";r(29)("sup",function(t){return function(){return t(this,"sup","","")}})},function(t,n,r){"use strict";r(82)("trim",function(t){return function(){return t(this,3)}})},function(t,n,r){"use strict";var e=r(3),i=r(24),o=r(10),u=r(1),c=r(28),f=r(65).KEY,a=r(4),s=r(126),l=r(81),h=r(76),v=r(7),p=r(182),d=r(153),y=r(206),g=r(205),b=r(138),m=r(2),x=r(30),w=r(50),S=r(66),_=r(70),O=r(174),E=r(31),P=r(11),j=r(72),F=E.f,M=P.f,A=O.f,N=e.Symbol,T=e.JSON,I=T&&T.stringify,k="prototype",L=v("_hidden"),R=v("toPrimitive"),C={}.propertyIsEnumerable,D=s("symbol-registry"),U=s("symbols"),W=s("op-symbols"),G=Object[k],B="function"==typeof N,V=e.QObject,z=!V||!V[k]||!V[k].findChild,q=o&&a(function(){return 7!=_(M({},"a",{get:function(){return M(this,"a",{value:7}).a}})).a})?function(t,n,r){var e=F(G,n);e&&delete G[n],M(t,n,r),e&&t!==G&&M(G,n,e)}:M,K=function(t){var n=U[t]=_(N[k]);return n._k=t,n},J=B&&"symbol"==typeof N.iterator?function(t){return"symbol"==typeof t}:function(t){return t instanceof N},Y=function(t,n,r){return t===G&&Y(W,n,r),m(t),n=w(n,!0),m(r),i(U,n)?(r.enumerable?(i(t,L)&&t[L][n]&&(t[L][n]=!1),r=_(r,{enumerable:S(0,!1)})):(i(t,L)||M(t,L,S(1,{})),t[L][n]=!0),q(t,n,r)):M(t,n,r)},H=function(t,n){m(t);for(var r,e=g(n=x(n)),i=0,o=e.length;o>i;)Y(t,r=e[i++],n[r]);return t},$=function(t,n){return void 0===n?_(t):H(_(t),n)},X=function(t){var n=C.call(this,t=w(t,!0));return!(this===G&&i(U,t)&&!i(W,t))&&(!(n||!i(this,t)||!i(U,t)||i(this,L)&&this[L][t])||n)},Q=function(t,n){if(t=x(t),n=w(n,!0),t!==G||!i(U,n)||i(W,n)){var r=F(t,n);return!r||!i(U,n)||i(t,L)&&t[L][n]||(r.enumerable=!0),r}},Z=function(t){for(var n,r=A(x(t)),e=[],o=0;r.length>o;)i(U,n=r[o++])||n==L||n==f||e.push(n);return e},tt=function(t){for(var n,r=t===G,e=A(r?W:x(t)),o=[],u=0;e.length>u;)!i(U,n=e[u++])||r&&!i(G,n)||o.push(U[n]);return o};B||(N=function(){if(this instanceof N)throw TypeError("Symbol is not a constructor!");var t=h(arguments.length>0?arguments[0]:void 0),n=function(r){this===G&&n.call(W,r),i(this,L)&&i(this[L],t)&&(this[L][t]=!1),q(this,t,S(1,r))};return o&&z&&q(G,t,{configurable:!0,set:n}),K(t)},c(N[k],"toString",function(){return this._k}),E.f=Q,P.f=Y,r(71).f=O.f=Z,r(116).f=X,r(125).f=tt,o&&!r(69)&&c(G,"propertyIsEnumerable",X,!0),p.f=function(t){return K(v(t))}),u(u.G+u.W+u.F*!B,{Symbol:N});for(var nt="hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables".split(","),rt=0;nt.length>rt;)v(nt[rt++]);for(var nt=j(v.store),rt=0;nt.length>rt;)d(nt[rt++]);u(u.S+u.F*!B,"Symbol",{for:function(t){return i(D,t+="")?D[t]:D[t]=N(t)},keyFor:function(t){if(J(t))return y(D,t);throw TypeError(t+" is not a symbol!")},useSetter:function(){z=!0},useSimple:function(){z=!1}}),u(u.S+u.F*!B,"Object",{create:$,defineProperty:Y,defineProperties:H,getOwnPropertyDescriptor:Q,getOwnPropertyNames:Z,getOwnPropertySymbols:tt}),T&&u(u.S+u.F*(!B||a(function(){var t=N();return"[null]"!=I([t])||"{}"!=I({a:t})||"{}"!=I(Object(t))})),"JSON",{stringify:function(t){if(void 0!==t&&!J(t)){for(var n,r,e=[t],i=1;arguments.length>i;)e.push(arguments[i++]);return n=e[1],"function"==typeof n&&(r=n),!r&&b(n)||(n=function(t,n){if(r&&(n=r.call(this,t,n)),!J(n))return n}),e[1]=n,I.apply(T,e)}}}),N[k][R]||r(27)(N[k],R,N[k].valueOf),l(N,"Symbol"),l(Math,"Math",!0),l(e.JSON,"JSON",!0)},function(t,n,r){"use strict";var e=r(1),i=r(127),o=r(152),u=r(2),c=r(75),f=r(16),a=r(6),s=r(3).ArrayBuffer,l=r(146),h=o.ArrayBuffer,v=o.DataView,p=i.ABV&&s.isView,d=h.prototype.slice,y=i.VIEW,g="ArrayBuffer";e(e.G+e.W+e.F*(s!==h),{ArrayBuffer:h}),e(e.S+e.F*!i.CONSTR,g,{isView:function(t){return p&&p(t)||a(t)&&y in t}}),e(e.P+e.U+e.F*r(4)(function(){return!new h(2).slice(1,void 0).byteLength}),g,{slice:function(t,n){if(void 0!==d&&void 0===n)return d.call(u(this),t);for(var r=u(this).byteLength,e=c(t,r),i=c(void 0===n?r:n,r),o=new(l(this,h))(f(i-e)),a=new v(this),s=new v(o),p=0;e<i;)s.setUint8(p++,a.getUint8(e++));return o}}),r(74)(g)},function(t,n,r){var e=r(1);e(e.G+e.W+e.F*!r(127).ABV,{DataView:r(152).DataView})},function(t,n,r){r(55)("Float32",4,function(t){return function(n,r,e){return t(this,n,r,e)}})},function(t,n,r){r(55)("Float64",8,function(t){return function(n,r,e){return t(this,n,r,e)}})},function(t,n,r){r(55)("Int16",2,function(t){return function(n,r,e){return t(this,n,r,e)}})},function(t,n,r){r(55)("Int32",4,function(t){return function(n,r,e){return t(this,n,r,e)}})},function(t,n,r){r(55)("Int8",1,function(t){return function(n,r,e){return t(this,n,r,e)}})},function(t,n,r){r(55)("Uint16",2,function(t){return function(n,r,e){return t(this,n,r,e)}})},function(t,n,r){r(55)("Uint32",4,function(t){return function(n,r,e){return t(this,n,r,e)}})},function(t,n,r){r(55)("Uint8",1,function(t){return function(n,r,e){return t(this,n,r,e)}})},function(t,n,r){r(55)("Uint8",1,function(t){return function(n,r,e){return t(this,n,r,e)}},!0)},function(t,n,r){"use strict";var e=r(166);r(118)("WeakSet",function(t){return function(){return t(this,arguments.length>0?arguments[0]:void 0)}},{add:function(t){return e.def(this,t,!0)}},e,!1,!0)},function(t,n,r){"use strict";var e=r(1),i=r(117)(!0);e(e.P,"Array",{includes:function(t){return i(this,t,arguments.length>1?arguments[1]:void 0)}}),r(78)("includes")},function(t,n,r){var e=r(1),i=r(143)(),o=r(3).process,u="process"==r(45)(o);e(e.G,{asap:function(t){var n=u&&o.domain;i(n?n.bind(t):t)}})},function(t,n,r){var e=r(1),i=r(45);e(e.S,"Error",{isError:function(t){return"Error"===i(t)}})},function(t,n,r){var e=r(1);e(e.P+e.R,"Map",{toJSON:r(165)("Map")})},function(t,n,r){var e=r(1);e(e.S,"Math",{iaddh:function(t,n,r,e){var i=t>>>0,o=n>>>0,u=r>>>0;return o+(e>>>0)+((i&u|(i|u)&~(i+u>>>0))>>>31)|0}})},function(t,n,r){var e=r(1);e(e.S,"Math",{imulh:function(t,n){var r=65535,e=+t,i=+n,o=e&r,u=i&r,c=e>>16,f=i>>16,a=(c*u>>>0)+(o*u>>>16);return c*f+(a>>16)+((o*f>>>0)+(a&r)>>16)}})},function(t,n,r){var e=r(1);e(e.S,"Math",{isubh:function(t,n,r,e){var i=t>>>0,o=n>>>0,u=r>>>0;return o-(e>>>0)-((~i&u|~(i^u)&i-u>>>0)>>>31)|0}})},function(t,n,r){var e=r(1);e(e.S,"Math",{umulh:function(t,n){var r=65535,e=+t,i=+n,o=e&r,u=i&r,c=e>>>16,f=i>>>16,a=(c*u>>>0)+(o*u>>>16);return c*f+(a>>>16)+((o*f>>>0)+(a&r)>>>16)}})},function(t,n,r){"use strict";var e=r(1),i=r(17),o=r(26),u=r(11);r(10)&&e(e.P+r(124),"Object",{__defineGetter__:function(t,n){u.f(i(this),t,{get:o(n),enumerable:!0,configurable:!0})}})},function(t,n,r){"use strict";var e=r(1),i=r(17),o=r(26),u=r(11);r(10)&&e(e.P+r(124),"Object",{__defineSetter__:function(t,n){u.f(i(this),t,{set:o(n),enumerable:!0,configurable:!0})}})},function(t,n,r){var e=r(1),i=r(176)(!0);e(e.S,"Object",{entries:function(t){return i(t)}})},function(t,n,r){var e=r(1),i=r(177),o=r(30),u=r(31),c=r(131);e(e.S,"Object",{getOwnPropertyDescriptors:function(t){for(var n,r=o(t),e=u.f,f=i(r),a={},s=0;f.length>s;)c(a,n=f[s++],e(r,n));return a}})},function(t,n,r){"use strict";var e=r(1),i=r(17),o=r(50),u=r(32),c=r(31).f;r(10)&&e(e.P+r(124),"Object",{__lookupGetter__:function(t){var n,r=i(this),e=o(t,!0);do{if(n=c(r,e))return n.get}while(r=u(r))}})},function(t,n,r){"use strict";var e=r(1),i=r(17),o=r(50),u=r(32),c=r(31).f;r(10)&&e(e.P+r(124),"Object",{__lookupSetter__:function(t){var n,r=i(this),e=o(t,!0);do{if(n=c(r,e))return n.set}while(r=u(r))}})},function(t,n,r){var e=r(1),i=r(176)(!1);e(e.S,"Object",{values:function(t){return i(t)}})},function(t,n,r){"use strict";var e=r(1),i=r(3),o=r(52),u=r(143)(),c=r(7)("observable"),f=r(26),a=r(2),s=r(68),l=r(73),h=r(27),v=r(79),p=v.RETURN,d=function(t){return null==t?void 0:f(t)},y=function(t){var n=t._c;n&&(t._c=void 0,n())},g=function(t){return void 0===t._o},b=function(t){g(t)||(t._o=void 0,y(t))},m=function(t,n){a(t),this._c=void 0,this._o=t,t=new x(this);try{var r=n(t),e=r;null!=r&&("function"==typeof r.unsubscribe?r=function(){e.unsubscribe()}:f(r),this._c=r)}catch(n){return void t.error(n)}g(this)&&y(this)};m.prototype=l({},{unsubscribe:function(){b(this)}});var x=function(t){this._s=t};x.prototype=l({},{next:function(t){var n=this._s;if(!g(n)){var r=n._o;try{var e=d(r.next);if(e)return e.call(r,t)}catch(t){try{b(n)}finally{throw t}}}},error:function(t){var n=this._s;if(g(n))throw t;var r=n._o;n._o=void 0;try{var e=d(r.error);if(!e)throw t;t=e.call(r,t)}catch(t){try{y(n)}finally{throw t}}return y(n),t},complete:function(t){var n=this._s;if(!g(n)){var r=n._o;n._o=void 0;try{var e=d(r.complete);t=e?e.call(r,t):void 0}catch(t){try{y(n)}finally{throw t}}return y(n),t}}});var w=function(t){s(this,w,"Observable","_f")._f=f(t)};l(w.prototype,{subscribe:function(t){return new m(t,this._f)},forEach:function(t){var n=this;return new(o.Promise||i.Promise)(function(r,e){f(t);var i=n.subscribe({next:function(n){try{return t(n)}catch(t){e(t),i.unsubscribe()}},error:e,complete:r})})}}),l(w,{from:function(t){var n="function"==typeof this?this:w,r=d(a(t)[c]);if(r){var e=a(r.call(t));return e.constructor===n?e:new n(function(t){return e.subscribe(t)})}return new n(function(n){var r=!1;return u(function(){if(!r){try{if(v(t,!1,function(t){if(n.next(t),r)return p})===p)return}catch(t){if(r)throw t;return void n.error(t)}n.complete()}}),function(){r=!0}})},of:function(){for(var t=0,n=arguments.length,r=Array(n);t<n;)r[t]=arguments[t++];return new("function"==typeof this?this:w)(function(t){var n=!1;return u(function(){if(!n){for(var e=0;e<r.length;++e)if(t.next(r[e]),n)return;t.complete()}}),function(){n=!0}})}}),h(w.prototype,c,function(){return this}),e(e.G,{Observable:w}),r(74)("Observable")},function(t,n,r){var e=r(54),i=r(2),o=e.key,u=e.set;e.exp({defineMetadata:function(t,n,r,e){u(t,n,i(r),o(e))}})},function(t,n,r){var e=r(54),i=r(2),o=e.key,u=e.map,c=e.store;e.exp({deleteMetadata:function(t,n){var r=arguments.length<3?void 0:o(arguments[2]),e=u(i(n),r,!1);if(void 0===e||!e.delete(t))return!1;if(e.size)return!0;var f=c.get(n);return f.delete(r),!!f.size||c.delete(n)}})},function(t,n,r){var e=r(185),i=r(161),o=r(54),u=r(2),c=r(32),f=o.keys,a=o.key,s=function(t,n){var r=f(t,n),o=c(t);if(null===o)return r;var u=s(o,n);return u.length?r.length?i(new e(r.concat(u))):u:r};o.exp({getMetadataKeys:function(t){return s(u(t),arguments.length<2?void 0:a(arguments[1]))}})},function(t,n,r){var e=r(54),i=r(2),o=r(32),u=e.has,c=e.get,f=e.key,a=function(t,n,r){if(u(t,n,r))return c(t,n,r);var e=o(n);return null!==e?a(t,e,r):void 0};e.exp({getMetadata:function(t,n){return a(t,i(n),arguments.length<3?void 0:f(arguments[2]))}})},function(t,n,r){var e=r(54),i=r(2),o=e.keys,u=e.key;e.exp({getOwnMetadataKeys:function(t){
-return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var e=r(54),i=r(2),o=e.get,u=e.key;e.exp({getOwnMetadata:function(t,n){return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){var e=r(54),i=r(2),o=r(32),u=e.has,c=e.key,f=function(t,n,r){if(u(t,n,r))return!0;var e=o(n);return null!==e&&f(t,e,r)};e.exp({hasMetadata:function(t,n){return f(t,i(n),arguments.length<3?void 0:c(arguments[2]))}})},function(t,n,r){var e=r(54),i=r(2),o=e.has,u=e.key;e.exp({hasOwnMetadata:function(t,n){return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){var e=r(54),i=r(2),o=r(26),u=e.key,c=e.set;e.exp({metadata:function(t,n){return function(r,e){c(t,n,(void 0!==e?i:o)(r),u(e))}}})},function(t,n,r){var e=r(1);e(e.P+e.R,"Set",{toJSON:r(165)("Set")})},function(t,n,r){"use strict";var e=r(1),i=r(147)(!0);e(e.P,"String",{at:function(t){return i(this,t)}})},function(t,n,r){"use strict";var e=r(1),i=r(46),o=r(16),u=r(122),c=r(120),f=RegExp.prototype,a=function(t,n){this._r=t,this._s=n};r(139)(a,"RegExp String",function(){var t=this._r.exec(this._s);return{value:t,done:null===t}}),e(e.P,"String",{matchAll:function(t){if(i(this),!u(t))throw TypeError(t+" is not a regexp!");var n=String(this),r="flags"in f?String(t.flags):c.call(t),e=new RegExp(t.source,~r.indexOf("g")?r:"g"+r);return e.lastIndex=o(t.lastIndex),new a(e,n)}})},function(t,n,r){"use strict";var e=r(1),i=r(181);e(e.P,"String",{padEnd:function(t){return i(this,t,arguments.length>1?arguments[1]:void 0,!1)}})},function(t,n,r){"use strict";var e=r(1),i=r(181);e(e.P,"String",{padStart:function(t){return i(this,t,arguments.length>1?arguments[1]:void 0,!0)}})},function(t,n,r){"use strict";r(82)("trimLeft",function(t){return function(){return t(this,1)}},"trimStart")},function(t,n,r){"use strict";r(82)("trimRight",function(t){return function(){return t(this,2)}},"trimEnd")},function(t,n,r){r(153)("asyncIterator")},function(t,n,r){r(153)("observable")},function(t,n,r){var e=r(1);e(e.S,"System",{global:r(3)})},function(t,n,r){for(var e=r(155),i=r(28),o=r(3),u=r(27),c=r(80),f=r(7),a=f("iterator"),s=f("toStringTag"),l=c.Array,h=["NodeList","DOMTokenList","MediaList","StyleSheetList","CSSRuleList"],v=0;v<5;v++){var p,d=h[v],y=o[d],g=y&&y.prototype;if(g){g[a]||u(g,a,l),g[s]||u(g,s,d),c[d]=l;for(p in e)g[p]||i(g,p,e[p],!0)}}},function(t,n,r){var e=r(1),i=r(151);e(e.G+e.B,{setImmediate:i.set,clearImmediate:i.clear})},function(t,n,r){var e=r(3),i=r(1),o=r(121),u=r(207),c=e.navigator,f=!!c&&/MSIE .\./.test(c.userAgent),a=function(t){return f?function(n,r){return t(o(u,[].slice.call(arguments,2),"function"==typeof n?n:Function(n)),r)}:t};i(i.G+i.B+i.F*f,{setTimeout:a(e.setTimeout),setInterval:a(e.setInterval)})},function(t,n,r){r(330),r(269),r(271),r(270),r(273),r(275),r(280),r(274),r(272),r(282),r(281),r(277),r(278),r(276),r(268),r(279),r(283),r(284),r(236),r(238),r(237),r(286),r(285),r(256),r(266),r(267),r(257),r(258),r(259),r(260),r(261),r(262),r(263),r(264),r(265),r(239),r(240),r(241),r(242),r(243),r(244),r(245),r(246),r(247),r(248),r(249),r(250),r(251),r(252),r(253),r(254),r(255),r(317),r(322),r(329),r(320),r(312),r(313),r(318),r(323),r(325),r(308),r(309),r(310),r(311),r(314),r(315),r(316),r(319),r(321),r(324),r(326),r(327),r(328),r(231),r(233),r(232),r(235),r(234),r(220),r(218),r(224),r(221),r(227),r(229),r(217),r(223),r(214),r(228),r(212),r(226),r(225),r(219),r(222),r(211),r(213),r(216),r(215),r(230),r(155),r(302),r(307),r(184),r(303),r(304),r(305),r(306),r(287),r(183),r(185),r(186),r(342),r(331),r(332),r(337),r(340),r(341),r(335),r(338),r(336),r(339),r(333),r(334),r(288),r(289),r(290),r(291),r(292),r(295),r(293),r(294),r(296),r(297),r(298),r(299),r(301),r(300),r(343),r(369),r(372),r(371),r(373),r(374),r(370),r(375),r(376),r(354),r(357),r(353),r(351),r(352),r(355),r(356),r(346),r(368),r(377),r(345),r(347),r(349),r(348),r(350),r(359),r(360),r(362),r(361),r(364),r(363),r(365),r(366),r(367),r(344),r(358),r(380),r(379),r(378),t.exports=r(52)},function(t,n){function r(t,n){if("string"==typeof n)return t.insertAdjacentHTML("afterend",n);var r=t.nextSibling;return r?t.parentNode.insertBefore(n,r):t.parentNode.appendChild(n)}t.exports=r},,,,,,,,,function(t,n,r){(function(n,r){!function(n){"use strict";function e(t,n,r,e){var i=n&&n.prototype instanceof o?n:o,u=Object.create(i.prototype),c=new p(e||[]);return u._invoke=s(t,r,c),u}function i(t,n,r){try{return{type:"normal",arg:t.call(n,r)}}catch(t){return{type:"throw",arg:t}}}function o(){}function u(){}function c(){}function f(t){["next","throw","return"].forEach(function(n){t[n]=function(t){return this._invoke(n,t)}})}function a(t){function n(r,e,o,u){var c=i(t[r],t,e);if("throw"!==c.type){var f=c.arg,a=f.value;return a&&"object"==typeof a&&m.call(a,"__await")?Promise.resolve(a.__await).then(function(t){n("next",t,o,u)},function(t){n("throw",t,o,u)}):Promise.resolve(a).then(function(t){f.value=t,o(f)},u)}u(c.arg)}function e(t,r){function e(){return new Promise(function(e,i){n(t,r,e,i)})}return o=o?o.then(e,e):e()}"object"==typeof r&&r.domain&&(n=r.domain.bind(n));var o;this._invoke=e}function s(t,n,r){var e=P;return function(o,u){if(e===F)throw new Error("Generator is already running");if(e===M){if("throw"===o)throw u;return y()}for(r.method=o,r.arg=u;;){var c=r.delegate;if(c){var f=l(c,r);if(f){if(f===A)continue;return f}}if("next"===r.method)r.sent=r._sent=r.arg;else if("throw"===r.method){if(e===P)throw e=M,r.arg;r.dispatchException(r.arg)}else"return"===r.method&&r.abrupt("return",r.arg);e=F;var a=i(t,n,r);if("normal"===a.type){if(e=r.done?M:j,a.arg===A)continue;return{value:a.arg,done:r.done}}"throw"===a.type&&(e=M,r.method="throw",r.arg=a.arg)}}}function l(t,n){var r=t.iterator[n.method];if(r===g){if(n.delegate=null,"throw"===n.method){if(t.iterator.return&&(n.method="return",n.arg=g,l(t,n),"throw"===n.method))return A;n.method="throw",n.arg=new TypeError("The iterator does not provide a 'throw' method")}return A}var e=i(r,t.iterator,n.arg);if("throw"===e.type)return n.method="throw",n.arg=e.arg,n.delegate=null,A;var o=e.arg;return o?o.done?(n[t.resultName]=o.value,n.next=t.nextLoc,"return"!==n.method&&(n.method="next",n.arg=g),n.delegate=null,A):o:(n.method="throw",n.arg=new TypeError("iterator result is not an object"),n.delegate=null,A)}function h(t){var n={tryLoc:t[0]};1 in t&&(n.catchLoc=t[1]),2 in t&&(n.finallyLoc=t[2],n.afterLoc=t[3]),this.tryEntries.push(n)}function v(t){var n=t.completion||{};n.type="normal",delete n.arg,t.completion=n}function p(t){this.tryEntries=[{tryLoc:"root"}],t.forEach(h,this),this.reset(!0)}function d(t){if(t){var n=t[w];if(n)return n.call(t);if("function"==typeof t.next)return t;if(!isNaN(t.length)){var r=-1,e=function n(){for(;++r<t.length;)if(m.call(t,r))return n.value=t[r],n.done=!1,n;return n.value=g,n.done=!0,n};return e.next=e}}return{next:y}}function y(){return{value:g,done:!0}}var g,b=Object.prototype,m=b.hasOwnProperty,x="function"==typeof Symbol?Symbol:{},w=x.iterator||"@@iterator",S=x.asyncIterator||"@@asyncIterator",_=x.toStringTag||"@@toStringTag",O="object"==typeof t,E=n.regeneratorRuntime;if(E)return void(O&&(t.exports=E));E=n.regeneratorRuntime=O?t.exports:{},E.wrap=e;var P="suspendedStart",j="suspendedYield",F="executing",M="completed",A={},N={};N[w]=function(){return this};var T=Object.getPrototypeOf,I=T&&T(T(d([])));I&&I!==b&&m.call(I,w)&&(N=I);var k=c.prototype=o.prototype=Object.create(N);u.prototype=k.constructor=c,c.constructor=u,c[_]=u.displayName="GeneratorFunction",E.isGeneratorFunction=function(t){var n="function"==typeof t&&t.constructor;return!!n&&(n===u||"GeneratorFunction"===(n.displayName||n.name))},E.mark=function(t){return Object.setPrototypeOf?Object.setPrototypeOf(t,c):(t.__proto__=c,_ in t||(t[_]="GeneratorFunction")),t.prototype=Object.create(k),t},E.awrap=function(t){return{__await:t}},f(a.prototype),a.prototype[S]=function(){return this},E.AsyncIterator=a,E.async=function(t,n,r,i){var o=new a(e(t,n,r,i));return E.isGeneratorFunction(n)?o:o.next().then(function(t){return t.done?t.value:o.next()})},f(k),k[_]="Generator",k.toString=function(){return"[object Generator]"},E.keys=function(t){var n=[];for(var r in t)n.push(r);return n.reverse(),function r(){for(;n.length;){var e=n.pop();if(e in t)return r.value=e,r.done=!1,r}return r.done=!0,r}},E.values=d,p.prototype={constructor:p,reset:function(t){if(this.prev=0,this.next=0,this.sent=this._sent=g,this.done=!1,this.delegate=null,this.method="next",this.arg=g,this.tryEntries.forEach(v),!t)for(var n in this)"t"===n.charAt(0)&&m.call(this,n)&&!isNaN(+n.slice(1))&&(this[n]=g)},stop:function(){this.done=!0;var t=this.tryEntries[0],n=t.completion;if("throw"===n.type)throw n.arg;return this.rval},dispatchException:function(t){function n(n,e){return o.type="throw",o.arg=t,r.next=n,e&&(r.method="next",r.arg=g),!!e}if(this.done)throw t;for(var r=this,e=this.tryEntries.length-1;e>=0;--e){var i=this.tryEntries[e],o=i.completion;if("root"===i.tryLoc)return n("end");if(i.tryLoc<=this.prev){var u=m.call(i,"catchLoc"),c=m.call(i,"finallyLoc");if(u&&c){if(this.prev<i.catchLoc)return n(i.catchLoc,!0);if(this.prev<i.finallyLoc)return n(i.finallyLoc)}else if(u){if(this.prev<i.catchLoc)return n(i.catchLoc,!0)}else{if(!c)throw new Error("try statement without catch or finally");if(this.prev<i.finallyLoc)return n(i.finallyLoc)}}}},abrupt:function(t,n){for(var r=this.tryEntries.length-1;r>=0;--r){var e=this.tryEntries[r];if(e.tryLoc<=this.prev&&m.call(e,"finallyLoc")&&this.prev<e.finallyLoc){var i=e;break}}i&&("break"===t||"continue"===t)&&i.tryLoc<=n&&n<=i.finallyLoc&&(i=null);var o=i?i.completion:{};return o.type=t,o.arg=n,i?(this.method="next",this.next=i.finallyLoc,A):this.complete(o)},complete:function(t,n){if("throw"===t.type)throw t.arg;return"break"===t.type||"continue"===t.type?this.next=t.arg:"return"===t.type?(this.rval=this.arg=t.arg,this.method="return",this.next="end"):"normal"===t.type&&n&&(this.next=n),A},finish:function(t){for(var n=this.tryEntries.length-1;n>=0;--n){var r=this.tryEntries[n];if(r.finallyLoc===t)return this.complete(r.completion,r.afterLoc),v(r),A}},catch:function(t){for(var n=this.tryEntries.length-1;n>=0;--n){var r=this.tryEntries[n];if(r.tryLoc===t){var e=r.completion;if("throw"===e.type){var i=e.arg;v(r)}return i}}throw new Error("illegal catch attempt")},delegateYield:function(t,n,r){return this.delegate={iterator:d(t),resultName:n,nextLoc:r},"next"===this.method&&(this.arg=g),A}}}("object"==typeof n?n:"object"==typeof window?window:"object"==typeof self?self:this)}).call(n,function(){return this}(),r(158))}])</script><script src="/./main.0cf68a.js"></script><script>!function(){!function(e){var t=document.createElement("script");document.getElementsByTagName("body")[0].appendChild(t),t.setAttribute("src",e)}("/slider.e37972.js")}()</script>
+  <script>
+  (() => {
+    const ACCESS_CODE="9900";
+    const DIMS=["决断","共情","开创","洞察","表达","经营","独立","担当"];
+    const ARCH={
+      ruler:{label:"定局者",tags:["格局","决断","秩序"],vec:[95,55,70,72,62,84,58,91],portrait:"你习惯先看全局，再决定局部如何落子。面对混乱，你的本能不是逃开，而是建立次序、分清轻重，并为最终结果负责。",blind:"容易把效率置于感受之前，让身边人误以为你只关心结果。",reality:"在团队里，你常常自然成为那个拍板、兜底、整合资源的人。",advice:"保留决断力，也给不同声音一点抵达核心的时间。"},
+      strategist:{label:"谋略家",tags:["洞察","布局","克制"],vec:[76,48,66,98,55,72,78,67],portrait:"你很少被表面热闹牵着走。你善于从碎片里识别规律，把眼前得失放进更长的时间轴，然后选择最有杠杆的一步。",blind:"思考过深时，可能错过需要快速行动的窗口。",reality:"你通常是局面中的观察者和设计者，擅长提前准备第二方案。",advice:"好谋略需要落地；当信息已足够，就允许自己果断下注。"},
+      pioneer:{label:"开路者",tags:["冒险","行动","边界"],vec:[82,50,99,62,60,55,86,78],portrait:"你对未知有天然的好奇。与其沿着成熟路线重复，你更愿意承担试错成本，亲手把不存在的路走成可抵达的地图。",blind:"容易被新鲜目标吸引，低估长期维护与收尾的价值。",reality:"面对新项目，你往往是第一个说“可以试试”的人。",advice:"每次开路前，先为持续投入和退出条件各留一条线。"},
+      diplomat:{label:"连接者",tags:["共情","协调","关系"],vec:[58,98,62,78,82,74,48,66],portrait:"你能听见言语背后的需求，也懂得在立场之间寻找可被共同接受的第三条路。你相信连接本身就是一种力量。",blind:"过于照顾关系时，可能把自己的真实边界放到最后。",reality:"你擅长缓和冲突、翻译分歧，让不同的人愿意坐在同一张桌前。",advice:"好的和解不靠自我牺牲；清晰说出自己的条件。"},
+      scholar:{label:"求真者",tags:["求知","理性","专注"],vec:[56,60,68,96,70,58,88,62],portrait:"你尊重证据、逻辑和长期积累。比起马上被看见，你更愿意把一件事研究透彻，让结论经得住时间和反复推敲。",blind:"可能因标准过高而推迟表达，也可能显得不够热络。",reality:"你是复杂问题里的深潜者，擅长把混乱知识整理成清晰框架。",advice:"不要等到百分之百确定；阶段性的公开，也能帮助知识继续生长。"},
+      reformer:{label:"破局者",tags:["改革","勇气","原则"],vec:[88,66,94,80,82,68,91,86],portrait:"你对“不合理但大家已习惯”的事尤其敏感。只要确认方向正确，你愿意承受质疑，推动规则、观念或系统发生真正变化。",blind:"推进过快时，容易低估旧结构的惯性和他人的安全感。",reality:"你不喜欢用“向来如此”解释问题，会主动寻找更好的做法。",advice:"改变不仅需要锋芒，也需要节奏、同盟和可复制的路径。"},
+      artist:{label:"表达者",tags:["审美","感受","创造"],vec:[48,88,82,79,99,46,93,55],portrait:"你对情绪、语言与美有敏锐触觉。你能把难以言明的经验转化为作品、叙事或气氛，让别人从中看见自己。",blind:"感受过载时，容易把现实责任视作对自由的压迫。",reality:"你靠表达整理世界，也常以独特审美为普通生活重新命名。",advice:"为灵感建立稳定容器，规律和自由并不相互排斥。"},
+      guardian:{label:"守护者",tags:["担当","忠诚","坚韧"],vec:[78,82,55,68,54,76,60,99],portrait:"你把承诺看得很重。越是艰难的局面，你越倾向于站稳、照顾整体，并用可靠的行动保护自己认定的人和价值。",blind:"习惯坚强会让你忘记求助，也会把不属于你的责任背在身上。",reality:"别人遇到真正的难题时，往往第一个想到你。",advice:"担当不是无限透支；让值得信任的人也有机会支持你。"},
+      merchant:{label:"经营者",tags:["务实","资源","长线"],vec:[72,65,74,78,73,99,64,71],portrait:"你善于让资源流动起来，既看见价值，也看见实现价值的路径。你重视信用、效率与可持续，而非一时的漂亮数字。",blind:"过于计算投入产出时，可能忽略无法量化的情感价值。",reality:"你擅长把想法变成项目，把零散人脉和资源组织成可运行的系统。",advice:"继续算清大账，同时给少数重要的人与事保留“不计回报”。"},
+      free:{label:"自守者",tags:["自由","清醒","边界"],vec:[52,72,62,84,77,43,99,58],portrait:"你重视精神自由与个人节奏，不愿为了不值得的评价消耗自己。你清醒地知道什么属于自己，也敢于离开失真的秩序。",blind:"过早抽身可能让机会、影响力和深层连接一起变小。",reality:"你有自己的价值坐标，不容易被集体情绪裹挟。",advice:"守住边界，但别把所有复杂协作都理解为对自由的冒犯。"}
+    };
 
+    const P=(name,gender,era,role,arch,quote)=>({name,gender,era,role,arch,quote});
+    const people=[
+      P("秦始皇","male","秦","一统型帝王","ruler","天下大势，要从分散走向一体。"),P("汉武帝","male","西汉","拓疆型帝王","ruler","边界不是天生的，是由意志重新丈量的。"),
+      P("李世民","male","唐","唐太宗·纳谏型帝王","ruler","以人为镜，才看得见得失。"),P("宋太祖","male","北宋","整合型帝王","ruler","真正的胜利，是让秩序长久。"),
+      P("朱元璋","male","明","逆袭型帝王","ruler","命运给得少，就自己打出一片天。"),P("商鞅","male","战国","制度改革家","reformer","真正的改变，要落进可以执行的制度。"),
+      P("周公","male","西周","礼制奠基者","guardian","守住规则，才守得住人心。"),P("诸葛亮","male","三国","长期主义谋臣","strategist","真正的谋划，是把责任坚持到最后。"),
+      P("张良","male","西汉","克制型谋士","strategist","最高明的一步，常在喧嚣之外。"),P("司马懿","male","三国","耐心型权谋家","strategist","能等到最后，也是一种锋芒。"),
+      P("孙武","male","春秋","战略家","strategist","先胜而后求战。"),P("王阳明","male","明","心学家","scholar","知行本是一件事。"),
+      P("孔子","male","春秋","教育家","scholar","学而不思则罔，思而不学则殆。"),P("孟子","male","战国","思想家","reformer","虽千万人，吾往矣。"),
+      P("墨子","male","战国","实践型思想家","reformer","真正的道理，要能让众人受益。"),P("韩非子","male","战国","制度思想家","strategist","人情会变，制度要能经得住变化。"),
+      P("司马迁","male","西汉","史学家","scholar","把真实写下来，时间自会作证。"),P("班固","male","东汉","史学家","scholar","秩序藏在事实的编排之中。"),
+      P("祖冲之","male","南北朝","数学家","scholar","精确，是抵达未知的一条路。"),P("张衡","male","东汉","科学家","scholar","天地虽远，规律可以被测量。"),
+      P("蔡伦","male","东汉","技术改良者","pioneer","好工具，会让知识走得更远。"),P("毕昇","male","北宋","活字印刷发明者","pioneer","把繁复拆开，世界便能重新排列。"),
+      P("郑和","male","明","航海家","pioneer","海的尽头不是边界，而是新的相逢。"),P("张骞","male","西汉","开路型使者","pioneer","路不是等来的，是一步一步走出来的。"),
+      P("玄奘","male","唐","求法者","scholar","真理值得一段漫长的路。"),P("鉴真","male","唐","文化传播者","guardian","风浪不能改变已经确认的方向。"),
+      P("苏轼","male","北宋","旷达型文豪","artist","人生如逆旅，我亦是行人。"),P("李白","male","唐","浪漫主义诗人","artist","天生我材必有用。"),
+      P("杜甫","male","唐","现实主义诗人","guardian","穷年忧黎元，叹息肠内热。"),P("白居易","male","唐","现实主义诗人","artist","文章要让人听得懂，也记得住。"),
+      P("陶渊明","male","东晋","自守型诗人","free","不为五斗米折腰。"),P("辛弃疾","male","南宋","豪放词人","guardian","真正的热望，经得住岁月。"),
+      P("范仲淹","male","北宋","担当型政治家","guardian","先天下之忧而忧。"),P("岳飞","male","南宋","忠勇型将领","guardian","认定的山河，要用一生守护。"),
+      P("卫青","male","西汉","稳健型将领","guardian","功劳不必喧哗，胜负自有答案。"),P("霍去病","male","西汉","进击型将领","pioneer","匈奴未灭，何以家为。"),
+      P("戚继光","male","明","治军型将领","guardian","真正的强大来自训练和纪律。"),P("管仲","male","春秋","政治家与改革家","merchant","善用资源，才能让秩序真正长久。"),
+      P("晏婴","male","春秋","外交家","diplomat","言语不必高声，也能守住立场。"),P("鲁班","male","春秋","工匠与发明家","pioneer","手里的尺度，能把想象变成器物。"),
+      P("贾思勰","male","北魏","农学家","scholar","知识要落在土地上，才有真正的收成。"),P("徐霞客","male","明","地理学家与旅行家","pioneer","山河的答案，要亲自走进去寻找。"),
+      P("郭守敬","male","元","天文学家","scholar","观测越精确，天地的秩序越清楚。"),P("王安石","male","北宋","改革家","reformer","不畏浮云，才能看见更远的方向。"),
+      P("张居正","male","明","改革家","strategist","宏大的愿望，必须变成可执行的次序。"),P("陆羽","male","唐","茶学家","scholar","一件寻常之物，也值得穷尽其理。"),
+      P("张仲景","male","东汉","医学家","scholar","医者求真，更要体恤人的痛苦。"),P("李时珍","male","明","医药学家","scholar","一味一药，都要经得住亲自查证。"),
+      P("沈括","male","北宋","博物学家","scholar","万物皆可观察，经验皆可验证。"),P("沈万三","male","元末明初","商人","merchant","会经营财富，更要看懂流动与时势。"),
+      P("韩信","male","西汉","军事家","strategist","真正的战局，要在动兵之前先看清地势与人心。"),P("曹操","male","东汉末","政治家与军事家","ruler","乱局之中，既要看清时势，也要敢于决断。"),
+      P("赵云","male","三国","蜀汉名将","guardian","越是危急的时候，越要把责任守到最后。"),P("项羽","male","秦汉之际","西楚霸王","pioneer","面对强敌，我更愿意先打开局面。"),
+      P("曾国藩","male","清","政治家与统帅","strategist","难事要从稳处着手，大事要靠长期积累。"),P("成吉思汗","male","蒙古帝国","建立者","ruler","辽阔的版图，始于统一的意志与秩序。"),
+      P("关羽","male","东汉末","蜀汉名将","guardian","承诺一旦说出口，就要用行动守住。"),P("包拯","male","北宋","官员","guardian","公道不能只写在纸上，更要落到每一件事里。"),
 
-    
-<div class="tools-col" q-class="show:isShow,hide:isShow|isFalse" q-on="click:stop(e)">
-  <div class="tools-nav header-menu">
-    
-    
-      
-      
-      
-    
-      
-      
-      
-    
-      
-      
-      
-    
-    
+      P("妇好","female","商","统帅与祭司","guardian","柔与刚，从来可以共存于一个人。"),P("武则天","female","唐","开创型女帝","ruler","位置从不定义我，我来定义位置。"),
+      P("吕后","female","西汉","权谋型政治家","ruler","能在风暴中站稳，才有资格重排局面。"),P("萧太后","female","辽","改革型政治家","ruler","真正的治理，要让不同传统共存。"),
+      P("嫘祖","female","上古传说","养蚕缫丝先驱","pioneer","把自然的馈赠变成众人可用的技艺。"),P("长孙皇后","female","唐","谏言型皇后","diplomat","温和的话，也可以有坚定的分量。"),
+      P("上官婉儿","female","唐","宫廷政治家","strategist","文字可以是门，也可以是路。"),P("班昭","female","东汉","史学家","scholar","记录与学习，让后来者不必从零开始。"),
+      P("蔡文姬","female","汉末","文学家","artist","离乱夺不走一个人对故土的记忆。"),P("李清照","female","宋","婉约词人","artist","细微的感受，也值得被认真写下。"),
+      P("卓文君","female","西汉","诗人与经营者","free","自己的生活，要由自己选择。"),P("谢道韫","female","东晋","才女","artist","好的比喻，能让风雪忽然有了形状。"),
+      P("薛涛","female","唐","诗人","artist","纸短情长，才思不应被身份束缚。"),P("鱼玄机","female","唐","诗人","free","珍贵的不是被理解，而是不失去自己。"),
+      P("朱淑真","female","宋","诗人","artist","心事不必沉默，它可以成为诗。"),P("太姒","female","西周","周室奠基者之一","guardian","温厚不是退让，而是让家国根基更稳。"),
+      P("王昭君","female","西汉","和平使者","diplomat","有些远行，是为更多人换来安宁。"),P("文成公主","female","唐","文化使者","diplomat","真正的连接，会把陌生变成共同生活。"),
+      P("冯嫽","female","西汉","外交家","diplomat","走进不同世界，才能找到共同语言。"),P("解忧公主","female","西汉","和亲公主","guardian","漫长的异乡，也能成为担当的疆场。"),
+      P("花木兰","female","南北朝传说","代父从军者","guardian","身份不是界限，选择才是。"),P("穆桂英","female","宋代传说","女将","guardian","临阵之时，勇气就是最清楚的回答。"),
+      P("梁红玉","female","南宋","抗金女将","guardian","鼓声一起，退路便不在心中。"),P("秦良玉","female","明","女将军","guardian","担当不分男女，只问是否守得住。"),
+      P("冼夫人","female","南北朝","岭南政治家","diplomat","能让众人安定，比一时胜负更重要。"),P("平阳昭公主","female","唐","军事统帅","ruler","局势不会因为你是谁而降低难度。"),
+      P("樊梨花","female","唐代传说","女将","pioneer","本事要在真正的难题里证明。"),P("芈月","female","战国","秦宣太后（通俗称谓）","ruler","真正的权力，是在复杂局势中掌握主动。"),
+      P("西施","female","春秋","越国人物","diplomat","有些选择看似柔弱，背后却承担着时代的重量。"),P("虞姬","female","秦汉之际","楚汉人物","guardian","即使身处风暴，也不轻易背离自己的选择。"),
+      P("缇萦","female","西汉","上书救父者","reformer","一封勇敢的上书，也能推动制度改变。"),P("班婕妤","female","西汉","文学家","artist","清醒地退一步，也能守住尊严与才情。"),
+      P("刘细君","female","西汉","和亲公主与诗人","diplomat","远行不是遗忘，而是在异乡承担使命。"),P("阴丽华","female","东汉","光烈皇后","diplomat","温和与分寸，同样能稳定复杂关系。"),
+      P("汉明德马皇后","female","东汉","贤德皇后","guardian","克制自己，才能让身边的人获得安定。"),P("邓绥","female","东汉","临朝政治家","ruler","真正的治理，要在灾难与纷争中护住民生。"),
+      P("王异","female","三国","守城谋略者","guardian","困境越深，越要守住勇气与判断。"),P("卫夫人","female","东晋","书法家","artist","一笔一画，都能留下人的精神筋骨。"),
+      P("苏蕙","female","前秦","诗人","artist","纵横回环的文字，也能容纳深长心意。"),P("冯太后","female","北魏","改革型政治家","reformer","改变旧制，需要耐心，也需要真正的执行力。"),
+      P("独孤伽罗","female","隋","政治参与者","ruler","并肩不是依附，而是共同判断国家方向。"),P("太平公主","female","唐","宫廷政治家","strategist","看懂权力如何流动，才能在局势中落子。"),
+      P("公孙大娘","female","唐","舞蹈家","artist","真正的技艺，能让力量与美同时被看见。"),P("宋若昭","female","唐","女官与学者","scholar","学识与秩序，可以让才华获得更远的影响。"),
+      P("刘娥","female","北宋","临朝政治家","ruler","从困局中走来，更懂得如何稳住大局。"),P("宋仁宗曹皇后","female","北宋","贤德皇后","guardian","真正的镇定，是危急时仍能守住分寸。"),
+      P("黄道婆","female","元","纺织技术革新者","pioneer","真正的技术，要让普通人的日子变好。"),P("管道昇","female","元","书画家","artist","才情不必高声，它会在笔墨中自然长久。"),
+      P("明成祖徐皇后","female","明","学者型皇后","scholar","读书不只修养自己，也能帮助更多人立身。"),P("明太祖马皇后","female","明","政治协调者","guardian","越在权力中心，越要记得体恤与节制。"),
+      P("貂蝉","female","东汉末文学形象","连环计人物","diplomat","柔弱的外表下，也可以藏着改变局势的勇气。"),P("孙尚香","female","三国","东吴宗室女子","free","身处联姻与时局之中，仍要守住自己的判断。"),
+      P("杨玉环","female","唐","音乐与舞蹈见长的贵妃","artist","对美与情感的感知，也能成为穿越时间的表达。"),P("年贵妃","female","清","雍正朝贵妃","diplomat","越在复杂的关系里，越需要分寸与清醒。"),
+      P("孝庄太后","female","清初","皇太后","diplomat","稳住人心与关系，才能让大局真正安定。")
+    ];
 
-    <ul style="width: 70%">
-    
-    
-      
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'innerArchive')"><a href="javascript:void(0)" q-class="active:innerArchive">所有文章</a></li>
-      
-        
-      
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'friends')"><a href="javascript:void(0)" q-class="active:friends">友链</a></li>
-      
-        
-      
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'aboutme')"><a href="javascript:void(0)" q-class="active:aboutme">关于我</a></li>
-      
-        
-    </ul>
-  </div>
-  <div class="tools-wrap">
-    
-    	<section class="tools-section tools-section-all" q-show="innerArchive">
-        <div class="search-wrap">
-          <input class="search-ipt" q-model="search" type="text" placeholder="find something…">
-          <i class="icon-search icon" q-show="search|isEmptyStr"></i>
-          <i class="icon-close icon" q-show="search|isNotEmptyStr" q-on="click:clearChose(e)"></i>
-        </div>
-        <div class="widget tagcloud search-tag">
-          <p class="search-tag-wording">tag:</p>
-          <label class="search-switch">
-            <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
-          </label>
-          <ul class="article-tag-list" q-show="showTags">
-            
-            <div class="clearfix"></div>
-          </ul>
-        </div>
-        <ul class="search-ul">
-          <p q-show="jsonFail" style="padding: 20px; font-size: 12px;">
-            缺失模块。<br/>1、请确保node版本大于6.2<br/>2、在博客根目录（注意不是yilia根目录）执行以下命令：<br/> npm i hexo-generator-json-content --save<br/><br/>
-            3、在根目录_config.yml里添加配置：
-<pre style="font-size: 12px;" q-show="jsonFail">
-  jsonContent:
-    meta: false
-    pages: false
-    posts:
-      title: true
-      date: true
-      path: true
-      text: false
-      raw: false
-      content: false
-      slug: false
-      updated: false
-      comments: false
-      link: false
-      permalink: false
-      excerpt: false
-      categories: false
-      tags: true
-</pre>
-          </p>
-          <li class="search-li" q-repeat="items" q-show="isShow">
-            <a q-attr="href:path|urlformat" class="search-title"><i class="icon-quo-left icon"></i><span q-text="title"></span></a>
-            <p class="search-time">
-              <i class="icon-calendar icon"></i>
-              <span q-text="date|dateformat"></span>
-            </p>
-            <p class="search-tag">
-              <i class="icon-price-tags icon"></i>
-              <span q-repeat="tags" q-on="click:choseTag(e, name)" q-text="name|tagformat"></span>
-            </p>
-          </li>
-        </ul>
-    	</section>
-    
+    const BASE_Q=[
+      ["⚖️ 决策方式","你做重要决定时，最自然的第一步是？",[["先定方向，再处理细节","决断"],["先看看会影响到哪些人","共情"],["先想有没有全新的解法","开创"],["先把信息和因果弄清楚","洞察"]]],
+      ["⚖️ 决策方式","面对一个信息不完整的机会，你通常会？",[["继续观察，补齐关键证据","洞察"],["设好底线后尽快决定","决断"],["询问相关人的真实感受","共情"],["用小成本先试一次","开创"]]],
+      ["⚖️ 决策方式","团队争论很久仍没有结论，你更可能？",[["翻译分歧，寻找共同点","共情"],["提出大家没想过的第三条路","开创"],["判断真正卡住局面的因素","洞察"],["明确拍板并承担结果","决断"]]],
+      ["⚖️ 决策方式","计划突然被打乱时，你的第一反应是？",[["把意外当成新机会","开创"],["观察变化后重新判断","洞察"],["迅速重排优先级","决断"],["先安顿好身边人的情绪","共情"]]],
+      ["🤝 人际协作","一段重要合作出现裂痕，你首先会？",[["把问题清楚地说出来","表达"],["算清双方还能交换什么价值","经营"],["守住自己的原则和边界","独立"],["主动承担自己该负责的部分","担当"]]],
+      ["🤝 人际协作","团队士气低落时，你更可能？",[["接下最困难的任务稳住大家","担当"],["讲清目标，让大家重新相信","表达"],["调整资源，让努力尽快有回报","经营"],["保持自己的节奏，不被情绪带走","独立"]]],
+      ["🤝 人际协作","别人强烈反对你的选择时，你会？",[["重新评估现实成本与收益","经营"],["按自己的价值判断继续走","独立"],["承担后果，不让别人替你买单","担当"],["把理由解释到足够清楚","表达"]]],
+      ["🤝 人际协作","你更希望别人怎样评价你？",[["活得清醒，始终像自己","独立"],["关键时刻真正靠得住","担当"],["能把复杂事情讲明白","表达"],["做事有章法，懂得长期经营","经营"]]],
+      ["🚀 行动与变化","遇到没有先例的新项目，你更倾向？",[["先做一个最小版本试水","开创"],["研究相似案例和失败原因","洞察"],["定目标和截止时间直接推进","决断"],["先听团队最真实的顾虑","共情"]]],
+      ["🚀 行动与变化","发现一条大家习惯了却不合理的规则，你会？",[["确认它为何形成以及谁会受影响","洞察"],["站出来推动它尽快改变","决断"],["先联合理解这件事的人","共情"],["设计一套完全不同的新规则","开创"]]],
+      ["🚀 行动与变化","一件事做了很久仍没有起色，你会？",[["设定最后期限，决定继续或停止","决断"],["确认伙伴是否还愿意同行","共情"],["换一种完全不同的方法","开创"],["重新检查最初的假设","洞察"]]],
+      ["🚀 行动与变化","遇到实力很强的对手，你更习惯？",[["寻找新的赛道和规则","开创"],["分析对方真正的优势与软肋","洞察"],["抢占节奏，正面应战","决断"],["寻找双方都在意的底线","共情"]]],
+      ["🧠 思考与表达","面对复杂信息，你最信任什么？",[["能被实际结果持续验证的方法","经营"],["能被清楚说出的逻辑","表达"],["自己独立思考后的判断","独立"],["经得住责任考验的选择","担当"]]],
+      ["🧠 思考与表达","别人误解你时，你通常会？",[["不急着证明，继续做自己的事","独立"],["确保误解不会伤及他人","担当"],["当场解释到彼此听懂","表达"],["判断解释是否值得投入","经营"]]],
+      ["🧠 思考与表达","准备一份重要提案时，你最看重？",[["它能否真正落地并持续运转","经营"],["它是否保留我的独特立场","独立"],["我是否愿意为结果负责","担当"],["它能否让陌生人听懂并相信","表达"]]],
+      ["🧠 思考与表达","如果只能保留一种能力，你会选？",[["准确表达思想和感受","表达"],["把资源组织成长期价值","经营"],["不被外界轻易改变方向","独立"],["在关键时刻站出来承担","担当"]]],
+      ["🏛️ 资源与责任","突然得到一笔可自由使用的资源，你会？",[["确定最重要的目标，集中投入","决断"],["先解决身边人最紧迫的需要","共情"],["支持一个高潜力的新尝试","开创"],["先研究怎样配置最合理","洞察"]]],
+      ["🏛️ 资源与责任","资源只够保住一件事，你优先保住？",[["最有价值的信息与判断","洞察"],["最关键、最能影响全局的结果","决断"],["最需要被照顾的人","共情"],["最可能打开未来的尝试","开创"]]],
+      ["🏛️ 资源与责任","你被临时推到台前主持大局，会先做什么？",[["听一圈意见，确认真实诉求","共情"],["用新形式快速打开局面","开创"],["梳理关键矛盾和先后手","洞察"],["明确主线并马上分工","决断"]]],
+      ["🏛️ 资源与责任","高回报与高风险同时出现时，你更倾向？",[["愿意为新的可能性冒险","开创"],["继续收集证据，降低未知","洞察"],["设置止损后果断下注","决断"],["评估它会给相关人带来什么","共情"]]],
+      ["🌙 价值与人生","什么最能让你长期坚持一件事？",[["让更多人理解它的意义","表达"],["它能不断产生实际价值","经营"],["它符合我真正相信的东西","独立"],["有人和结果需要我负责","担当"]]],
+      ["🌙 价值与人生","你理想中的成就更接近？",[["完成一件对很多人重要的事","担当"],["让一种思想被更多人看见","表达"],["建立一个能持续运行的系统","经营"],["拥有选择自己生活的自由","独立"]]],
+      ["🌙 价值与人生","你最不能接受哪种状态？",[["长期投入却没有真实价值","经营"],["为了合群而背离自己","独立"],["关键时刻没有人负责","担当"],["有想法却无法表达出来","表达"]]],
+      ["🌙 价值与人生","千年之后，你希望人们记得你什么？",[["我始终忠于自己的方向","独立"],["我守住了重要的人和事","担当"],["我留下了能影响别人的表达","表达"],["我建立了可以继续生长的价值","经营"]]]
+    ];
 
-    
-    	<section class="tools-section tools-section-friends" q-show="friends">
-  		
-        <ul class="search-ul">
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接1</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接2</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接3</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接4</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接5</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接6</a>
-            </li>
-          
-        </ul>
-  		
-    	</section>
-    
-
-    
-    	<section class="tools-section tools-section-me" q-show="aboutme">
-  	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">很惭愧&lt;br&gt;&lt;br&gt;只做了一点微小的工作&lt;br&gt;谢谢大家</div>
-  	  	
-    	</section>
-    
-  </div>
-  
-</div>
-    <!-- Root element of PhotoSwipe. Must have class pswp. -->
-<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-
-    <!-- Background of PhotoSwipe. 
-         It's a separate element as animating opacity is faster than rgba(). -->
-    <div class="pswp__bg"></div>
-
-    <!-- Slides wrapper with overflow:hidden. -->
-    <div class="pswp__scroll-wrap">
-
-        <!-- Container that holds slides. 
-            PhotoSwipe keeps only 3 of them in the DOM to save memory.
-            Don't modify these 3 pswp__item elements, data is added later on. -->
-        <div class="pswp__container">
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-        </div>
-
-        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
-        <div class="pswp__ui pswp__ui--hidden">
-
-            <div class="pswp__top-bar">
-
-                <!--  Controls are self-explanatory. Order can be changed. -->
-
-                <div class="pswp__counter"></div>
-
-                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-
-                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
-
-                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-
-                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-
-                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
-                <!-- element will get class pswp__preloader--active when preloader is running -->
-                <div class="pswp__preloader">
-                    <div class="pswp__preloader__icn">
-                      <div class="pswp__preloader__cut">
-                        <div class="pswp__preloader__donut"></div>
-                      </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                <div class="pswp__share-tooltip"></div> 
-            </div>
-
-            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-            </button>
-
-            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-            </button>
-
-            <div class="pswp__caption">
-                <div class="pswp__caption__center"></div>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-  </div>
+    const DECISION_SCENES=[
+      "战国城邑面临邻国施压且盟约即将到期","秦汉边关告急而军粮只够支撑一月","汉代使团抵达陌生的西域邦国","三国联军对进兵路线争执不下","南北朝百姓因战乱需要迁往新城",
+      "隋代河道工程进度落后且汛期将至","唐代驿站收到两份互相矛盾的军报","唐代商队准备穿越局势不明的边地","宋代州府只能先修河堤或先行赈灾","宋代新法推行遭到地方士绅反对",
+      "元代驿路中断而使团必须按期抵达","明代海防同时出现倭患与粮饷短缺","明代远航船队在陌生海域失去风向","清初地方刚经历灾荒又要恢复税赋","春秋诸侯会盟前夕盟友突然改变条件",
+      "战国军营发现敌军可能故意示弱","秦代郡县新政在地方执行受阻","汉代盐铁经营引发朝堂巨大分歧","东汉水患迫使郡守在数县间分配粮食","三国城池被围且援军日期无法确定",
+      "晋代北方流民大量涌入南方州郡","南北朝北魏改革触动旧部族的既有利益","隋唐之际旧制度崩解而新秩序未立","唐代科举改革让寒门与世家争论激烈","唐代安史乱后地方需要重建户籍与粮仓",
+      "五代政局频繁更替而城中人心不稳","北宋边境同时传来议和与开战请求","南宋水军面对强敌且船只数量不足","宋代书院因学术分歧面临分裂","元代草原驿站遭遇暴雪并失去联络",
+      "明代工坊接到前所未有的大型工程","明代朝廷需要决定是否开放新的海贸口岸","明代边城疫病扩散且药材十分有限","清代黄河改道威胁多个州县","古代粮仓账册出现无法解释的亏空",
+      "古代城墙修缮与农田灌溉争夺人力","古代驿使带来真假难辨的紧急诏令","古代军队深入陌生地形且向导意见相反","古代县衙同时收到多起互相冲突的诉状","古代村落因水源分配发生长期争执",
+      "古代商港突然遇到封航与货物积压","古代医馆面对新出现且病因不明的疫症","古代天文官发现历法与观测结果不合","古代工匠发现祖传做法无法完成新器物","古代学者找到与旧注完全相反的证据",
+      "古代使臣必须在两国猜疑中送达国书","古代将领发现既定战术已被敌军识破","古代地方官必须在严法与安民之间取舍","古代家族需要决定是否离开世居之地","古代新君即位而朝中派系彼此试探"
+    ];
+    const RELATION_SCENES=[
+      "春秋会盟上你要向诸侯说明共同主张","战国说客要让敌对两方暂时坐下谈判","秦汉郡县推行新令而百姓充满疑虑","汉代朝堂上你的真实动机遭到误解","汉代使团内部因路线问题出现裂痕",
+      "东汉乡里豪强反复越过官府边界","三国主将向你托付一座危城","三国谋士之间因功劳归属发生冲突","晋代南迁家族需要重新组织田产与人力","南北朝寺院与乡民因水源产生矛盾",
+      "隋代徭役过重而民众开始失去信心","唐代朝堂需要向不同派别解释改革","唐代诗会中你的作品被他人冒名传抄","唐代西域使团要协调多种语言与习俗","唐代军营士气低落且人人保持沉默",
+      "宋代书院中你要反驳一项流行观点","宋代商帮合作多年后出现利益失衡","宋代官员需要公开说明一次赈灾失误","宋代乡约要调解两个家族的世代矛盾","元代商队中没人愿意承担押运责任",
+      "元代驿站收到尖锐但有根据的批评","明代工坊的新技法很难向老匠人解释","明代远航船队因文化差异发生误会","明代将领必须拒绝上级的不合理命令","明代地方学社因理念不同即将解散",
+      "清代票号需要重建外地商户的信任","清代灾民求助时你的粮仓也所剩无几","古代朝堂上多数人要求你随声附和","古代军功册对多人功劳记载不公","古代大型水利工程即将交给新人接手",
+      "古代师徒因技艺传承方式逐渐疏远","古代药铺必须维护多年积累的信誉","古代女子的生活选择受到族人议论","古代誓约因局势变化带来意外代价","古代边城需要协调不同族群共同守城",
+      "古代粮食短缺开始破坏邻里关系","古代书院迎来一位背景陌生的新学子","古代史官要公开纠正一段错误记载","古代使者任务失败后必须向君主复命","古代合作筑城成功但各方留下隔阂",
+      "古代学者坚持的主张长期无人理解","古代军营的重复操练让士卒失去耐心","古代女将要鼓励一支缺乏信心的队伍","古代商人要把新买卖变成百年字号","古代改革者坚持的方向暂时不受欢迎",
+      "古代众人推举你主持一项公共事务","古代宗族分歧正在迅速升级","古代家国责任与个人生活同时需要你","古代文人希望留下一部真正有价值的著作","古代隐士的个人自由与乡里需要发生冲突"
+    ];
+    const DECISION_ANGLES=[
+      "你会先采取哪一步？","必须尽快回应时，你会怎么处理？","原有办法行不通时，你更可能怎么做？","责任和风险同时压来时，你会怎么处理？","信息还不完整时，你会如何推进？",
+      "局势继续变化时，你会把重点放在哪里？","众人都在等你拿主意时，你会怎样行动？","资源有限时，你会优先做什么？","你必须为结果负责时，会怎么处理？","只能先做一件事时，你会选择哪一步？"
+    ];
+    const RELATION_ANGLES=[
+      "你会先怎么回应？","要让众人继续协作，你会先做什么？","矛盾正在加深时，你会如何处理？","人心不稳时，你会怎样行动？","只能先处理一件事时，你会做什么？",
+      "你认为哪种回应最有效？","关系与原则发生冲突时，你会怎么做？","你希望通过哪种行动改变局面？","面对众人的目光时，你会先做什么？","时间和精力有限时，你会优先处理什么？"
+    ];
+    const DECISION_FOCUS=[
+      ["守城与续盟的底线","城中百姓和盟友的担忧","互市或共同防务的新条件","邻军动向与原有盟约"],
+      ["军粮的分配次序","伤兵和民夫的基本口粮","新的补给通道","存粮、援军和敌军距离"],
+      ["出使目标与不可退让条款","当地礼俗和对方顾虑","互市或礼物合作方案","当地权力格局与各方关系"],
+      ["主攻路线与各军责任","各路将领反对路线的原因","分路佯攻后再会师","地形、粮道与敌军部署"],
+      ["首批迁移人群与时限","老人儿童的安置困难","中转营地和分批试迁","道路、水源与新城承载力"],
+      ["最危险堤段的抢修次序","下游居民和工役的安全","分段围堰与临时泄洪","水位、堤况与剩余工期"],
+      ["按最危险军情先行布防","驿卒和前线士卒的真实处境","两路侦骑交叉验证","印信、时间与传递路线"],
+      ["商队可承受的路线风险","商旅对安全和补给的担忧","小队探路与沿途接应","边地局势、天气与驿站"],
+      ["赈灾与修堤的先后次序","灾民最急迫的粮食和住处","以工代赈并同步加固险段","水位、库存与受灾范围"],
+      ["改革底线与推行期限","百姓和士绅的实际损失","少数县试行后再推广","利益阻力与执行困难"],
+      ["绕行路线与赶路节奏","伤员和疲惫随员的安全","拆分使团多路传递","地图、雪情与可用驿站"],
+      ["最危险海段的兵力配置","守军粮饷和家属安置","民船参与的临时海防网","倭患位置、库存与粮饷缺口"],
+      ["供水供粮限额与航向","船员情绪和病弱者需要","借洋流与改造船帆脱困","星象、海流、鸟群与云层"],
+      ["税赋减免与恢复期限","受灾家庭的基本生计","以工代赈与种粮借贷","人口、收成与地方库存"],
+      ["续盟时不可退让的条件","盟友突然改约的真实顾虑","分阶段履约与共同担保","对方动机、实力和外部压力"],
+      ["禁止全军贸然追击","前锋与斥候的现场判断","小股部队试探敌军虚实","营火、车辙与补给痕迹"],
+      ["执行负责人和完成期限","基层官吏与百姓的困难","简化流程并先在一地试办","政策卡住的层级和步骤"],
+      ["国计与民生的主目标","商户、百姓和官员的承受","官营与民营并行试点","税收、物价与流通数据"],
+      ["各县拨粮的先后次序","老弱和重灾家庭的需要","邻县接力转运与互助粮仓","水势、道路与各县余粮"],
+      ["按援军不到制定守城计划","士卒和城中百姓的恐惧","突围联络与远程烽火","敌军补给、城防和可守时日"],
+      ["流民接收区域与登记办法","流民住处、食物与医疗","闲田安置与以工代赈","流民技能、土地与粮食余量"],
+      ["改革边界与分阶段时间表","受影响部族的损失和顾虑","试行新官制并保留过渡","旧势力、利益链和支持者"],
+      ["维持治安交易的紧急规则","百姓不能中断的日常生计","临时议事与地方试行制度","仍能运作的旧机构"],
+      ["统一考试标准与改革期限","寒门和世家对公平的担忧","匿名阅卷与区域名额试点","选拔效果与舞弊风险"],
+      ["户籍与粮仓的恢复顺序","失散者和流民的安置","临时公役重建道路仓储","人口、田地与库存损失"],
+      ["明确法令和各级守城职责","商户居民对政局的恐惧","街坊联防与物资互助","谣言来源与城内各方力量"],
+      ["议和条件或作战目标","边民与士卒承受的代价","限期停战并同步加强防御","敌方意图与双方真实战力"],
+      ["有利水域与船队部署","船员信心和伤员安置","借火攻潮汐改变战法","水流、风向与敌军阵形"],
+      ["公开辩论规则和共同底线","两派真正的学术关切","共同讲席与平行课程","学理分歧与私人冲突"],
+      ["就地扎营与口粮配给","冻伤者和体弱人员的需要","沿路标记和小队联络","风雪、地形与驿站距离"],
+      ["工程里程碑和总负责人","工匠最难解决的环节","先做关键结构的小型样件","材料、承重与工期风险"],
+      ["试开口岸、期限与监管底线","商人和沿海居民的顾虑","有限互市与新关税试办","贸易、海防与走私风险"],
+      ["按病情轻重分配药材","重症者与医护人员的安全","分区隔离和替代药材试用","症状、接触路径与用药反应"],
+      ["抢险州县与救援次序","沿河居民和牲畜的转移","分洪、蓄洪与改道并用","水势、地形与堤岸变化"],
+      ["封存账册并暂停异常出库","避免先冤枉管仓人员","独立复核与交叉盘点","账目、实物与运输记录"],
+      ["城墙与灌溉的用工次序","农户与守城士卒的需要","按农时轮工并分段施工","敌情、水源、产量与工期"],
+      ["暂缓可能造成损失的命令","传令驿使的安全与清白","通过多条渠道同时复核","印玺、措辞、时间与来路"],
+      ["最稳妥路线与行军阵形","两名向导各自的判断依据","多支侦察队分段探路","地图、地貌、补给与天气"],
+      ["诉状分类与审理次序","弱势当事人的完整陈述","现场勘验与调解程序","证词、物证与时间线"],
+      ["临时分水规则与停争期限","上下游村民的实际困难","共同测水并轮流取水","水量、人口与农田需求"],
+      ["易腐和损失最大货物的处置","滞留船员与商户的需要","陆路转运与临时换货仓","货物、封航期限与替代路线"],
+      ["隔离病患与诊治优先级","患者尊严和医馆人员安全","分组试验疗法并记录反应","共同症状、接触史与病程"],
+      ["暂停旧历并立即上报复核","历法误差对农户官员的影响","用后续天象试验新算法","仪器、观测记录与计算过程"],
+      ["新器物的功能与安全标准","老匠人对改法的担忧","更换材料并制作缩小样件","旧做法失败的具体位置"],
+      ["完整记录新证据与结论","师友和旧注形成的背景","提出并列比较的新注法","证据来源、年代与上下文"],
+      ["国书内容与正式递交方式","双方猜疑和安全顾虑","中立见证与分段递交","礼仪、措辞与对方反应"],
+      ["取消旧战术并重新部署","将士面对突变的军心","佯攻与新阵形诱敌","敌军部署与反制计划"],
+      ["严法与宽缓的执行边界","百姓违法背后的困境","分级处罚与补救办法","恶意犯法与被迫违规"],
+      ["迁居日期与决定条件","每位家人最担心的事","先派人试住并安排退路","两地安全、生计与土地"],
+      ["关键官职与议事规则","各派真正的担忧和诉求","跨派小组先办一件实事","各派关系、利益与力量"]
+    ];
+    const DECISION_OPTIONS=DECISION_FOCUS.map(f=>[["先确定"+f[0],"决断"],["先考虑"+f[1],"共情"],["尝试"+f[2],"开创"],["先核实"+f[3],"洞察"]]);
+    const RELATION_FOCUS=[
+      ["各国都能理解的共同主张","会盟后的履约与复核办法","本国真实底线，不靠迎合换支持","自己代表国家作出的承诺"],
+      ["双方立场和可以继续谈的部分","分阶段停争与验证安排","中立判断，不受任何一方施压","会谈过程的安全"],
+      ["新令缘由、步骤和百姓疑问","答疑、反馈与修正流程","新令真正要守住的原则","执行中造成的具体困难"],
+      ["事实、动机和事情经过","公开行动进展与长期检验机制","不靠迎合权贵换取理解","自己决定带来的后果"],
+      ["各条路线的理由和风险","向导、补给与探路任务","自己认可的路线判断","风险最高的先行任务"],
+      ["官府边界和豪强违法事实","受理、查证与持续执法机制","拒绝私下妥协的执法底线","举报百姓的安全与案件结果"],
+      ["守城计划、兵力和真实风险","轮防、粮草与城墙修补制度","自己的守城判断，不随众人改口","最危险城门的守卫任务"],
+      ["每个人的真实贡献和证据","公开记功与复核规则","不因关系亲疏改变评价","厘清自己功劳与责任的任务"],
+      ["田产与人力的分配方案","账册、轮值与复议安排","每户是否参与的自主选择","最难协调的安置工作"],
+      ["寺院与乡民各自的用水需要","长期轮流取水与旱时规则","不因身份势力改变公平标准","规则执行与紧急供水"],
+      ["徭役过重造成的真实民情","轮役、减免与农时避让制度","不隐瞒民情换取政绩","推动减役后的执行结果"],
+      ["不同派别最关心的改革问题","定期汇报与修正机制","不为讨好各派删掉核心原则","改革落地造成的问题"],
+      ["原稿、时间和作者证据","署名、传抄与存档规则","维护自己创作权利的底线","查明事实且不牵连无辜"],
+      ["译文、礼仪和习俗差异","翻译、接待与复核流程","出使任务不可让步的原则","己方误解造成的冲突"],
+      ["眼前任务、风险和可行计划","小目标、轮换与奖励节奏","不靠夸大胜利作空洞鼓动","最困难的一段军营任务"],
+      ["反驳观点所依据的证据和逻辑","讲义、讨论与持续验证方式","不因观点流行放弃判断","自己论证产生的影响"],
+      ["账目和利益失衡的位置","分账与风险共担规则","合作中不能退让的公平底线","纠正自己已经多占的利益"],
+      ["赈灾失误的经过和真实损失","补救、复核与监督流程","拒绝把责任推给下属","向灾民道歉并落实补偿"],
+      ["两个家族各自的诉求与底线","土地、婚约或水源的长期规则","不因宗族压力偏向一方","协议执行与再次冲突的处理"],
+      ["押运任务、风险和重要性","报酬、轮班与护卫安排","自己是否参加的真实判断","无人愿去时的带队押运"],
+      ["批评中有根据与无根据的部分","整改节点与后续复查","对无根据之处保留判断","承认错误并推动改正"],
+      ["新技法每一步的作用","样板、培训与师徒复核流程","证据充分时对新技法的坚持","首批制作失败的解决"],
+      ["双方习俗差异和误会来源","双语提示与共同船规","不因误会放弃任务原则","己方失礼之处的补救"],
+      ["命令不合理之处和可能后果","替代方案与正式上报程序","不伤害无辜的职责边界","保护部属并接受抗命后果"],
+      ["不同理念之间的真实分歧","共同项目与新的议事规则","即使解散也不放弃的学术原则","最后的协调与收尾"],
+      ["票号账目、期限和真实风险","担保、审计与定期对账制度","不作超出偿付能力的承诺","逾期款项的赔付与兑现"],
+      ["余粮数量和分粮依据","限量配给与后续寻粮安排","不因熟人求情破坏公平","把粮食送到受灾最重处"],
+      ["不同意见及其证据","按正式程序复议和表决","不为随大流改变真实判断","提出异议带来的后果"],
+      ["每个人的战功和相关证据","透明复核与更正记录","拒绝因亲疏权势改动名册","纠正错误并补偿漏记者"],
+      ["工程关键风险和未完事项","图纸、清单与验收制度","对有分歧做法的明确意见","陪同新人完成最终验收"],
+      ["师徒疏远的真正原因","固定教学与技艺记录安排","徒弟形成自己方法的自由","答应传授的核心技艺"],
+      ["药材来源、剂量和价格","验货、留样与追溯制度","拒售来路不明药材的底线","问题药材的召回与赔付"],
+      ["自己的生活选择和理由","家人参与沟通的边界","人生决定由自己作出","选择带来的现实后果"],
+      ["局势变化和誓约的新代价","可以长期履行的新承诺","不违背良知的履约底线","无法完成部分的补偿"],
+      ["各族都能理解的守城目标","联合指挥、轮防与奖惩规则","不因族群偏见改变用人","最易引发冲突的协调任务"],
+      ["余粮数字和邻里分配依据","共灶、定量与互助登记","不以关系亲疏改变次序","给老弱病户送粮"],
+      ["新学子的经历与求学目标","同伴带领与固定学习计划","不听流言而独立观察","新学子不被排斥的保证"],
+      ["旧记载错误之处和新证据","原档保存与勘误流程","面对压力也不篡改事实","更正后记载的准确性"],
+      ["任务失败经过和实际损失","补救步骤与再次行动计划","不为自保而改写事实","自己的判断与执行责任"],
+      ["合作成功后仍存在的分配矛盾","后续分配与沟通机制","不为表面和气放弃底线","自己造成隔阂的补救"],
+      ["长期主张和支持它的证据","著述、讲学与论证保存","不为掌声随意改变结论","接受质疑并修正问题"],
+      ["重复操练对应的真实战场风险","操练变化与阶段反馈","不因抱怨降低必要标准","自己全程参加操练"],
+      ["战况、任务和可行计划","小目标、轮换与及时奖励","不说自己都不相信的空话","最危险位置的带队任务"],
+      ["百年字号坚持的品质承诺","账目、学徒与品控传承","拒绝短期造假换暴利","每一批货物的质量"],
+      ["改革要解决的具体问题","试行、反馈与长期支持者","暂时不受欢迎也守住原则","改革带来的现实阵痛"],
+      ["公共事务的目标、步骤和时限","分工、账目与公开监督","不因人情改变公共判断","整项事务的最终成败"],
+      ["各支宗族的诉求和底线","议事、调解与执行规则","不因血缘远近偏向一支","阻止伤害并主持调解"],
+      ["自己的时间、能力和两边需要","可持续的照顾与个人计划","不能被完全放弃的个人边界","家中最紧急的责任"],
+      ["书中观点、结构和证据","长期修订、校勘与保存","不随流俗改变的独立见解","每一条记载和结论"],
+      ["自己能为乡里提供多少帮助","有限而可持续的协助方式","独居与独立生活的边界","真正紧急时的亲自援助"]
+    ];
+    const RELATION_OPTIONS=RELATION_FOCUS.map(f=>[["先讲清"+f[0],"表达"],["建立或调整"+f[1],"经营"],["坚持"+f[2],"独立"],["主动承担"+f[3],"担当"]]);
+    const DECISION_CATEGORIES=["⚖️ 决策方式","🚀 行动与变化","🏛️ 资源与责任","🔭 判断与洞察","🌊 压力与转折"];
+    const RELATION_CATEGORIES=["🤝 人际协作","🧠 思考与表达","🌙 价值与人生","🧭 边界与担当","🪴 长期经营"];
+    function rotateQuestionOptions(options,seed){
+      const shift=seed%4,rotated=options.slice(shift).concat(options.slice(0,shift));
+      if(Math.floor(seed/4)%2)rotated.reverse();
+      return rotated.map(option=>option.slice());
+    }
+    function questionTextKey(text){return text.normalize("NFKC").replace(/[\s，。！？、；：‘’“”'"（）()]/g,"").toLowerCase()}
+    function buildHistoricalQuestionBank(base){
+      const bank=[],seen=new Set();
+      const add=question=>{const key=questionTextKey(question[1]);if(bank.length<1000&&!seen.has(key)){seen.add(key);bank.push(question)}};
+      for(let i=0;i<500&&bank.length<1000;i++){
+        const sceneIndex=i%50,angleIndex=Math.floor(i/50);
+        add([DECISION_CATEGORIES[(sceneIndex+angleIndex)%DECISION_CATEGORIES.length],DECISION_SCENES[sceneIndex]+"，"+DECISION_ANGLES[angleIndex],rotateQuestionOptions(DECISION_OPTIONS[sceneIndex],i)]);
+        add([RELATION_CATEGORIES[(sceneIndex+angleIndex)%RELATION_CATEGORIES.length],RELATION_SCENES[sceneIndex]+"，"+RELATION_ANGLES[angleIndex],rotateQuestionOptions(RELATION_OPTIONS[sceneIndex],i+1)]);
+      }
+      if(bank.length!==1000||seen.size!==1000)throw new Error("历史人物正式题库未能生成1000道唯一题目");
+      return bank;
+    }
+    const QUESTION_BANK=buildHistoricalQuestionBank(BASE_Q);
+    function secureShuffle(values){
+      const copy=values.slice();
+      for(let i=copy.length-1;i>0;i--){const random=new Uint32Array(1);crypto.getRandomValues(random);const j=random[0]%(i+1);[copy[i],copy[j]]=[copy[j],copy[i]]}
+      return copy;
+    }
+    function pickQuestionSet(count=24){
+      const decisionDims=new Set(["决断","共情","开创","洞察"]),decisionIndexes=[],relationIndexes=[];
+      QUESTION_BANK.forEach((question,index)=>(question[2].some(option=>decisionDims.has(option[1]))?decisionIndexes:relationIndexes).push(index));
+      let used=[];
+      try{used=JSON.parse(sessionStorage.getItem("lishirenwu-used-questions-v3")||"[]")}catch(error){used=[]}
+      const usedSet=new Set(used.filter(index=>Number.isInteger(index)&&index>=0&&index<QUESTION_BANK.length));
+      const take=(pool,amount)=>{
+        let remaining=pool.filter(index=>!usedSet.has(index));
+        if(remaining.length<amount){pool.forEach(index=>usedSet.delete(index));remaining=pool.slice()}
+        const chosen=secureShuffle(remaining).slice(0,amount);chosen.forEach(index=>usedSet.add(index));return chosen;
+      };
+      const half=Math.floor(count/2),indexes=secureShuffle(take(decisionIndexes,half).concat(take(relationIndexes,count-half)));
+      sessionStorage.setItem("lishirenwu-used-questions-v3",JSON.stringify([...usedSet]));
+      return indexes.map(index=>QUESTION_BANK[index]);
+    }
+    let Q=[];
+    const state={gender:null,index:0,answers:[],advanceTimer:null,result:null};
+    const $=s=>document.querySelector(s);
+    function roundedRectPath(c,x,y,w,h,r){
+      const radius=Math.max(0,Math.min(Number(r)||0,Math.abs(w)/2,Math.abs(h)/2));
+      c.beginPath();
+      if(typeof c.roundRect==="function"){c.roundRect(x,y,w,h,radius);return}
+      c.moveTo(x+radius,y);c.lineTo(x+w-radius,y);c.quadraticCurveTo(x+w,y,x+w,y+radius);
+      c.lineTo(x+w,y+h-radius);c.quadraticCurveTo(x+w,y+h,x+w-radius,y+h);
+      c.lineTo(x+radius,y+h);c.quadraticCurveTo(x,y+h,x,y+h-radius);
+      c.lineTo(x,y+radius);c.quadraticCurveTo(x,y,x+radius,y);c.closePath();
+    }
+    const intro=$("#intro"),pref=$("#preference"),question=$("#question"),result=$("#result"),chrome=$("#quizChrome");
+    function unlock(){
+      const input=$("#accessInput"),error=$("#accessError");
+      if(input.value.trim()!==ACCESS_CODE){
+        error.classList.add("show");input.value="";input.focus();return;
+      }
+      $("#accessGate").classList.add("hidden");$("#appShell").classList.remove("app-locked");document.body.classList.remove("locked");
+      error.classList.remove("show");window.scrollTo(0,0);
+    }
+    $("#unlockBtn").onclick=unlock;
+    $("#accessInput").addEventListener("keydown",e=>{if(e.key==="Enter")unlock()});
+    const accessParam=new URLSearchParams(location.search).get("code");
+    if(accessParam){$("#accessInput").value=accessParam;setTimeout(unlock,120)}
+    const show=el=>{[intro,pref,question,result].forEach(x=>x.classList.add("hidden"));el.classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})};
+    function setChrome(on){chrome.classList.toggle("hidden",!on)}
+    $("#startBtn").onclick=()=>{show(pref);setChrome(false)};
+    function announce(message,duration=1800){const toast=$("#toast");toast.textContent=message;toast.classList.add("show");clearTimeout(toast._timer);toast._timer=setTimeout(()=>toast.classList.remove("show"),duration)}
+    $("#browseBtn").onclick=()=>announce("系统会把你的选择映射到八种性格维度，再与历史人物档案计算距离。没有标准答案，请选择最像真实自己的反应。",6200);
+    $("#prefBack").onclick=()=>{show(intro);setChrome(false)};
+    document.querySelectorAll(".gender").forEach(btn=>btn.onclick=()=>{
+      document.querySelectorAll(".gender").forEach(x=>x.classList.remove("selected"));btn.classList.add("selected");state.gender=btn.dataset.gender;$("#prefNext").disabled=false;
+    });
+    $("#prefNext").onclick=()=>{Q=pickQuestionSet(24);state.index=0;state.answers=Array(Q.length).fill(null);setChrome(true);show(question);renderQuestion()};
+    $("#prevBtn").onclick=()=>{if(state.index===0){show(pref);setChrome(false)}else{state.index--;renderQuestion()}};
+    function advanceQuestion(){
+      clearTimeout(state.advanceTimer);
+      if(state.answers[state.index]===null)return;
+      if(state.index<Q.length-1){state.index++;renderQuestion();requestAnimationFrame(()=>question.scrollIntoView({behavior:"smooth",block:"start"}))}
+      else finish();
+    }
+    $("#nextBtn").onclick=advanceQuestion;
+    function chapter(i){return Q[i][0]}
+    function updateChrome(i,label){
+      const n=Math.max(1,i+1),total=Q.length,pct=Math.round(n/total*100);
+      $("#progressText").textContent=`${n} / ${total}`;$("#progressBar").style.width=`${pct}%`;$("#progressPct").textContent=`${pct}%`;
+      $("#stageLabel").textContent=label||chapter(i);$("#topCount").textContent=`第 ${n} / ${total}`;
+    }
+    function renderQuestion(){
+      const i=state.index,[cat,text,opts]=Q[i];updateChrome(i);$("#chapterName").textContent=cat;$("#questionText").textContent=text;
+      $("#answerList").innerHTML=opts.map((o,j)=>`<button class="choice answer ${state.answers[i]===j?"selected":""}" data-i="${j}"><span class="letter">${"ABCD"[j]}</span><span><strong>${o[0]}</strong><small>更接近「${o[1]}」的行为倾向</small></span></button>`).join("");
+      $("#autoHint").textContent=state.answers[i]===null?"选择后自动进入下一题":"本题已选择，可重新选择";$("#autoHint").classList.toggle("active",state.answers[i]!==null);
+      document.querySelectorAll(".answer").forEach(btn=>btn.onclick=()=>{
+        state.answers[i]=+btn.dataset.i;document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));btn.classList.add("selected");$("#nextBtn").disabled=false;
+        $("#autoHint").textContent=i===Q.length-1?"已选择，正在生成人物档案…":"已选择，正在进入下一题…";$("#autoHint").classList.add("active");
+        clearTimeout(state.advanceTimer);state.advanceTimer=setTimeout(advanceQuestion,420);
+      });
+      $("#nextBtn").disabled=state.answers[i]===null;$("#nextBtn").textContent=i===Q.length-1?"生成档案":"下一题";
+    }
+    function finish(){
+      const raw=Object.fromEntries(DIMS.map(d=>[d,12]));
+      state.answers.forEach((a,i)=>{const dim=Q[i][2][a][1];raw[dim]+=9});
+      const max=Math.max(...Object.values(raw)),min=Math.min(...Object.values(raw));
+      const scores=DIMS.map(d=>Math.round(38+(raw[d]-min)/(max-min||1)*60));
+      const pool=people.filter(p=>(state.gender==="all"||p.gender===state.gender)&&ARCH[p.arch]);
+      const distance=p=>{const v=ARCH[p.arch].vec;return Math.sqrt(v.reduce((sum,x,i)=>sum+(x-scores[i])**2,0))};
+      const ranked=pool.map(p=>({p,d:distance(p)})).sort((a,b)=>a.d-b.d);
+      const person=ranked[0].p,a=ARCH[person.arch];
+      const similarity=Math.max(76,Math.min(97,Math.round(100-ranked[0].d/4.8)));
+      $("#resultName").textContent=person.name;$("#resultTitle").textContent=`${person.era} · ${person.role} · ${a.label}`;
+      $("#resultQuote").textContent=`“${person.quote}”`;$("#reportHead").dataset.seal=person.name.slice(0,1);$("#matchRate").textContent=similarity+"%";
+      $("#dominant").textContent=`主导维度：${DIMS[scores.indexOf(Math.max(...scores))]}`;
+      $("#resultTags").innerHTML=a.tags.map(t=>`<span class="tag">${t}</span>`).join("");
+      $("#portrait").textContent=`你与${person.name}相似的，并不是具体经历，而是处理世界的方式。${a.portrait}`;
+      $("#dimensionGrid").innerHTML=DIMS.map((d,i)=>`<div class="dim-row"><span>${d}</span><span class="dim-bar"><i style="width:${scores[i]}%"></i></span><b>${scores[i]}</b></div>`).join("");
+      const top=DIMS.map((d,i)=>[d,scores[i]]).sort((x,y)=>y[1]-x[1]).slice(0,3);
+      state.result={person,a,scores,similarity,top};
+      $("#commonGround").innerHTML=top.map(([d,s],i)=>`<div class="note"><b>${["第一底色","隐藏天赋","长期优势"][i]} · ${d}</b>${commonText(d,s,person.name)}</div>`).join("");
+      $("#blindspot").textContent=a.blind;$("#reality").textContent=a.reality;$("#advice").textContent=a.advice;
+      $("#risk").textContent=`当「${a.tags[0]}」被过度使用时，你可能会把它变成唯一答案。尤其在压力状态下，记得检查自己是否忽略了关系、节奏或新的证据。`;
+      $("#lines").innerHTML=makeLines(a,person).map(x=>`<div class="note">“${x}”</div>`).join("");
+      setChrome(false);$("#topCount").textContent="档案已生成";show(result);
+      sessionStorage.setItem("figureResult",JSON.stringify({name:person.name,similarity,gender:state.gender,scores}));
+    }
+    function commonText(d,s,name){
+      const map={决断:"在需要做决定时，你倾向于收束噪音、抓住主线。",共情:"你能感知他人的处境，并把关系当成局面的一部分。",开创:"旧答案无法解决问题时，你敢于另起一行。",洞察:"你相信真正的答案藏在表象背后的规律里。",表达:"你擅长让模糊的感受与想法获得清晰形状。",经营:"你能看见资源的组合方式与长期价值。",独立:"你有一套不轻易被外界带走的内在坐标。",担当:"越到关键时刻，你越愿意站出来承担。"};
+      return `${map[d]}这也是你与${name}最接近的一层性格底色。`;
+    }
+    function makeLines(a,p){
+      const lines={ruler:["先把局面稳住，再谈漂亮。","位置越高，越要对结果负责。","真正的秩序，能让众人各得其所。"],strategist:["别只看眼前这一手。","信息不全时，克制也是行动。","真正的胜负，在动手前已有轮廓。"],pioneer:["没有路，就先走出第一步。","试错不是浪费，是地图的成本。","边界之外，才有新的答案。"],diplomat:["先听懂，再说服。","关系不是妥协，是通往结果的桥。","让不同的人看见共同的方向。"],scholar:["先求证，再下结论。","真正的知识，经得起反复追问。","慢一点没关系，但要更接近真实。"],reformer:["向来如此，不代表理应如此。","改变要有锋芒，也要有路径。","如果没人先走，那就从我开始。"],artist:["我把说不清的感受，变成能被看见的东西。","生活不是材料，生活本身就是作品。","敏感不是脆弱，是另一种看见。"],guardian:["你们先走，我来守最后一段。","答应过的事，就要有回音。","真正的强大，是让身边的人安心。"],merchant:["信用是最贵的本钱。","会算账，也要会看长远。","让价值流动起来，才算真正拥有。"],free:["我不逃离世界，我只是选择自己的位置。","热闹不等于值得。","守住自己，才有余力理解别人。"]};
+      return [p.quote,...lines[p.arch]].slice(0,3);
+    }
+    function captureWholeResult(){
+      const canvas=document.createElement("canvas"),c=canvas.getContext("2d"),W=1200,margin=60,cardW=W-margin*2,gap=28,pad=38;
+      const font=(size,weight)=>String(weight||400)+" "+size+"px Microsoft YaHei, PingFang SC, sans-serif";
+      const split=(value,maxWidth,size,weight)=>{c.font=font(size||24,weight||400);const rows=[];String(value||"").split("\n").forEach(part=>{let line="";for(const char of part){const next=line+char;if(line&&c.measureText(next).width>maxWidth){rows.push(line);line=char}else line=next}if(line)rows.push(line)});return rows.length?rows:[""]};
+      const blockHeight=(value,maxWidth,size,lineHeight,weight)=>split(value,maxWidth,size,weight).length*lineHeight;
+      const common=[...document.querySelectorAll("#commonGround .note")].map(node=>{const title=((node.querySelector("b")||{}).textContent||"").trim();return{title,body:node.textContent.trim().slice(title.length).trim()}});
+      const risks=[{title:"可能的盲点",body:$("#blindspot").textContent.trim()},{title:"风险提醒",body:$("#risk").textContent.trim()},{title:"给你的建议",body:$("#advice").textContent.trim()}];
+      const lines=[...document.querySelectorAll("#lines .note")].map(node=>node.textContent.trim());
+      const portrait=$("#portrait").textContent.trim(),reality=$("#reality").textContent.trim(),quote=$("#resultQuote").textContent.trim();
+      const innerW=cardW-pad*2,colGap=20,colW=(innerW-colGap*2)/3;
+      const portraitH=112+blockHeight(portrait,innerW,25,42,400)+36,dimensionsH=112+DIMS.length*48+34;
+      const commonInnerH=Math.max(...common.map(item=>88+blockHeight(item.body,colW-36,21,36,400)),210),commonH=112+commonInnerH+34;
+      const realityH=112+blockHeight(reality,innerW-36,23,39,400)+70;
+      const riskInnerH=Math.max(...risks.map(item=>88+blockHeight(item.body,colW-36,21,36,400)),220),riskH=112+riskInnerH+34;
+      const linesInnerH=Math.max(...lines.map(value=>54+blockHeight(value,colW-36,22,38,400)),145),linesH=112+linesInnerH+34;
+      const topH=650,totalH=margin+topH+gap+portraitH+gap+dimensionsH+gap+commonH+gap+realityH+gap+riskH+gap+linesH+118;
+      canvas.width=W;canvas.height=Math.ceil(totalH);
+      const round=(x,y,w,h,r,fill,stroke)=>{roundedRectPath(c,x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=2;c.stroke()}};
+      const text=(value,x,y,size,color,weight,align)=>{c.font=font(size,weight);c.fillStyle=color||"#2D2458";c.textAlign=align||"left";c.textBaseline="top";c.fillText(String(value),x,y)};
+      const paragraph=(value,x,y,maxWidth,size,lineHeight,color,weight,align)=>{const rows=split(value,maxWidth,size,weight);rows.forEach((row,index)=>text(row,x,y+index*lineHeight,size,color,weight,align));return y+rows.length*lineHeight};
+      const section=(title,y,h)=>{round(margin,y,cardW,h,28,"#FFFFFF","#E2DCF5");text(title,margin+pad,y+34,29,"#2D2458",900);return y+94};
+      const bg=c.createLinearGradient(0,0,W,totalH);bg.addColorStop(0,"#F7F4FD");bg.addColorStop(.55,"#EFEAF7");bg.addColorStop(1,"#E8E4F2");c.fillStyle=bg;c.fillRect(0,0,W,totalH);
+      let y=margin;round(margin,y,cardW,topH,34,"#FFFFFF","#E2DCF5");
+      text("你的历史人物匹配结果",W/2,y+42,25,"#7B68C8",800,"center");text("🏛️",W/2,y+86,54,"#2D2458",400,"center");
+      const pctGradient=c.createLinearGradient(W/2-120,0,W/2+120,0);pctGradient.addColorStop(0,"#7B68C8");pctGradient.addColorStop(1,"#6B5DB8");c.font=font(92,900);c.fillStyle=pctGradient;c.textAlign="center";c.textBaseline="top";c.fillText($("#matchRate").textContent.trim(),W/2,y+154);
+      text($("#resultName").textContent.trim(),W/2,y+264,56,"#2D2458",900,"center");text($("#resultTitle").textContent.trim(),W/2,y+336,24,"#8279AE",500,"center");
+      const tagValues=[...document.querySelectorAll("#resultTags .tag")].map(node=>node.textContent.trim());c.font=font(21,700);const tagWidths=tagValues.map(value=>c.measureText(value).width+40),tagTotal=tagWidths.reduce((sum,width)=>sum+width,0)+(tagValues.length-1)*12;let tagX=(W-tagTotal)/2;tagValues.forEach((value,index)=>{round(tagX,y+385,tagWidths[index],42,21,"#F1EDF9","#DDD8EE");text(value,tagX+tagWidths[index]/2,y+393,21,"#6B5DB8",700,"center");tagX+=tagWidths[index]+12});
+      const dominant=$("#dominant").textContent.trim();c.font=font(21,700);const dominantW=c.measureText(dominant).width+44;round((W-dominantW)/2,y+447,dominantW,44,22,"#F1EDF9");text(dominant,W/2,y+455,21,"#6B5DB8",700,"center");
+      round(margin+pad,y+515,innerW,104,20,"#F7F4FD","#E2DCF5");text("人物心声",margin+pad+24,y+535,21,"#6B5DB8",800);paragraph(quote,margin+pad+24,y+570,innerW-48,23,36,"#514A75",400);y+=topH+gap;
+      let bodyY=section("01 · 人物自画像",y,portraitH);paragraph(portrait,margin+pad,bodyY,innerW,25,42,"#514A75",400);y+=portraitH+gap;
+      bodyY=section("02 · 八维能力结构",y,dimensionsH);state.result.scores.forEach((score,index)=>{const rowY=bodyY+index*48;text(DIMS[index],margin+pad,rowY+8,22,"#655D8F",600);round(margin+pad+132,rowY+14,innerW-220,15,8,"#F0EDF8");const bar=c.createLinearGradient(margin+pad+132,0,margin+cardW-pad-88,0);bar.addColorStop(0,"#7B68C8");bar.addColorStop(1,"#6B5DB8");round(margin+pad+132,rowY+14,(innerW-220)*score/100,15,8,bar);text(score,margin+cardW-pad,rowY+6,23,"#6B5DB8",800,"right")});y+=dimensionsH+gap;
+      bodyY=section("03 · 你与 TA 的共同底色",y,commonH);common.forEach((item,index)=>{const x=margin+pad+index*(colW+colGap);round(x,bodyY,colW,commonInnerH,20,"#FAF8FF","#E2DCF5");text(item.title,x+18,bodyY+24,21,"#2D2458",800);paragraph(item.body,x+18,bodyY+62,colW-36,21,36,"#625B86",400)});y+=commonH+gap;
+      bodyY=section("04 · 现实中的你",y,realityH);round(margin+pad,bodyY,innerW,realityH-128,20,"#FAF8FF","#E2DCF5");text("现实互动方式",margin+pad+22,bodyY+24,22,"#2D2458",800);paragraph(reality,margin+pad+22,bodyY+64,innerW-44,23,39,"#625B86",400);y+=realityH+gap;
+      bodyY=section("05 · 性格盲点与风险提醒",y,riskH);risks.forEach((item,index)=>{const x=margin+pad+index*(colW+colGap);round(x,bodyY,colW,riskInnerH,20,"#FAF8FF","#E2DCF5");text(item.title,x+18,bodyY+24,21,"#2D2458",800);paragraph(item.body,x+18,bodyY+62,colW-36,21,36,"#625B86",400)});y+=riskH+gap;
+      bodyY=section("06 · 你的三句人物台词",y,linesH);lines.forEach((value,index)=>{const x=margin+pad+index*(colW+colGap);round(x,bodyY,colW,linesInnerH,20,"#FAF8FF","#E2DCF5");paragraph(value,x+18,bodyY+28,colW-36,22,38,"#625B86",400)});y+=linesH;
+      text("历史人物测试 · 趣味性自我探索结果",W/2,y+48,19,"#8D86AE",600,"center");return canvas;
+    }
+    const phoneSaveMode=()=>matchMedia("(max-width:900px)").matches||/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const canShareFile=file=>{try{return typeof navigator.share==="function"&&typeof navigator.canShare==="function"&&navigator.canShare({files:[file]})}catch(error){return false}};
+    let savePreviewUrl="";
+    function closeSaveModal(){const modal=$("#saveModal");modal.classList.add("hidden");$("#savePreview").removeAttribute("src");if(savePreviewUrl){URL.revokeObjectURL(savePreviewUrl);savePreviewUrl=""}}
+    function showSaveModal(blob){closeSaveModal();savePreviewUrl=URL.createObjectURL(blob);$("#savePreview").src=savePreviewUrl;$("#saveModal").classList.remove("hidden");$("#saveModal").scrollTop=0;announce("请长按完整结果图保存到相册")}
+    function downloadOnComputer(blob,fileName){const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=fileName;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+    function refreshExportLabel(){const button=$("#exportBtn");if(button&&!button.disabled)button.textContent=phoneSaveMode()?"保存到手机相册":"下载完整结果图"}
+    $("#saveModalClose").onclick=closeSaveModal;
+    $("#saveModal").onclick=event=>{if(event.target===$("#saveModal"))closeSaveModal()};
+    $("#exportBtn").onclick=async()=>{if(!state.result){announce("请先完成测试");return}const button=$("#exportBtn"),mobile=phoneSaveMode();button.disabled=true;button.textContent="正在生成…";try{const canvas=captureWholeResult(),blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));if(!blob)throw new Error("empty image");const fileName="历史人物测试-"+state.result.person.name+"-完整结果.png",file=new File([blob],fileName,{type:"image/png"});if(mobile){if(canShareFile(file)){try{await navigator.share({files:[file],title:"保存历史人物测试结果"});announce("已交给系统保存");return}catch(error){if(error&&error.name==="AbortError")return}}showSaveModal(blob);return}downloadOnComputer(blob,fileName);announce("完整结果图已下载")}catch(error){console.error(error);announce("图片生成失败，请刷新后重试")}finally{button.disabled=false;refreshExportLabel()}};
+    refreshExportLabel();window.addEventListener("resize",refreshExportLabel);
+    $("#restartBtn").onclick=()=>{state.gender=null;state.index=0;state.answers=[];state.result=null;Q=[];document.querySelectorAll(".gender").forEach(x=>x.classList.remove("selected"));$("#prefNext").disabled=true;$("#topCount").textContent="人物档案库";show(intro);window.scrollTo(0,0)};
+    console.assert(QUESTION_BANK.length===1000,"正式题库应为1000题");
+    console.assert(new Set(QUESTION_BANK.map(question=>questionTextKey(question[1]))).size===1000,"正式题库题干不得重复");
+    console.assert(DECISION_OPTIONS.length===50&&RELATION_OPTIONS.length===50,"100个历史场景都必须有专属选项");
+    console.assert(new Set(QUESTION_BANK.map(question=>question[2].map(option=>option[0]).sort().join("|"))).size===100,"每个历史场景都必须使用独立选项组");
+    console.assert(DIMS.every(dim=>QUESTION_BANK.some(question=>question[2].some(option=>option[1]===dim))),"八个结果维度都必须由正式题目覆盖");
+    console.assert(people.length===113,`人物库应为113，当前${people.length}`);
+    console.assert(people.filter(p=>p.gender==="male").length===58,"男性人物应为58");
+    console.assert(people.filter(p=>p.gender==="female").length===55,"女性人物应为55");
+    console.assert(people.every(p=>ARCH[p.arch]),"每位人物都必须配置有效的能力原型");
+  })();
+  </script>
 </body>
 </html>
