@@ -1804,7 +1804,7 @@ function showStep(name){
   }
   function tryCode(){
     const v = input.value.trim();
-    if (/^\d{4}$/.test(v) && v === '9900'){ unlock(); return; }
+    if (/^\d{4}$/.test(v) && v === '8023'){ unlock(); return; }
     err.textContent = '访问码不正确，请重新输入';
     input.value = '';
     input.focus();
@@ -1812,7 +1812,7 @@ function showStep(name){
   }
   try{
     const p = new URLSearchParams(location.search);
-    if (p.get('code') === '9900'){ unlock(); return; }
+    if (p.get('code') === '8023'){ unlock(); return; }
   }catch(e){}
   $('#gateBtn').addEventListener('click', tryCode);
   input.addEventListener('keydown', e => { if (e.key === 'Enter') tryCode(); });
