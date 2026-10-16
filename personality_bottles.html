@@ -77,7 +77,7 @@ h1,h2,h3,h4{font-weight:400}
 .bg-float .ff-bottle{width:44px}
 
 /* ================= 入场码验证 ================= */
-.code-inner{text-align:center; padding:40px 20px calc(48px + var(--safe-b)); max-width:560px; width:100%}
+.code-inner{position:relative; z-index:2; text-align:center; padding:40px 20px calc(48px + var(--safe-b)); max-width:560px; width:100%}
 .code-mascot{width:86px; margin:0 auto 6px; filter:drop-shadow(0 6px 10px rgba(95,191,163,.25))}
 .code-eyebrow{font-size:.75rem; letter-spacing:.4em; text-indent:.4em; color:var(--mint-dark)}
 .code-inner h2{font-size:clamp(1.6rem,6vw,2.1rem); margin:10px 0 4px}
@@ -103,7 +103,7 @@ h1,h2,h3,h4{font-weight:400}
 .code-btns{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
 
 /* ================= 偏好选择 ================= */
-.pref-inner{text-align:center; padding:60px 18px calc(48px + var(--safe-b)); max-width:640px; width:100%}
+.pref-inner{position:relative; z-index:2; text-align:center; padding:60px 18px calc(48px + var(--safe-b)); max-width:640px; width:100%}
 .step-eyebrow{font-size:.75rem; letter-spacing:.4em; text-indent:.4em; color:var(--mint-dark)}
 .pref-inner h2{font-size:1.9rem; margin:12px 0 6px}
 .pref-inner>p{color:var(--ink-soft); font-size:.9rem; margin-bottom:28px}
@@ -114,7 +114,6 @@ h1,h2,h3,h4{font-weight:400}
   padding:16px 18px; cursor:pointer; transition:transform .15s, background .15s;
   box-shadow:0 4px 0 rgba(55,69,63,.16);
 }
-.pref-item:hover{transform:translateY(-3px)}
 .pref-item .pi-emoji{grid-row:span 2; font-size:30px; text-align:center;
   background:var(--paper2); border-radius:14px; width:52px; height:52px; line-height:52px}
 .pref-item b{font-size:1.15rem; display:block}
@@ -123,7 +122,7 @@ h1,h2,h3,h4{font-weight:400}
 .pref-item.picked{background:linear-gradient(180deg,#fff,#e8f8f1); border-color:var(--mint-deep)}
 
 /* ================= 答题页 ================= */
-.quiz-wrap{max-width:620px; margin:0 auto; padding:26px 20px 130px}
+.quiz-wrap{position:relative; z-index:2; max-width:620px; margin:0 auto; padding:26px 20px 130px}
 .quiz-top{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
 .quiz-back{
   border:2.5px solid var(--stroke); background:#fff; border-radius:999px;
@@ -139,12 +138,13 @@ h1,h2,h3,h4{font-weight:400}
 .quiz-progress i{
   display:block; height:100%; width:0; border-radius:99px; position:relative; overflow:hidden;
   background:linear-gradient(90deg,var(--mint),var(--mint-deep));
-  transition:width .5s cubic-bezier(.34,1.4,.44,1);
+  /* 缓和版：无过冲、平缓缓动（水滴落入后再涨） */
+  transition:width .95s cubic-bezier(.37,0,.26,1);
 }
 .quiz-progress i::after{
   content:''; position:absolute; inset:0; transform:translateX(-110%);
   background:linear-gradient(105deg,transparent 32%,rgba(255,255,255,.8) 50%,transparent 68%);
-  animation:sheen 2.3s ease-in-out infinite;
+  animation:sheen 2.6s ease-in-out infinite;
 }
 @keyframes sheen{55%{transform:translateX(110%)}100%{transform:translateX(110%)}}
 .quiz-body h3{font-size:1.42rem; line-height:1.55; min-height:4.2em}
@@ -152,9 +152,12 @@ h1,h2,h3,h4{font-weight:400}
 .opt{
   display:block; width:100%; text-align:left; background:#fff; cursor:pointer;
   border:2.5px solid #ddd5c3; border-radius:18px; padding:14px 18px; margin:11px 0;
-  transition:border-color .15s, transform .15s, box-shadow .15s;
+  transition:border-color .15s, transform .15s, box-shadow .15s, background .15s;
 }
-.opt:hover{border-color:var(--mint-deep); transform:translateY(-2px)}
+/* 触屏设备不启用 :hover（修复移动端高亮粘滞）；按压反馈改用 :active */
+.opt:not(.sel):active{background:#f3faf6; border-color:#bfe3d5}
+.opt:focus{outline:none}
+.opt:focus-visible{outline:3px solid var(--mint-deep); outline-offset:2px}
 .opt.sel{
   border-color:var(--mint-deep); background:linear-gradient(180deg,#fff,#e6f8f0);
   box-shadow:0 3px 0 var(--mint-deep); transform:none;
@@ -171,7 +174,17 @@ h1,h2,h3,h4{font-weight:400}
 }
 .quiz-cta.on .btn{opacity:1; transform:none; pointer-events:auto}
 
-/* ================= 装瓶过渡层（最后一题自动触发的全屏过渡） ================= */
+/* ================= 底部小草（清新装饰） ================= */
+.grass{position:fixed; left:0; right:0; bottom:0; height:48px; z-index:1;
+  pointer-events:none; opacity:.65; overflow:hidden}
+.tuft{position:absolute; bottom:-2px; transform-origin:bottom center;
+  animation:grassSway ease-in-out infinite alternate}
+.tuft svg{display:block}
+.tuft path{stroke:var(--mint-deep); stroke-width:2.6; fill:none; stroke-linecap:round; opacity:.6}
+.grass .fl{position:absolute; font-size:12px; animation:bob 3.4s ease-in-out infinite}
+@keyframes grassSway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+
+/* ================= 装瓶过渡层 ================= */
 .fill-overlay{
   position:fixed; inset:0; z-index:160; display:flex; flex-direction:column;
   align-items:center; justify-content:center; gap:12px; text-align:center;
@@ -207,6 +220,13 @@ h1,h2,h3,h4{font-weight:400}
   background:var(--yellow); border:3px solid var(--stroke); border-radius:50%;
   transform:rotate(8deg); box-shadow:0 4px 0 rgba(55,69,63,.2); z-index:3;
 }
+.hero-ripple{
+  position:absolute; left:50%; bottom:-10px; width:64px; height:15px; margin-left:-32px;
+  border:2px solid rgba(95,191,163,.55); border-radius:50%; opacity:0;
+  animation:rip 2.6s ease-out infinite; pointer-events:none;
+}
+.hero-ripple.r2{animation-delay:1.3s}
+@keyframes rip{0%{transform:scale(.35);opacity:.75}100%{transform:scale(1.8);opacity:0}}
 .hero-pretitle{font-size:.95rem; color:var(--ink-soft); letter-spacing:.35em; text-indent:.35em; margin-top:12px}
 .hero-title{
   font-size:clamp(2rem,9vw,3.2rem); line-height:1.25; margin:4px 0 2px;
@@ -291,7 +311,6 @@ h1,h2,h3,h4{font-weight:400}
 .ov-fl,.ov-fr{stroke:var(--mint); stroke-width:5px; fill:none; stroke-linecap:round; stroke-dasharray:132; stroke-dashoffset:132}
 .ov-pool{fill:var(--mint); opacity:.88; transform:scale(0); transform-box:fill-box; transform-origin:center}
 .ov-drop{fill:var(--mint)}
-/* 瓶内小气泡 */
 .bubs{opacity:0; transition:opacity .6s}
 .bubbling .bubs{opacity:1}
 .bubs circle{transform-box:fill-box; transform-origin:center; animation:bubUp 3.1s linear infinite; opacity:0}
@@ -356,9 +375,12 @@ h1,h2,h3,h4{font-weight:400}
 .final-btns{display:flex; justify-content:center; gap:16px; flex-wrap:wrap}
 .final-note{margin-top:36px; font-size:.72rem; color:#a39c8e}
 
-/* ================= 飞行元素 ================= */
+/* ================= 飞行元素（水滴 / 喷泉 / 花瓣 / 小气泡） ================= */
 .fly-drop{position:fixed; z-index:150; pointer-events:none; font-size:20px; transform:translate(-50%,-50%)}
 .burst-p{position:fixed; z-index:200; pointer-events:none; font-size:18px; transform:translate(-50%,-50%)}
+.petal{position:fixed; top:-46px; z-index:170; pointer-events:none; will-change:transform}
+.pop-bub{position:fixed; z-index:145; border-radius:50%; pointer-events:none;
+  background:rgba(143,214,192,.8); border:1.5px solid rgba(95,191,163,.85)}
 
 /* ================= Toast / 模态 ================= */
 #toast{
@@ -375,6 +397,12 @@ h1,h2,h3,h4{font-weight:400}
   max-width:min(560px,94vw); text-align:center; max-height:92vh; overflow:auto}
 .modal-box img{width:100%; border:3px solid var(--stroke); border-radius:14px; margin:14px 0; display:block}
 .modal-box p{font-size:.95rem}
+
+/* ================= 悬停样式仅限真鼠标设备（修复触屏 :hover 粘滞） ================= */
+@media (hover:hover) and (pointer:fine){
+  .opt:hover{border-color:var(--mint-deep); transform:translateY(-2px)}
+  .pref-item:hover{transform:translateY(-3px)}
+}
 
 /* ================= 响应式 ================= */
 @media (max-width:480px){
@@ -408,8 +436,10 @@ h1,h2,h3,h4{font-weight:400}
   .mini-row .cell{width:22%}
   .burst-p{font-size:15px}
   .fly-drop{font-size:17px}
+  .petal{font-size:14px}
   #resultAmbient{opacity:.4}
   .hero-sim b{font-size:clamp(3rem,14vw,4.2rem)}
+  .grass{height:40px; opacity:.55}
 }
 @media (min-width:640px){ .cell{width:14.285%} }
 /* ================= 减少动态 ================= */
@@ -526,6 +556,8 @@ h1,h2,h3,h4{font-weight:400}
   <div class="act act-hero" id="actHero">
     <p class="hero-kicker">— 你的测试结果 —</p>
     <div class="hero-stage" id="heroStage">
+      <i class="hero-ripple"></i>
+      <i class="hero-ripple r2"></i>
       <div class="hero-bottle-wrap" id="heroBottleWrap"></div>
       <span class="hero-emoji-badge" id="heroBadge"></span>
     </div>
@@ -608,8 +640,9 @@ h1,h2,h3,h4{font-weight:400}
 /* =========================================================================
  * 人格小瓶子 · 单文件应用
  *  - 入场码验证（1314，本会话免重复）
- *  - 答完最后一题自动「装瓶」过渡并生成结果
- *  - 结果页第一幕直接揭晓本命（大瓶落下→注满→盖子弹飞→溢出→称号弹出）
+ *  - 首页背景：大瓶圆形净空区 + 正文避让 + 最小间距（修复重叠）
+ *  - 计分 v2：主维度 +1 / 亲和维度 +0.35（连续画像），
+ *    绝对标定匹配（强度 + 形状），相似度真实浮动（82–95 典型区间）
  *  - GSAP 为可选依赖：加载失败 / reduced-motion 自动降级为静态模式
  * ========================================================================= */
 'use strict';
@@ -856,7 +889,7 @@ function buildBank(){
 const QUIZ_BANK=buildBank();
 
 /* =========================================================================
- * ③ 抽题与计分
+ * ③ 抽题与计分（v2：连续画像 + 绝对标定匹配）
  * ========================================================================= */
 const state={pref:'both', qs:[], ans:Array(12).fill(null), idx:0};
 let autoTimer=null;
@@ -894,19 +927,27 @@ function questionAt(q){
     opts:q.perm.map(i=>full.opts[i]),
   };
 }
-/* 计分：基础分 12，每选中 +9，线性归一化到 30–98 */
-function computeScores(ans){
-  const counts=Array(8).fill(0);
-  ans.forEach(d=>{ if(d!==null) counts[d]++; });
-  return counts.map(c=>Math.round(30+((12+9*c)-12)/108*68));
+/* ---- 计分 v2 ----
+ * 维度亲和对（互相对偶）：决断↔行动、共情↔稳定、理性↔独立、热烈↔表达。
+ * 选择某维度 +1 的同时，给亲和维度 +0.35 —— 画像从「整数计数」变成连续曲线，
+ * 不同作答组合不再折叠成同一种向量（这是旧版结果单一的主因）。 */
+const AFF=[3,7,5,0,6,2,1,4]; // AFF[i] = 选择维度 i 时同时加权的亲和维度
+function computeProfile(ans){
+  const w=Array(8).fill(0);
+  ans.forEach(d=>{ if(d===null) return; w[d]+=1; w[AFF[d]]+=0.35; });
+  return w;
 }
-/* 匹配：欧氏距离取最近；相似度 = clamp(100-d/4.8, 76, 97)；液面 5%–100% */
-function matchMatrix(list,scores){
-  const mn=Math.min(...scores), mx=Math.max(...scores);
-  const u=scores.map(s=> (mx===mn)?44 : 22+(s-mn)/(mx-mn)*44);
+/* 展示分数：w∈[0,6] 线性映射到 30–98（藤蔓高度 / 海报 Top3 用） */
+function profileScores(w){
+  return w.map(v=>Math.round(Math.max(30,Math.min(98,30+v/6*68))));
+}
+/* 匹配：用户画像绝对标定到与原型同尺度（u = 46+(w-1.9)*9，钳制 [20,68]），
+ * 强度与形状都参与距离计算；相似度 = clamp(100-d/2.8, 76, 97)（不再常年钉在 97） */
+function matchMatrix(list,w){
+  const u=w.map(v=>Math.max(20,Math.min(68,46+(v-1.9)*9)));
   const rows=list.map(p=>{
     const d=Math.hypot(...p.vec.map((v,i)=>u[i]-(20+v*4.6)));
-    return {key:p.key, p:p, d:d, sim:Math.max(76,Math.min(97,Math.round(100-d/4.8)))};
+    return {key:p.key, p:p, d:d, sim:Math.max(76,Math.min(97,Math.round(100-d/2.8)))};
   });
   const ds=rows.map(r=>r.d), dMin=Math.min(...ds), dMax=Math.max(...ds);
   rows.forEach(r=>{ r.level=(dMax===dMin)?1:+(0.05+0.95*(1-(r.d-dMin)/(dMax-dMin))).toFixed(4); });
@@ -914,16 +955,17 @@ function matchMatrix(list,scores){
   rows.forEach(r=>{ if(r.d<fate.d) fate=r; });
   return {rows:rows, fate:fate};
 }
-function buildResult(pref,scores){
+function buildResult(pref,w){
   const useA=(pref!=='vibe'), useB=(pref!=='heart');
-  const A=useA?matchMatrix(MATRIX_A,scores):null;
-  const B=useB?matchMatrix(MATRIX_B,scores):null;
+  const A=useA?matchMatrix(MATRIX_A,w):null;
+  const B=useB?matchMatrix(MATRIX_B,w):null;
   let hero=A, alt=B;
   if(A&&B&&B.fate.d<A.fate.d){ hero=B; alt=A; }
   if(!A){ hero=B; alt=null; }
   if(!B){ hero=A; alt=null; }
-  const topDims=scores.map((v,i)=>({v:v,i:i})).sort((a,b)=>b.v-a.v).map(x=>x.i);
-  return {pref:pref, scores:scores, A:A, B:B, hero:hero, alt:alt,
+  const scores=profileScores(w);
+  const topDims=w.map((v,i)=>({v:v,i:i})).sort((a,b)=>b.v-a.v).map(x=>x.i);
+  return {pref:pref, w:w, scores:scores, A:A, B:B, hero:hero, alt:alt,
           dominant:topDims[0], topDims:topDims, arch:ARCHETYPES[hero.fate.p.arch]};
 }
 function reviveResult(saved){
@@ -933,9 +975,13 @@ function reviveResult(saved){
   if(!A&&!B) throw new Error('结果数据为空');
   let hero=(A&&B)?(B.fate.sim>A.fate.sim?B:A):(A||B);
   let alt=(hero===A)?B:A;
-  const scores=saved.scores;
-  const topDims=scores.map((v,i)=>({v:v,i:i})).sort((a,b)=>b.v-a.v).map(x=>x.i);
-  return {pref:saved.pref, scores:scores, A:A, B:B, hero:hero, alt:alt,
+  /* 兼容旧版会话：无 w 时由展示分数反推近似画像 */
+  const w=(Array.isArray(saved.w)&&saved.w.length===8)
+    ? saved.w
+    : (saved.scores||[2,2,2,2,2,2,2,2]).map(s=>Math.max(0,Math.min(6,(s-30)/68*6)));
+  const scores=profileScores(w);
+  const topDims=w.map((v,i)=>({v:v,i:i})).sort((a,b)=>b.v-a.v).map(x=>x.i);
+  return {pref:saved.pref, w:w, scores:scores, A:A, B:B, hero:hero, alt:alt,
           dominant:topDims[0], topDims:topDims, arch:ARCHETYPES[hero.fate.p.arch]};
 }
 
@@ -950,15 +996,21 @@ function showScreen(id,silent){
   window.scrollTo(0,0);
   if(!silent&&HAS_GSAP) gsap.fromTo('#'+id,{opacity:0,y:22},{opacity:1,y:0,duration:.45,ease:'power2.out'});
 }
+/* 偏好页入口：卡片依次弹入 */
+function gotoPref(){
+  showScreen('scr-pref');
+  if(HAS_GSAP&&!RM) gsap.fromTo('#prefList .pref-item',{opacity:0,y:26},
+    {opacity:1,y:0,duration:.5,stagger:.09,ease:'back.out(1.7)'});
+}
 
-/* ---- 首页 ---- */
+/* ---- 首页（含吉祥物净空区：所有装饰避开大瓶，瓶子额外避开正文块） ---- */
 function onStart(){
   const saved=store.get('pb_quiz',null);
   if(saved&&Array.isArray(saved.qs)&&saved.qs.length===12&&Array.isArray(saved.ans)&&saved.ans.some(a=>a!==null)){
     try{ restoreQuiz(saved); toast('检测到未完成的测试，已接着上次的进度继续 🫙'); return; }
     catch(e){ store.del('pb_quiz'); }
   }
-  if(store.get('pb_gate',0)===1){ showScreen('scr-pref'); return; } // 本会话已验票
+  if(store.get('pb_gate',0)===1){ gotoPref(); return; } // 本会话已验票
   showScreen('scr-code');
   if(matchMedia('(pointer:fine)').matches){ // 桌面自动聚焦第一格；移动端避免强弹键盘
     setTimeout(()=>{ const i=$('#codeBox input'); if(i) i.focus(); },450);
@@ -966,7 +1018,7 @@ function onStart(){
 }
 function initHome(){
   $('#btnStart').onclick=onStart;
-  $('#btnHow').onclick=()=>toast('🧪 匹配原理：你的 12 个答案会映射为一个 8 维向量（决断 / 共情 / 理性 / 行动 / 热烈 / 独立 / 表达 / 稳定），再与每款人格的原型向量计算欧氏距离——距离最近的瓶子就是你的本命；矩阵内液面高度 = 你们有多像。');
+  $('#btnHow').onclick=()=>toast('🧪 匹配原理：你的 12 个答案会映射为一个 8 维向量（决断 / 共情 / 理性 / 行动 / 热烈 / 独立 / 表达 / 稳定），选项还会给亲和维度少量加权，让画像更细腻；再与每款人格的原型向量计算欧氏距离——距离最近的瓶子就是你的本命，矩阵内液面高度 = 你们有多像。');
   try{
     const svg=makeBottleSVG(); setLiquid(svg,.62);
     svg.classList.add('bubbling');
@@ -977,13 +1029,63 @@ function initHome(){
       gsap.to('#homeMascot',{y:-10,duration:2.6,yoyo:true,repeat:-1,ease:'sine.inOut'});
       gsap.to('#codeMascot',{y:-7,duration:2.8,yoyo:true,repeat:-1,ease:'sine.inOut'});
     }
+    /* ---- 漂浮背景落位：大瓶圆形净空 + 正文避让 + 装饰间最小间距 ---- */
     const wrap=$('#homeFloat');
     const isSmall=innerWidth<480;
-    const total=isSmall?9:16, bottles=isSmall?3:6;
+    const total=isSmall?8:15, bottles=isSmall?3:6;
+    const minD=isSmall?88:118;                       // 装饰物之间的像素级最小间距
+    /* 吉祥物圆形禁放区：实测位置 + 漂浮余量（所有装饰都避开，大瓶附近不再长小瓶） */
+    const mas=(()=>{
+      const r=$('#homeMascot').getBoundingClientRect();
+      return {cx:r.left+r.width/2, cy:r.top+r.height/2, r:Math.max(r.width,r.height)*.8+34};
+    })();
+    /* 正文内容块（吉祥物→按钮），瓶子额外避让，防止压字 */
+    const cbox=(()=>{
+      const a=$('#homeMascot').getBoundingClientRect();
+      const b=$('#scr-home h1').getBoundingClientRect();
+      const c=$('.home-btns').getBoundingClientRect();
+      return {l:Math.min(a.left,b.left,c.left)-24, r:Math.max(a.right,b.right,c.right)+24,
+              t:a.top-20, b:c.bottom+24};
+    })();
+    const placed=[];
+    const put=(el,isBottle)=>{
+      const ox=isBottle?22:10, oy=isBottle?33:10;    // 元素中心相对左上角的近似偏移
+      const pad=isBottle?34:12;                      // 瓶子给大瓶留更大净空
+      const ok=(x,y)=>{
+        const cx=x*innerWidth/100+ox, cy=y*innerHeight/100+oy;
+        if(Math.hypot(cx-mas.cx,cy-mas.cy)<mas.r+pad) return false;             // 大瓶净空区
+        if(isBottle&&cx>cbox.l&&cx<cbox.r&&cy>cbox.t&&cy<cbox.b) return false;  // 瓶子避开正文
+        if(!isBottle&&x>24&&x<76&&y>30&&y<70) return false;                     // 小元素避开正中
+        return true;
+      };
+      const spaced=(x,y)=>placed.every(p=>
+        Math.hypot(x*innerWidth/100+ox-p.cx, y*innerHeight/100+oy-p.cy)>=minD);
+      let spot=null;
+      /* 先探测左右边缘带的固定锚点（带抖动），再随机采样 */
+      const anchors=[[5,8],[88,8],[5,45],[88,45],[5,82],[88,82]];
+      for(let k=0;k<anchors.length&&!spot;k++){
+        const x=Math.max(1,Math.min(93,anchors[k][0]+(Math.random()*5-2.5)));
+        const y=Math.max(2,Math.min(89,anchors[k][1]+(Math.random()*6-3)));
+        if(ok(x,y)&&spaced(x,y)) spot={x:x,y:y};
+      }
+      for(let t=0;t<140&&!spot;t++){
+        const x=1+Math.random()*93, y=2+Math.random()*88;
+        if(ok(x,y)&&spaced(x,y)) spot={x:x,y:y};
+      }
+      for(let t=0;t<60&&!spot;t++){                 // 放宽间距兜底：位置合法即可
+        const x=1+Math.random()*93, y=2+Math.random()*88;
+        if(ok(x,y)) spot={x:x,y:y};
+      }
+      if(!spot) return false;                        // 实在放不下：宁可少放，不可重叠
+      placed.push({cx:spot.x*innerWidth/100+ox, cy:spot.y*innerHeight/100+oy});
+      el.style.left=spot.x+'vw'; el.style.top=spot.y+'vh';
+      return true;
+    };
     const emojiPool=['🫧','✨','🍃','🌙','💧','🍀'];
     for(let i=0;i<total;i++){
+      const isBottle=(i<bottles);
       let el;
-      if(i<bottles){
+      if(isBottle){
         el=document.createElement('div'); el.className='ff ff-bottle';
         const b=makeBottleSVG(); setLiquid(b,.25+Math.random()*.65); b.classList.add('bubbling'); el.appendChild(b);
       }else if(i<bottles+(isSmall?2:5)){
@@ -993,13 +1095,11 @@ function initHome(){
         el=document.createElement('span'); el.className='ff ff-emoji';
         el.textContent=emojiPool[i%emojiPool.length];
       }
-      let px,py; /* 采样落在页面四周，避开中心内容区 */
-      do{ px=2+Math.random()*94; py=4+Math.random()*88; }
-      while(px>24&&px<72&&py>28&&py<74);
-      el.style.left=px+'vw'; el.style.top=py+'vh';
+      if(!put(el,isBottle)) continue;                // 放不下就跳过该装饰
       wrap.appendChild(el);
-      if(HAS_GSAP) gsap.to(el,{y:-(14+Math.random()*18), x:(Math.random()-.5)*24, rotation:(Math.random()-.5)*16,
-        duration:2.8+Math.random()*2.4, delay:Math.random()*2, yoyo:true, repeat:-1, ease:'sine.inOut'});
+      /* 漂浮幅度收窄，避免晃动中再次贴近 */
+      if(HAS_GSAP) gsap.to(el,{y:-(10+Math.random()*16), x:(Math.random()-.5)*18, rotation:(Math.random()-.5)*14,
+        duration:3+Math.random()*2.4, delay:Math.random()*2, yoyo:true, repeat:-1, ease:'sine.inOut'});
     }
   }catch(e){ console.warn('[首页装饰]',e); }
 }
@@ -1036,7 +1136,7 @@ function initCode(){
       box.classList.remove('err'); box.classList.add('ok');
       if(HAS_GSAP&&!RM) gsap.fromTo(box,{scale:1},{scale:1.06,duration:.18,yoyo:true,repeat:1,ease:'power1.inOut'});
       toast('验证成功，欢迎入场 🎉',1600);
-      setTimeout(()=>showScreen('scr-pref'),650);
+      setTimeout(()=>gotoPref(),650);
     }else{
       box.classList.remove('ok'); box.classList.add('err');
       box.classList.remove('code-shake'); void box.offsetWidth; box.classList.add('code-shake');
@@ -1073,45 +1173,88 @@ function restoreQuiz(saved){
   state.idx=Math.min(saved.idx||0,11);
   showScreen('scr-quiz'); renderQ(state.idx,true);
 }
-/* ---- 答题渲染与交互（选项不带维度提示，避免误导） ---- */
+/* ---- 答题渲染：纸片式飘出飘入 + 章节翻牌 ---- */
+let lastChip='';
 function renderQ(i,first){
-  state.idx=i;
-  const q=state.qs[i];
-  const full=questionAt(q);
-  const chipPool=(q.t==='A')?CHIP_A:CHIP_B;
-  $('#quizChip').textContent=chipPool[Math.floor(i/2)%2];
-  $('#quizCount').textContent=(i+1)+' / 12';
-  $('#quizBar').style.width=((i+1)/12*100)+'%';
-  $('#quizText').textContent=full.scenario;
-  $('#quizAngle').textContent=full.angle;
-  const box=$('#quizOpts'); box.innerHTML='';
-  full.opts.forEach(o=>{
-    const b=document.createElement('button');
-    b.className='opt'+(state.ans[i]===o.dim?' sel':'');
-    b.innerHTML='<span class="opt-text">'+o.t+'</span>';
-    b.onclick=()=>onAnswer(o.dim,b);
-    box.appendChild(b);
-  });
-  $('#quizGo').classList.toggle('on', i===11&&state.ans[11]!==null);
-  if(HAS_GSAP){
-    if(!first) gsap.fromTo('#quizBody',{opacity:0,x:26},{opacity:1,x:0,duration:.34,ease:'power2.out'});
-    gsap.fromTo('#quizOpts .opt',{opacity:0,y:16},
-      {opacity:1,y:0,duration:.35,stagger:.055,ease:'power2.out',delay:first?.15:.06});
-    gsap.fromTo('#quizChip',{scale:.82},{scale:1,duration:.5,ease:'back.out(3)'});
+  const buildContent=()=>{
+    state.idx=i;
+    const q=state.qs[i];
+    const full=questionAt(q);
+    const chipPool=(q.t==='A')?CHIP_A:CHIP_B;
+    const chipTxt=chipPool[Math.floor(i/2)%2];
+    const chipChanged=(chipTxt!==lastChip); lastChip=chipTxt;
+    $('#quizChip').textContent=chipTxt;
+    $('#quizCount').textContent=(i+1)+' / 12';
+    $('#quizBar').style.width=((i+1)/12*100)+'%';
+    $('#quizText').textContent=full.scenario;
+    $('#quizAngle').textContent=full.angle;
+    const box=$('#quizOpts'); box.innerHTML='';
+    full.opts.forEach(o=>{
+      const b=document.createElement('button');
+      b.className='opt'+(state.ans[i]===o.dim?' sel':'');
+      b.innerHTML='<span class="opt-text">'+o.t+'</span>';
+      b.onclick=()=>onAnswer(o.dim,b);
+      box.appendChild(b);
+    });
+    $('#quizGo').classList.toggle('on', i===11&&state.ans[11]!==null);
+    if(HAS_GSAP){
+      gsap.fromTo('#quizOpts .opt',{opacity:0,y:18},
+        {opacity:1,y:0,duration:.36,stagger:.06,ease:'power2.out'});
+      if(chipChanged){ // 章节标签 3D 翻牌换面
+        gsap.fromTo('#quizChip',{rotationX:-90,opacity:0},
+          {rotationX:0,opacity:1,duration:.45,ease:'back.out(2)',transformPerspective:400});
+      }else{
+        gsap.fromTo('#quizChip',{scale:.9},{scale:1,duration:.4,ease:'back.out(2.5)'});
+      }
+    }
+  };
+  if(HAS_GSAP&&!first){
+    gsap.to('#quizBody',{opacity:0,y:-14,rotation:-.6,duration:.16,ease:'power1.in',onComplete:()=>{
+      buildContent();
+      gsap.fromTo('#quizBody',{opacity:0,y:18,rotation:.5},
+        {opacity:1,y:0,rotation:0,duration:.42,ease:'power2.out'});
+    }});
+  }else{
+    buildContent();
+    if(HAS_GSAP){
+      gsap.fromTo('#quizBody',{opacity:0,y:16,rotation:.4},{opacity:1,y:0,rotation:0,duration:.42,ease:'power2.out'});
+      gsap.fromTo(['.quiz-top','.quiz-progress'],{opacity:0,y:-16},
+        {opacity:1,y:0,duration:.55,stagger:.12,ease:'power2.out'});
+    }
   }
 }
-function flyDrop(fromEl){ /* 水滴从选项飞向进度条 */
+/* 水滴从选项飞向进度条；落位后进度条才缓缓上涨 */
+function setBarNext(){ $('#quizBar').style.width=((state.idx+2)/12*100)+'%'; }
+function flyDrop(fromEl){
+  const bar=$('.quiz-progress');
   const r=fromEl.getBoundingClientRect();
-  const bar=$('.quiz-progress'); if(!bar) return;
+  if(!bar){ setBarNext(); return; }
+  const at=state.idx;
   const br=bar.getBoundingClientRect();
   const d=document.createElement('span');
   d.className='fly-drop'; d.textContent='💧';
   d.style.left=(r.left+r.width/2)+'px';
   d.style.top=(r.top+r.height/2)+'px';
   document.body.appendChild(d);
-  const tx=br.left+br.width*((state.idx+1)/12)-(r.left+r.width/2);
+  const tx=br.left+br.width*Math.min(1,(state.idx+2)/12)-(r.left+r.width/2);
   const ty=br.top+br.height/2-(r.top+r.height/2);
-  gsap.to(d,{x:tx,y:ty,scale:.55,duration:.32,ease:'power2.inOut',onComplete:()=>d.remove()});
+  gsap.to(d,{x:tx,y:ty,scale:.5,duration:.38,ease:'power2.inOut',
+    onComplete:()=>{ d.remove(); if(state.idx===at) setBarNext(); }});
+}
+/* 选项按下：冒几颗小气泡 */
+function popBubbles(el){
+  const r=el.getBoundingClientRect();
+  const n=2+rint(2);
+  for(let k=0;k<n;k++){
+    const b=document.createElement('i'); b.className='pop-bub';
+    const sz=5+rint(5);
+    b.style.width=b.style.height=sz+'px';
+    b.style.left=(r.left+14+Math.random()*(r.width-28))+'px';
+    b.style.top=(r.top+6)+'px';
+    document.body.appendChild(b);
+    gsap.to(b,{y:-(22+Math.random()*26),x:(Math.random()-.5)*20,opacity:0,
+      duration:.65+Math.random()*.35,delay:k*.05,ease:'power1.out',onComplete:()=>b.remove()});
+  }
 }
 function onAnswer(dim,el){
   state.ans[state.idx]=dim;
@@ -1119,14 +1262,16 @@ function onAnswer(dim,el){
   el.classList.add('sel');
   if(HAS_GSAP){
     gsap.fromTo(el,{scale:.96},{scale:1,duration:.5,ease:'elastic.out(1.1,.5)',clearProps:'transform'});
-    if(!RM) flyDrop(el);
-    $('#quizBar').style.width=((state.idx+2)/12*100)+'%';
+    if(!RM){ popBubbles(el); flyDrop(el); }   // 水滴落位后再涨进度
+    else setBarNext();
+  }else{
+    setBarNext();
   }
   clearTimeout(autoTimer);
   if(state.idx<11){
-    autoTimer=setTimeout(()=>{ saveQuiz(); renderQ(state.idx+1); },420);
+    autoTimer=setTimeout(()=>{ saveQuiz(); renderQ(state.idx+1); },460);
   }else{
-    autoTimer=setTimeout(()=>{ saveQuiz(); autoFinish(); },700); // 答完最后一题自动生成结果
+    autoTimer=setTimeout(()=>{ saveQuiz(); autoFinish(); },760); // 答完最后一题自动生成结果
   }
   saveQuiz();
 }
@@ -1134,13 +1279,30 @@ function initQuiz(){
   $('#btnBack').onclick=()=>{
     clearTimeout(autoTimer);
     if(state.idx>0){ renderQ(state.idx-1); }
-    else{ showScreen('scr-pref'); }
+    else{ gotoPref(); }
   };
   $('#btnGo').onclick=()=>{ clearTimeout(autoTimer); autoFinish(); };
 }
-/* 装瓶过渡：全屏小瓶子快速注满后进入结果页 */
+/* 完成时花瓣雨 */
+function rainPetals(){
+  const pool=['🌸','✨','🍃','🌼','🫧'];
+  const n=(innerWidth<480)?10:14;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span'); s.className='petal';
+    s.textContent=pool[i%pool.length];
+    s.style.left=(3+Math.random()*94)+'vw';
+    document.body.appendChild(s);
+    gsap.fromTo(s,{y:-50,x:0,rotation:0,opacity:1},
+      {y:innerHeight+60, x:(Math.random()-.5)*120,
+       rotation:(Math.random()<.5?-1:1)*(120+rint(160)),
+       duration:1.5+Math.random()*.9, delay:Math.random()*.35, ease:'power1.in',
+       onComplete:()=>s.remove()});
+  }
+}
+/* 装瓶过渡：花瓣雨 + 果冻晃动注满 */
 function autoFinish(){
   if(state.ans.some(a=>a===null)){ toast('还有题目没答完哦 🫙'); return; }
+  if(HAS_GSAP&&!RM) rainPetals();
   const ov=$('#fillOverlay');
   ov.classList.add('on');
   const bw=$('#fillBottle'); bw.innerHTML='';
@@ -1149,19 +1311,27 @@ function autoFinish(){
   const go=()=>{ if(fired) return; fired=true; ov.classList.remove('on'); finishQuizCore(); };
   if(HAS_GSAP&&!RM){
     svg.classList.add('bubbling');
-    const o={lv:0};
-    gsap.to(o,{lv:1,duration:1,ease:'power2.inOut',
-      onUpdate:()=>setLiquid(svg,o.lv), onComplete:go});
-    setTimeout(go,1800); // 兜底
+    const o={lv:0}; let lastQ=0;
+    gsap.to(o,{lv:1,duration:1.05,ease:'power2.inOut',
+      onUpdate:()=>{                    // 每涨四分之一“咕嘟”果冻一下
+        setLiquid(svg,o.lv);
+        const q=Math.floor(o.lv*4);
+        if(q>lastQ){ lastQ=q;
+          gsap.fromTo(svg,{scaleY:.93,scaleX:1.06},
+            {scaleY:1,scaleX:1,duration:.5,ease:'elastic.out(1,.35)',transformOrigin:'50% 100%'});
+        }
+      },
+      onComplete:go});
+    setTimeout(go,1900); // 兜底
   }else{
-    setTimeout(go,600);
+    setTimeout(go,650);
   }
 }
 function finishQuizCore(){
-  const scores=computeScores(state.ans);
-  const res=buildResult(state.pref,scores);
+  const w=computeProfile(state.ans);          // v2：连续画像
+  const res=buildResult(state.pref,w);
   G.res=res;
-  store.set('pb_result',{pref:res.pref, scores:res.scores,
+  store.set('pb_result',{pref:res.pref, w:res.w, scores:res.scores,
     A:res.A?{rows:res.A.rows.map(r=>({k:r.key,l:r.level,s:r.sim}))}:null,
     B:res.B?{rows:res.B.rows.map(r=>({k:r.key,l:r.level,s:r.sim}))}:null});
   finishFlow(res);
@@ -1309,7 +1479,7 @@ function renderResult(res){
   $('#orbitCore').textContent=dom.emoji;
   $('#orbText').textContent=('核心燃料 · '+dom.name+' · ').repeat(3);
   $('#orbitLabel').textContent='你的核心燃料是「'+dom.name+'」——'+dom.quote;
-  /* 八维藤蔓（高度 = 得分） */
+  /* 八维藤蔓（高度 = 展示得分） */
   const vf=$('#vineField'); vf.innerHTML='';
   res.scores.forEach((s,i)=>{
     const H=Math.round(46+(s-30)*2.4);
@@ -1366,6 +1536,36 @@ function startAmbient(){
     s.style.animationDelay=(-Math.random()*12)+'s';
     layer.appendChild(s);
   }
+}
+/* 底部小草：验证 / 偏好 / 答题页随风摆动（固定层随所属 screen 显隐） */
+function plantGrass(){
+  ['scr-code','scr-pref','scr-quiz'].forEach(id=>{
+    const host=$('#'+id); if(!host||host.querySelector('.grass')) return;
+    const g=document.createElement('div'); g.className='grass'; g.setAttribute('aria-hidden','true');
+    const n=Math.max(7,Math.floor(innerWidth/60));
+    for(let i=0;i<n;i++){
+      const h=20+rint(18);
+      const t=document.createElement('span'); t.className='tuft';
+      t.innerHTML='<svg width="'+Math.round(h*.5)+'" height="'+h+'" viewBox="0 0 20 44">'
+        +'<path d="M10 44 C 8 30 5 20 2 8"/>'
+        +'<path d="M10 44 C 10 28 13 16 17 4"/>'
+        +'<path d="M10 44 C 9 34 10 24 10 12"/></svg>';
+      const left=(i/(n-1)*96+2+(Math.random()*3-1.5)).toFixed(2)+'%';
+      t.style.left=left;
+      t.style.animationDuration=(3.2+Math.random()*2.6).toFixed(2)+'s';
+      t.style.animationDelay=(-Math.random()*4).toFixed(2)+'s';
+      g.appendChild(t);
+      if(i%4===2){ // 草丛里偶尔藏一朵小花
+        const f=document.createElement('span'); f.className='fl';
+        f.textContent=(i%8===2)?'🌼':'🌸';
+        f.style.left=left;
+        f.style.bottom=(h*.45).toFixed(0)+'px';
+        f.style.animationDelay=(-Math.random()*3).toFixed(2)+'s';
+        g.appendChild(f);
+      }
+    }
+    host.appendChild(g);
+  });
 }
 
 /* =========================================================================
@@ -1552,6 +1752,7 @@ async function playStory(res){
     onUpdate:()=>setLiquid(hsvg,lv.v),onComplete:r,onInterrupt:r}));});
   if(!ok())return;
   heroReveal(res);                                                          // 溢出爆发 + 喷泉
+  G.tl.push(gsap.to('#heroStage',{y:-6,duration:2.4,yoyo:true,repeat:-1,ease:'sine.inOut'})); // 大瓶轻轻悬浮
   await wait(650); if(!ok())return;
   pTo('.hero-pretitle',{opacity:1,y:0,duration:.5});
   pTo('#heroTitle .ch',{opacity:1,y:0,scale:1,duration:.55,stagger:.07,ease:'back.out(2.2)'}); // 称号逐字弹出
@@ -1621,7 +1822,7 @@ function killAllTweens(){
   try{ gsap.globalTimeline.getChildren(true,true,true).forEach(t=>{ try{t.kill();}catch(e){} }); }catch(e){}
 }
 function cleanupFx(){
-  $$('.burst-p,.fly-drop').forEach(e=>e.remove());
+  $$('.burst-p,.fly-drop,.petal,.pop-bub').forEach(e=>e.remove());
 }
 function skipStory(){
   if(!G.playing) return;
@@ -1778,6 +1979,8 @@ async function exportPoster(){
     console.assert(new Set([...MATRIX_A,...MATRIX_B].map(p=>p.key)).size===28,'[人格] 存在重复 key');
     console.assert([...MATRIX_A,...MATRIX_B].every(p=>ARCHETYPES[p.arch]&&p.vec.length===8),'[人格] 存在无效原型或向量长度错误');
     console.assert([...MATRIX_A,...MATRIX_B].every(p=>p.tag&&p.voice&&p.emoji&&p.title),'[人格] 标签 / 台词 / emoji / 称号缺失');
+    console.assert(DIMS.every((_,i)=>AFF[AFF[i]]===i),'[计分] 亲和维度映射应为互相对偶');
+    console.assert(new Set([...MATRIX_A,...MATRIX_B].flatMap(p=>p.vec.filter(v=>v<2||v>10))).length===0,'[人格] 向量取值应在 2–10 之间');
   }catch(err){ console.warn('[断言] 执行异常：',err); }
 })();
 
@@ -1786,6 +1989,7 @@ async function exportPoster(){
  * ========================================================================= */
 function init(){
   initHome(); initCode(); initPref(); initQuiz();
+  plantGrass(); /* 底部小草（验证 / 偏好 / 答题页） */
   $('#btnSkip').onclick=skipStory;
   $('#btnSave').onclick=exportPoster;
   $('#btnModalClose').onclick=()=>$('#modal').classList.remove('on');
@@ -1797,7 +2001,7 @@ function init(){
     cleanupFx();
     $('#resultAmbient').innerHTML='';
     store.del('pb_quiz'); store.del('pb_result');
-    showScreen('scr-pref');
+    gotoPref();
   };
   const saved=store.get('pb_result',null);
   if(saved){
