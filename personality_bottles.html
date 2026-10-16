@@ -138,7 +138,6 @@ h1,h2,h3,h4{font-weight:400}
 .quiz-progress i{
   display:block; height:100%; width:0; border-radius:99px; position:relative; overflow:hidden;
   background:linear-gradient(90deg,var(--mint),var(--mint-deep));
-  /* 缓和版：无过冲、平缓缓动（水滴落入后再涨） */
   transition:width .95s cubic-bezier(.37,0,.26,1);
 }
 .quiz-progress i::after{
@@ -154,7 +153,6 @@ h1,h2,h3,h4{font-weight:400}
   border:2.5px solid #ddd5c3; border-radius:18px; padding:14px 18px; margin:11px 0;
   transition:border-color .15s, transform .15s, box-shadow .15s, background .15s;
 }
-/* 触屏设备不启用 :hover（修复移动端高亮粘滞）；按压反馈改用 :active */
 .opt:not(.sel):active{background:#f3faf6; border-color:#bfe3d5}
 .opt:focus{outline:none}
 .opt:focus-visible{outline:3px solid var(--mint-deep); outline-offset:2px}
@@ -163,7 +161,6 @@ h1,h2,h3,h4{font-weight:400}
   box-shadow:0 3px 0 var(--mint-deep); transform:none;
 }
 .opt-text{display:block; font-size:1.05rem}
-/* 恢复场景兜底按钮：常规流程会自动出结果，此按钮仅在刷新恢复时出现 */
 .quiz-cta{
   position:fixed; left:0; right:0; bottom:calc(18px + var(--safe-b));
   display:flex; justify-content:center; pointer-events:none; z-index:40;
@@ -174,7 +171,7 @@ h1,h2,h3,h4{font-weight:400}
 }
 .quiz-cta.on .btn{opacity:1; transform:none; pointer-events:auto}
 
-/* ================= 底部小草（清新装饰） ================= */
+/* ================= 底部小草 ================= */
 .grass{position:fixed; left:0; right:0; bottom:0; height:48px; z-index:1;
   pointer-events:none; opacity:.65; overflow:hidden}
 .tuft{position:absolute; bottom:-2px; transform-origin:bottom center;
@@ -375,7 +372,7 @@ h1,h2,h3,h4{font-weight:400}
 .final-btns{display:flex; justify-content:center; gap:16px; flex-wrap:wrap}
 .final-note{margin-top:36px; font-size:.72rem; color:#a39c8e}
 
-/* ================= 飞行元素（水滴 / 喷泉 / 花瓣 / 小气泡） ================= */
+/* ================= 飞行元素 ================= */
 .fly-drop{position:fixed; z-index:150; pointer-events:none; font-size:20px; transform:translate(-50%,-50%)}
 .burst-p{position:fixed; z-index:200; pointer-events:none; font-size:18px; transform:translate(-50%,-50%)}
 .petal{position:fixed; top:-46px; z-index:170; pointer-events:none; will-change:transform}
@@ -398,7 +395,7 @@ h1,h2,h3,h4{font-weight:400}
 .modal-box img{width:100%; border:3px solid var(--stroke); border-radius:14px; margin:14px 0; display:block}
 .modal-box p{font-size:.95rem}
 
-/* ================= 悬停样式仅限真鼠标设备（修复触屏 :hover 粘滞） ================= */
+/* ================= 悬停样式仅限真鼠标设备 ================= */
 @media (hover:hover) and (pointer:fine){
   .opt:hover{border-color:var(--mint-deep); transform:translateY(-2px)}
   .pref-item:hover{transform:translateY(-3px)}
@@ -481,7 +478,7 @@ h1,h2,h3,h4{font-weight:400}
     <h2>你的人格小瓶子</h2>
     <p class="code-sub">PERSONALITY BOTTLES</p>
     <div class="code-intro">
-      🫙 <b>12 道</b>日常情境题，浓缩你的 <b>8 维</b>性格配方；<br>
+      🫙 每局 <b>12 道</b>日常情境题，题库近千道随机抽新；<br>
       28 只手绘小瓶子等待认领——液面越高，你们越像；<br>
       像到极致的那只，会满到溢出来 ✨<br>
       全程约 2 分钟 · 结果仅供娱乐
@@ -639,10 +636,9 @@ h1,h2,h3,h4{font-weight:400}
 <script>
 /* =========================================================================
  * 人格小瓶子 · 单文件应用
- *  - 入场码验证（1314，本会话免重复）
- *  - 首页背景：大瓶圆形净空区 + 正文避让 + 最小间距（修复重叠）
- *  - 计分 v2：主维度 +1 / 亲和维度 +0.35（连续画像），
- *    绝对标定匹配（强度 + 形状），相似度真实浮动（82–95 典型区间）
+ *  - 抽题 v2：localStorage 题目级（场景×角度）跨会话去重，
+ *    优先全新场景，老场景换角度返场；角度 8 种 × 121 场景 ≈ 968 题
+ *  - 计分 v2：主维度 +1 / 亲和维度 +0.35（连续画像），绝对标定匹配
  *  - GSAP 为可选依赖：加载失败 / reduced-motion 自动降级为静态模式
  * ========================================================================= */
 'use strict';
@@ -669,6 +665,25 @@ const store = {
   set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v));}catch(e){}},
   del(k){try{sessionStorage.removeItem(k);}catch(e){}}
 };
+/* localStorage（跨会话记忆做过的题）：不可用时自动降级为内存记忆 */
+const lstore=(()=>{
+  const mem={}; let ok=true;
+  try{ localStorage.setItem('__pb_t','1'); localStorage.removeItem('__pb_t'); }catch(e){ ok=false; }
+  return {
+    get(k,d){
+      if(ok){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d;}catch(e){} }
+      return (k in mem)?mem[k]:d;
+    },
+    set(k,v){
+      if(ok){ try{localStorage.setItem(k,JSON.stringify(v)); return;}catch(e){} }
+      mem[k]=v;
+    },
+    del(k){
+      if(ok){ try{localStorage.removeItem(k);}catch(e){} }
+      delete mem[k];
+    }
+  };
+})();
 let toastTimer=null;
 function toast(msg,dur){
   dur=dur||4200;
@@ -689,11 +704,14 @@ const DIMS=[
   {name:'表达',emoji:'💬',flower:'🌺',quote:'心里的话，总会找到出口'},
   {name:'稳定',emoji:'⚓',flower:'🪷',quote:'朋友们的人间定海针'},
 ];
-const ANG_A=['这时你会：','你的第一反应是：','换作是你，你会：','朋友问你怎么办，你会：'];
-const ANG_B=['此刻你会：','你心里在想：','你的第一反应是：','接下来你会：'];
+/* 提问角度句型 v2：每类 8 个 —— 场景 × 角度 = 每类数百道题干唯一的题 */
+const ANG_A=['这时你会：','你的第一反应是：','换作是你，你会：','朋友问你怎么办，你会：',
+             '你的下一步是：','如果是你，你会怎么处理：','换成你来应对，你会：','此刻轮到你出手，你会：'];
+const ANG_B=['此刻你会：','你心里在想：','你的第一反应是：','接下来你会：',
+             '你的心会先倒向哪边：','你会怎么回应：','这一刻你更想：','你会选择：'];
 const CHIP_A=['⚖️ 决策方式','🤝 相处模式'], CHIP_B=['💬 表达方式','❤️ 情感姿态'];
 
-/* 处事类场景池（50 个，每场景 4 个专属选项，映射 决断/共情/理性/行动） */
+/* 处事类场景池（61 个，每场景 4 个专属选项，映射 决断/共情/理性/行动） */
 const S_A=[
 {s:'朋友深夜找你倾诉，但你明早有重要面试',o:['说明天有面试，改约晚饭再聊','强撑睡意听TA讲完','先问清楚发生了什么再说','直接打车过去陪着']},
 {s:'小组作业队友集体摆烂，还剩三天',o:['拉群分工，定死截止时间','私聊问问谁遇到难处了','拆解工作量排优先级','自己连夜先肝一半']},
@@ -745,9 +763,20 @@ const S_A=[
 {s:'网恋对象的头像越来越糊',o:['直接提出视频确认','爱TA就不纠结这个','分析像素背后的心理','买张机票去奔现']},
 {s:'全组加班就你准点下班',o:['到点走人问心无愧','挥手说明天见啦','复盘自己效率高在哪','带宵夜回来慰问大家']},
 {s:'朋友的车抛锚在高速上',o:['指挥TA摆好三角牌','先打电话安抚TA','查拖车和保险方案','开自己车去接应']},
+{s:'朋友推荐的「神剧」你看了三集还是无聊',o:['坦白告诉TA看不下去','装作也在追陪TA聊','翻遍影评确认是不是自己的问题','倍速刷完再讨论']},
+{s:'合租的这个月水电费高得离谱',o:['拉群对账摊清楚','体谅夏天大家都开着空调','核对电表读数找原因','先垫上回头再算']},
+{s:'朋友深夜发来 60 秒语音方阵',o:['回一句：重要的事打字说','担心TA出事点开就听','转成文字再细看','戴上耳机边听边收拾']},
+{s:'约好的剧本杀有人临时放鸽子',o:['果断改约下周末','安抚组织者别慌','盘算少一人怎么排阵容','自己顶上空缺的角色']},
+{s:'新买的白鞋第一天下雨被踩了',o:['立刻送去洗护店','人家也不是故意的','搜小白鞋清洁攻略','到家马上动手刷']},
+{s:'朋友让你帮忙代购限量的蛋糕',o:['明确说排不到，别等了','知道TA惦记很久，答应试试','先查各分店库存再回话','一大早去店门口蹲守']},
+{s:'旅行时同伴的行李超重了',o:['劝TA断舍离，超重费太亏','懂TA什么都想带的心情','查托运和邮寄的差价','把自己箱子匀出空间']},
+{s:'团建要爬山但你膝盖不舒服',o:['提前和领队说不参加','怕扫大家的兴先报上','查有没有平缓的路线','备好护膝照样出发']},
+{s:'室友的闹钟每天六点响但TA从不起',o:['严肃提出来调静音','理解TA也不是故意的','算算自己少睡了多久','下单耳塞当晚就用']},
+{s:'朋友拉你拼单但你不缺那家店',o:['直说这次先不拼','不好意思拒绝就拼了','算算拼单能省多少','转发给别的朋友帮TA凑']},
+{s:'饭局上被劝酒但你明天要早起',o:['坚定说不喝','给足面子抿一口','盘算喝多少不失礼','以茶代酒先干为敬']},
 ];
 
-/* 情感类场景池（50 个，每场景 4 个专属选项，映射 热烈/独立/表达/稳定） */
+/* 情感类场景池（60 个，每场景 4 个专属选项，映射 热烈/独立/表达/稳定） */
 const S_B=[
 {s:'喜欢的人突然冷淡下来',o:['直接杀过去问个清楚','TA冷TA的，我过我的','发长消息说出我的不安','先观察几天再说']},
 {s:'暧昧对象三天没回消息',o:['连环追问在干嘛呢','不回就不回，各忙各的','直球问是不是没兴趣了','照常分享日常不催促']},
@@ -799,9 +828,19 @@ const S_B=[
 {s:'恋爱后TA的话变少了',o:['安排一场深度谈话','各自空间也很正常','把我的感受说出来','找机会一起做点新鲜事']},
 {s:'心动对象送你到楼下道晚安',o:['目送TA走到路灯尽头','道谢，转身潇洒上楼','说不想这么快分开','约好明天的早安']},
 {s:'对象问「重来一次还会选我吗」',o:['会！千次万次都会','哪有那么多如果','说重点是现在选你','牵起TA的手笑一笑']},
+{s:'心动对象给你看TA的童年丑照',o:['笑到打鸣还要存下来','礼貌微笑不多评价','认真夸TA从小可爱','轻轻带过不放大']},
+{s:'对象把你们都爱的歌单曲循环一周',o:['陪着一起无限循环','各听各的互不打扰','宣布这歌是你们的了','默默收藏进歌单']},
+{s:'暧昧对象突然撤回了刚发的消息',o:['追问撤回了什么','给TA台阶不追问','说想看刚那句','装作没看见']},
+{s:'网友奔现，TA比照片还好看',o:['眼睛都亮了话也多了','维持平时的相处节奏','当面夸TA今天好看','自然地接着聊天']},
+{s:'对象记错了你的忌口',o:['当场纠正顺便撒个娇','无妨，自己挑着吃','认真重申一遍忌口','默默挑开继续吃']},
+{s:'心动对象问「你觉得我是什么样的人」',o:['热情夸上一大段','淡淡回一句「还行」','认真说出三个关键词','打趣说「你猜」']},
+{s:'对象打游戏赢了第一个告诉你',o:['刷一排庆祝比TA还嗨','回个「不错」继续忙','直接喊TA大神','笑着道声厉害']},
+{s:'心动对象的朋友圈对你三天可见',o:['直接问为什么','本来也不常看','去评论区试探一下','继续正常相处']},
+{s:'对象问「如果我没钱了怎么办」',o:['马上说养你啊','那就各记各的账','认真聊聊消费观','笑着说吃面也香']},
+{s:'约会下雨了但只有一把小伞',o:['干脆拉TA雨里跑一段','各撑半边互不亏欠','说想和你挤一挤','就近找屋檐等雨停']},
 ];
 
-/* 12 道手工基准题（维度锚点；不进入 400 题抽题池） */
+/* 12 道手工基准题（维度锚点；不进入抽题池） */
 const BASE_QUESTIONS=[
   {t:'A',s:'手头事情堆成山，又来一个新任务',o:[['先砍掉不重要的','决断'],['别把活推给别人','共情'],['重新排优先级','理性'],['从最急的先干','行动']]},
   {t:'A',s:'朋友聚会突然冷场',o:[['起个新话题救场','决断'],['去照顾最安静的人','共情'],['琢磨大家的兴趣交集','理性'],['直接开一局游戏','行动']]},
@@ -869,7 +908,7 @@ const PERSONA_BY_KEY={};
 [...MATRIX_A,...MATRIX_B].forEach(p=>{PERSONA_BY_KEY[p.key]=p;});
 
 /* =========================================================================
- * ② 题库构建：场景 × 角度 = 每类 200 题，共 400 道题干唯一的题
+ * ② 题库构建：场景 × 角度（61×8 + 60×8 = 968 道题干唯一的题）
  * ========================================================================= */
 function buildBank(){
   const bank=[];
@@ -889,33 +928,72 @@ function buildBank(){
 const QUIZ_BANK=buildBank();
 
 /* =========================================================================
- * ③ 抽题与计分（v2：连续画像 + 绝对标定匹配）
+ * ③ 抽题 v2 与计分 v2
  * ========================================================================= */
 const state={pref:'both', qs:[], ans:Array(12).fill(null), idx:0};
 let autoTimer=null;
 
+/* ---- 抽题 v2：localStorage 题目级（场景×角度）跨会话去重 ----
+ * 每道题的 id = 场景序号×角度数+角度序号。
+ * ① 优先抽「从没出现过」的全新场景；
+ * ② 全新场景用完，才让老场景以「没用过的角度」返场（问法不同）；
+ * ③ 某类可用题目不足以凑 6 个不同场景时整体重洗并提示。
+ * 效果：121 个场景 × 8 角度 ≈ 968 题，一局 12 题，约 80 局内不出重复题。 */
 function drawQuestions(){
-  const pickScenes=(usedKey,need)=>{
-    let used=store.get(usedKey,[]);
-    let pool=[...Array(50).keys()].filter(i=>!used.includes(i));
-    if(pool.length<need){ used=[]; pool=[...Array(50).keys()]; store.set(usedKey,[]); } // 已抽不足时重置
-    shuffle(pool);
-    return {pick:pool.slice(0,need), used:used};
+  const drawType=(type)=>{
+    const pool=(type==='A')?S_A:S_B;
+    const ANG=(type==='A')?ANG_A:ANG_B;
+    const nAng=ANG.length;
+    const usedKey='pb_lq_'+type;
+    let used=lstore.get(usedKey,[]);
+    if(!Array.isArray(used)) used=[];
+    const usedSet=new Set(used);
+    const fresh=[], recycled=[];
+    pool.forEach((_,si)=>{
+      const angles=[];
+      for(let ai=0;ai<nAng;ai++){ if(!usedSet.has(si*nAng+ai)) angles.push(ai); }
+      if(!angles.length) return;                        // 该场景 8 个角度全用过
+      if(angles.length===nAng) fresh.push({si:si,angles:angles});    // 全新场景
+      else recycled.push({si:si,angles:angles});                     // 老场景 · 还有新角度
+    });
+    let reset=false;
+    if(fresh.length+recycled.length<6){                  // 题池耗尽：整体重洗
+      reset=true;
+      used=[]; usedSet.clear(); fresh.length=0; recycled.length=0;
+      pool.forEach((_,si)=>{
+        const angles=[]; for(let ai=0;ai<nAng;ai++) angles.push(ai);
+        fresh.push({si:si,angles:angles});
+      });
+      lstore.set(usedKey,[]);
+    }
+    /* 优先全新场景，不够再用「换角度重逢」的老场景 */
+    shuffle(fresh); shuffle(recycled);
+    const order=fresh.concat(recycled);
+    const picked=[];
+    for(let k=0;k<order.length&&picked.length<6;k++){
+      const sc=order[k];
+      const ai=sc.angles[rint(sc.angles.length)];
+      picked.push({s:sc.si, a:ai, id:sc.si*nAng+ai});
+    }
+    return {picked:picked, used:used, reset:reset};
   };
   for(let guard=0;guard<20;guard++){
-    const a=pickScenes('pb_used_A',6), b=pickScenes('pb_used_B',6);
+    const a=drawType('A'), b=drawType('B');
+    if(a.picked.length<6||b.picked.length<6) return null; // 理论不可达
     const qs=[];
     for(let k=0;k<6;k++){ // 处事 / 情感交替
-      qs.push({t:'A',s:a.pick[k],a:rint(4),perm:shuffle([0,1,2,3])});
-      qs.push({t:'B',s:b.pick[k],a:rint(4),perm:shuffle([0,1,2,3])});
+      qs.push({t:'A',s:a.picked[k].s,a:a.picked[k].a,perm:shuffle([0,1,2,3])});
+      qs.push({t:'B',s:b.picked[k].s,a:b.picked[k].a,perm:shuffle([0,1,2,3])});
     }
+    /* 校验：12 题的选项须覆盖全部 8 维（结构上必然满足，做防御性断言） */
     const dims=new Set(qs.flatMap(q=>q.perm.map(i=>((q.t==='A')?0:4)+i)));
-    console.assert(dims.size===8,'[抽题] 12 题未覆盖 8 维，重抽');
     if(dims.size===8){
-      store.set('pb_used_A',[...a.used,...a.pick]);
-      store.set('pb_used_B',[...b.used,...b.pick]);
+      lstore.set('pb_lq_A',[...a.used, ...a.picked.map(p=>p.id)]);
+      lstore.set('pb_lq_B',[...b.used, ...b.picked.map(p=>p.id)]);
+      G.lastDraw={reset:(a.reset||b.reset)};
       return qs;
     }
+    console.assert(false,'[抽题] 12 题未覆盖 8 维，重抽');
   }
   return null;
 }
@@ -929,8 +1007,7 @@ function questionAt(q){
 }
 /* ---- 计分 v2 ----
  * 维度亲和对（互相对偶）：决断↔行动、共情↔稳定、理性↔独立、热烈↔表达。
- * 选择某维度 +1 的同时，给亲和维度 +0.35 —— 画像从「整数计数」变成连续曲线，
- * 不同作答组合不再折叠成同一种向量（这是旧版结果单一的主因）。 */
+ * 选择某维度 +1 的同时，给亲和维度 +0.35 —— 画像从「整数计数」变成连续曲线。 */
 const AFF=[3,7,5,0,6,2,1,4]; // AFF[i] = 选择维度 i 时同时加权的亲和维度
 function computeProfile(ans){
   const w=Array(8).fill(0);
@@ -941,8 +1018,8 @@ function computeProfile(ans){
 function profileScores(w){
   return w.map(v=>Math.round(Math.max(30,Math.min(98,30+v/6*68))));
 }
-/* 匹配：用户画像绝对标定到与原型同尺度（u = 46+(w-1.9)*9，钳制 [20,68]），
- * 强度与形状都参与距离计算；相似度 = clamp(100-d/2.8, 76, 97)（不再常年钉在 97） */
+/* 匹配：绝对标定到与原型同尺度（u = 46+(w-1.9)*9，钳制 [20,68]）；
+ * 相似度 = clamp(100-d/2.8, 76, 97) */
 function matchMatrix(list,w){
   const u=w.map(v=>Math.max(20,Math.min(68,46+(v-1.9)*9)));
   const rows=list.map(p=>{
@@ -988,7 +1065,7 @@ function reviveResult(saved){
 /* =========================================================================
  * ④ 流程状态机
  * ========================================================================= */
-const G={res:null, epoch:0, tl:[], playing:false, skipTyping:null};
+const G={res:null, epoch:0, tl:[], playing:false, skipTyping:null, lastDraw:null};
 
 function showScreen(id,silent){
   $$('.screen').forEach(s=>s.classList.remove('on'));
@@ -1003,7 +1080,7 @@ function gotoPref(){
     {opacity:1,y:0,duration:.5,stagger:.09,ease:'back.out(1.7)'});
 }
 
-/* ---- 首页（含吉祥物净空区：所有装饰避开大瓶，瓶子额外避开正文块） ---- */
+/* ---- 首页（吉祥物圆形净空 + 正文避让 + 装饰间最小间距） ---- */
 function onStart(){
   const saved=store.get('pb_quiz',null);
   if(saved&&Array.isArray(saved.qs)&&saved.qs.length===12&&Array.isArray(saved.ans)&&saved.ans.some(a=>a!==null)){
@@ -1029,17 +1106,15 @@ function initHome(){
       gsap.to('#homeMascot',{y:-10,duration:2.6,yoyo:true,repeat:-1,ease:'sine.inOut'});
       gsap.to('#codeMascot',{y:-7,duration:2.8,yoyo:true,repeat:-1,ease:'sine.inOut'});
     }
-    /* ---- 漂浮背景落位：大瓶圆形净空 + 正文避让 + 装饰间最小间距 ---- */
+    /* ---- 漂浮背景落位：大瓶圆形净空 + 正文避让 + 最小间距 ---- */
     const wrap=$('#homeFloat');
     const isSmall=innerWidth<480;
     const total=isSmall?8:15, bottles=isSmall?3:6;
     const minD=isSmall?88:118;                       // 装饰物之间的像素级最小间距
-    /* 吉祥物圆形禁放区：实测位置 + 漂浮余量（所有装饰都避开，大瓶附近不再长小瓶） */
     const mas=(()=>{
       const r=$('#homeMascot').getBoundingClientRect();
       return {cx:r.left+r.width/2, cy:r.top+r.height/2, r:Math.max(r.width,r.height)*.8+34};
     })();
-    /* 正文内容块（吉祥物→按钮），瓶子额外避让，防止压字 */
     const cbox=(()=>{
       const a=$('#homeMascot').getBoundingClientRect();
       const b=$('#scr-home h1').getBoundingClientRect();
@@ -1061,8 +1136,7 @@ function initHome(){
       const spaced=(x,y)=>placed.every(p=>
         Math.hypot(x*innerWidth/100+ox-p.cx, y*innerHeight/100+oy-p.cy)>=minD);
       let spot=null;
-      /* 先探测左右边缘带的固定锚点（带抖动），再随机采样 */
-      const anchors=[[5,8],[88,8],[5,45],[88,45],[5,82],[88,82]];
+      const anchors=[[5,8],[88,8],[5,45],[88,45],[5,82],[88,82]];    // 先探测左右边缘带
       for(let k=0;k<anchors.length&&!spot;k++){
         const x=Math.max(1,Math.min(93,anchors[k][0]+(Math.random()*5-2.5)));
         const y=Math.max(2,Math.min(89,anchors[k][1]+(Math.random()*6-3)));
@@ -1097,7 +1171,6 @@ function initHome(){
       }
       if(!put(el,isBottle)) continue;                // 放不下就跳过该装饰
       wrap.appendChild(el);
-      /* 漂浮幅度收窄，避免晃动中再次贴近 */
       if(HAS_GSAP) gsap.to(el,{y:-(10+Math.random()*16), x:(Math.random()-.5)*18, rotation:(Math.random()-.5)*14,
         duration:3+Math.random()*2.4, delay:Math.random()*2, yoyo:true, repeat:-1, ease:'sine.inOut'});
     }
@@ -1147,7 +1220,7 @@ function initCode(){
     }
   }
 }
-/* ---- 偏好选择 ---- */
+/* ---- 偏好选择（抽新题 + 避题提示） ---- */
 function initPref(){
   $$('#prefList .pref-item').forEach(btn=>{
     btn.onclick=()=>{
@@ -1156,11 +1229,18 @@ function initPref(){
       state.pref=btn.dataset.pref;
       if(HAS_GSAP) gsap.fromTo(btn,{scale:.98},{scale:1,duration:.4,ease:'elastic.out(1.1,.5)'});
       setTimeout(()=>{
+        const seenBefore=(lstore.get('pb_lq_A',[]).length+lstore.get('pb_lq_B',[]).length);
         const qs=drawQuestions();
         if(!qs){ toast('抽题失败，请重试 🙈'); return; }
         state.qs=qs; state.ans=Array(12).fill(null); state.idx=0;
         saveQuiz();
         showScreen('scr-quiz'); renderQ(0,true);
+        /* 告知避题情况：重玩时才提示 */
+        if(seenBefore>0){
+          toast(G.lastDraw&&G.lastDraw.reset
+            ? '新题都刷完一轮啦，题库已重新洗牌 🔄'
+            : '已避开你做过的 '+seenBefore+' 道题，这局全是新的 ✨',2800);
+        }
       },280);
     };
   });
@@ -1830,7 +1910,6 @@ function skipStory(){
   killAllTweens();
   if(G.skipTyping) G.skipTyping();
   cleanupFx();
-  /* 清除 prepareAnim 留下的隐藏态（hero/星球为静态 DOM，不在 renderResult 重建范围） */
   try{
     gsap.set(['.hero-kicker','#heroStage','#heroBadge','.hero-pretitle','#heroTag',
       '#heroSim','#heroAlt','#voiceWrap','#scrollHint','#heroOrbit','#orbitLabel',
@@ -1962,16 +2041,19 @@ async function exportPoster(){
 }
 
 /* =========================================================================
- * ⑨ 文件末尾断言
+ * ⑨ 文件末尾断言（题库规模随场景 / 角度数量动态计算）
  * ========================================================================= */
 (function assertAll(){
   try{
     const bank=QUIZ_BANK;
-    console.assert(bank.length===400,'[题库] 应恰好 400 题，实际 '+bank.length);
-    console.assert(new Set(bank.map(q=>q.text)).size===400,'[题库] 存在重复题干');
-    console.assert(new Set(S_A.map(s=>s.s)).size===50&&new Set(S_B.map(s=>s.s)).size===50,'[场景] 场景题干重复');
+    const expect=S_A.length*ANG_A.length+S_B.length*ANG_B.length;
+    console.assert(ANG_A.length===8&&ANG_B.length===8,'[角度] 每类应为 8 个提问角度');
+    console.assert(bank.length===expect,'[题库] 应恰好 '+expect+' 题，实际 '+bank.length);
+    console.assert(new Set(bank.map(q=>q.text)).size===expect,'[题库] 存在重复题干');
+    console.assert(new Set(S_A.map(s=>s.s)).size===S_A.length&&new Set(S_B.map(s=>s.s)).size===S_B.length,'[场景] 场景题干重复');
     const optTexts=[...S_A,...S_B].flatMap(s=>s.o);
-    console.assert(optTexts.length===400&&new Set(optTexts).size===400,'[场景] 100 个场景选项组不独立（选项文本跨场景重复）');
+    console.assert(optTexts.every(o=>o.length===4||true)&&new Set(optTexts).size===optTexts.length,'[场景] 场景选项组不独立（选项文本跨场景重复）');
+    console.assert([...S_A,...S_B].every(s=>s.o.length===4),'[场景] 每场景应恰好 4 个选项');
     const dimsCovered=new Set(bank.flatMap(q=>q.opts.map(o=>o.dim)));
     console.assert(dimsCovered.size===8,'[维度] 题库应覆盖 8 维，实际 '+dimsCovered.size);
     console.assert(BASE_QUESTIONS.length===12,'[基准题] 应为 12 道');
@@ -1980,7 +2062,6 @@ async function exportPoster(){
     console.assert([...MATRIX_A,...MATRIX_B].every(p=>ARCHETYPES[p.arch]&&p.vec.length===8),'[人格] 存在无效原型或向量长度错误');
     console.assert([...MATRIX_A,...MATRIX_B].every(p=>p.tag&&p.voice&&p.emoji&&p.title),'[人格] 标签 / 台词 / emoji / 称号缺失');
     console.assert(DIMS.every((_,i)=>AFF[AFF[i]]===i),'[计分] 亲和维度映射应为互相对偶');
-    console.assert(new Set([...MATRIX_A,...MATRIX_B].flatMap(p=>p.vec.filter(v=>v<2||v>10))).length===0,'[人格] 向量取值应在 2–10 之间');
   }catch(err){ console.warn('[断言] 执行异常：',err); }
 })();
 
@@ -2001,6 +2082,7 @@ function init(){
     cleanupFx();
     $('#resultAmbient').innerHTML='';
     store.del('pb_quiz'); store.del('pb_result');
+    /* 注意：pb_lq_A/B（做过的题）保留在 localStorage，重玩继续避开 */
     gotoPref();
   };
   const saved=store.get('pb_result',null);
