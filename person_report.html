@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>你做人能得几分｜做人成绩单</title>
+<style>
+/* ============ 基础与纸纹 ============ */
+:root{
+  --paper:#FBF8F2; --mint:#8FD6C0; --red:#F26D6D; --yellow:#FBE7A1;
+  --ink:#2B2B2B; --ink-soft:#7a756c; --line:#e7e0d2;
+  --hand:"Kaiti SC","STKaiti","KaiTi","楷体","PingFang SC","Microsoft YaHei",serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{overflow-x:hidden}
+body{
+  color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background-color:var(--paper);
+  /* 纸张微纹理：双层点阵 */
+  background-image:
+    radial-gradient(rgba(43,43,43,.028) 1px,transparent 1px),
+    radial-gradient(rgba(43,43,43,.018) 1px,transparent 1px);
+  background-size:24px 24px,15px 15px;
+  background-position:0 0,7px 9px;
+  line-height:1.7;
+}
+button,input{font-family:inherit;touch-action:manipulation}
+button{cursor:pointer;user-select:none;-webkit-user-select:none}
+body.locked{overflow:hidden}
+body.locked #app{visibility:hidden}
+
+/* ============ 通用按钮 / toast / 模态 ============ */
+.btn{
+  min-height:48px;padding:12px 26px;border-radius:14px;font-size:17px;letter-spacing:1px;
+  border:2px solid var(--red);transition:transform .15s ease,box-shadow .15s ease;
+}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:var(--red);color:#fff;box-shadow:0 6px 0 rgba(242,109,109,.28)}
+.btn-primary:active{box-shadow:0 2px 0 rgba(242,109,109,.28)}
+.btn-ghost{background:transparent;color:var(--red)}
+.link-btn{background:none;border:none;color:var(--ink-soft);font-size:14px;min-height:44px;padding:8px}
+#toast{
+  position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);z-index:400;
+  max-width:min(560px,90vw);background:#fff;border:1.5px dashed var(--red);border-radius:14px;
+  padding:14px 20px;font-size:14.5px;line-height:1.8;color:var(--ink);
+  opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;box-shadow:0 10px 30px rgba(43,43,43,.1);
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:350;display:flex;align-items:center;justify-content:center}
+.modal.hidden{display:none}
+.modal-mask{position:absolute;inset:0;background:rgba(43,43,43,.45)}
+.modal-body{
+  position:relative;background:var(--paper);border-radius:18px;padding:20px;max-width:92vw;max-height:88dvh;
+  overflow:auto;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.modal-body img{max-width:100%;border-radius:10px;border:1px solid var(--line);display:block;margin:10px auto}
+.modal-tip{font-size:14px;color:var(--ink-soft)}
+
+/* ============ 门禁层 ============ */
+#gate{
+  position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;
+  background-color:var(--paper);
+  background-image:radial-gradient(rgba(43,43,43,.03) 1px,transparent 1px);background-size:22px 22px;
+  height:100vh;height:100dvh;
+}
+#gate.off{display:none}
+.gate-card{
+  width:min(410px,92vw);background:#fff;border:1px solid var(--line);border-radius:20px;
+  padding:44px 30px 34px;text-align:center;position:relative;
+  box-shadow:0 24px 60px rgba(43,43,43,.1);
+}
+.gate-card::before{ /* 鹅黄胶带 */
+  content:"";position:absolute;top:-14px;left:50%;width:120px;height:30px;transform:translateX(-50%) rotate(-3deg);
+  background:rgba(251,231,161,.85);border-radius:3px;box-shadow:0 2px 6px rgba(43,43,43,.08);
+}
+.lock-icon{width:58px;height:58px;color:var(--red);transition:color .4s}
+.lock-icon.ok{color:#5cbfa5}
+.gate-title{font-family:var(--hand);font-size:26px;margin:12px 0 4px}
+.gate-sub{font-size:13.5px;color:var(--ink-soft);margin-bottom:22px}
+.gate-code{display:flex;gap:12px;justify-content:center;margin-bottom:8px}
+.gate-code input{
+  width:58px;height:66px;font-size:30px;text-align:center;border:none;outline:none;color:var(--ink);
+  border-bottom:3px solid var(--red);background:var(--paper);border-radius:12px 12px 0 0;font-family:var(--hand);
+}
+.gate-code input:focus{background:#fff;box-shadow:0 6px 14px rgba(242,109,109,.12)}
+.gate-err{min-height:22px;font-size:13px;color:var(--red);margin-bottom:10px}
+.gate-btn{width:100%;font-size:17px}
+.gate-tip{font-size:12px;color:var(--ink-soft);margin-top:14px}
+
+/* ============ 页面容器 ============ */
+.page{display:none;min-height:100vh;min-height:100dvh}
+.page.active{display:block}
+#app{max-width:760px;margin:0 auto;padding:0 20px}
+
+/* ============ 首页 ============ */
+#page-home{display:none;position:relative;overflow:hidden}
+#page-home.active{display:flex;align-items:center;justify-content:center}
+.float-layer{position:absolute;inset:0;pointer-events:none;font-size:34px}
+.float-layer span{position:absolute;opacity:.55}
+.float-layer span:nth-child(1){left:10%;top:16%}
+.float-layer span:nth-child(2){right:12%;top:30%}
+.float-layer span:nth-child(3){left:20%;bottom:18%}
+.home-inner{text-align:center;position:relative;z-index:1;padding:56px 0 40px;width:100%}
+.tape{
+  display:inline-block;width:110px;height:26px;background:rgba(143,214,192,.5);
+  transform:rotate(-4deg);border-radius:3px;margin-bottom:18px;
+}
+.home-title{
+  font-family:var(--hand);font-weight:700;font-size:clamp(36px,9.5vw,64px);
+  letter-spacing:2px;line-height:1.25;
+}
+.underline-doodle{display:block;width:min(320px,72vw);height:16px;margin:2px auto 0}
+.underline-doodle path{stroke:var(--red);stroke-width:4;fill:none;stroke-linecap:round}
+.home-sub{margin-top:14px;font-size:14px;letter-spacing:4px;color:var(--ink-soft)}
+.home-lead{margin:26px auto 0;max-width:440px;font-size:15px;color:var(--ink);opacity:.85}
+.home-btns{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.home-history{margin-top:20px;font-size:13px;color:var(--ink-soft);min-height:20px}
+.home-disclaimer{margin-top:26px;font-size:12px;color:var(--ink-soft);opacity:.8}
+
+/* ============ 答题页 ============ */
+#page-quiz{display:none;padding:34px 0 60px}
+#page-quiz.active{display:block}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.q-section{
+  background:#fff;border:1.5px solid var(--mint);color:#3f8a75;border-radius:999px;
+  padding:6px 16px;font-size:14px;white-space:nowrap;
+}
+.q-count{font-family:var(--hand);font-size:19px;color:var(--ink-soft)}
+.q-progress{height:10px;border-radius:6px;background:#efe8da;margin:16px 0 30px;overflow:hidden}
+.q-progress i{
+  display:block;height:100%;width:0;border-radius:6px;transition:width .4s ease;
+  background:linear-gradient(90deg,var(--mint),var(--yellow),var(--red),var(--mint));
+  background-size:220% 100%;animation:flow 2.6s linear infinite;
+}
+@keyframes flow{to{background-position:-220% 0}}
+.q-card h2{
+  font-family:var(--hand);font-size:clamp(22px,5.6vw,30px);line-height:1.55;
+  margin-bottom:26px;min-height:2.9em;
+}
+.opt{
+  display:flex;align-items:center;gap:14px;width:100%;text-align:left;min-height:60px;
+  background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:13px 16px;margin-bottom:13px;
+  transition:border-color .18s,transform .18s,background .18s;color:var(--ink);
+}
+.opt:active{transform:scale(.98)}
+.opt .abc{
+  flex:none;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--ink-soft);
+  display:flex;align-items:center;justify-content:center;font-family:var(--hand);font-size:16px;color:var(--ink-soft);
+}
+.opt .opt-main{flex:1;font-size:16.5px;line-height:1.5}
+.opt.sel{border-color:var(--red);background:#fff7f5;transform:translateX(4px)}
+.opt.sel .abc{border-color:var(--red);background:var(--red);color:#fff}
+.opt.sel .opt-main{color:var(--red)}
+.q-foot{margin-top:22px;display:flex;flex-direction:column;align-items:center;gap:8px}
+#btn-back-home.hidden{visibility:hidden}
+
+/* ============ 结果页 ============ */
+#page-result{padding:0 0 30px}
+.r-sec{padding:44px 4px 20px;position:relative}
+.r-kicker{text-align:center;font-size:15px;letter-spacing:6px;color:var(--ink-soft);margin-bottom:6px}
+.score-stage{position:relative;width:min(460px,88vw);margin:0 auto}
+.score-svg{width:100%;display:block}
+.s-stroke,.s-fill{
+  font-family:var(--hand);font-weight:700;font-size:212px;
+}
+.s-stroke{fill:none;stroke:var(--red);stroke-width:2.6}
+.s-fill{fill:var(--red)}
+.pen-tip{position:absolute;top:6%;left:12%;font-size:26px;opacity:0}
+.stamp{
+  position:absolute;right:-4px;bottom:-6px;width:132px;height:132px;border-radius:50%;
+  border:4px solid rgba(242,109,109,.92);color:var(--red);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  transform:rotate(-14deg);background:rgba(255,255,255,.35);opacity:.92;
+}
+.stamp::before{content:"";position:absolute;inset:7px;border:1.5px dashed rgba(242,109,109,.75);border-radius:50%}
+.stamp .st1{font-family:var(--hand);font-weight:700;font-size:21px;letter-spacing:2px}
+.stamp .st2{font-size:9px;letter-spacing:1px;opacity:.85}
+.r-hint{text-align:center;font-size:14px;color:var(--ink-soft);margin-top:26px;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(5px)}}
+.r-lead{text-align:center;font-size:16px;color:var(--ink-soft);max-width:420px;margin:0 auto 18px}
+.model{
+  text-align:center;font-family:var(--hand);font-weight:700;color:var(--red);
+  font-size:clamp(28px,7.4vw,44px);letter-spacing:2px;line-height:1.5;min-height:1.6em;
+}
+.model .m-ch{display:inline-block;white-space:pre}
+.r-title{font-family:var(--hand);font-size:26px;letter-spacing:2px}
+.r-sub{font-size:13px;color:var(--ink-soft);margin:4px 0 22px}
+.pen-wiggle{display:inline-block;transform-origin:60% 80%;animation:penwig 2.8s ease-in-out infinite}
+@keyframes penwig{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg)}}
+.r-squiggle{display:block;width:180px;height:12px;margin:0 0 8px}
+.r-squiggle path{stroke:var(--red);stroke-width:3.5;fill:none;stroke-linecap:round}
+.dim-row{
+  padding:13px 4px 15px;border-bottom:1.5px dashed var(--line);cursor:pointer;min-height:44px;
+}
+.dim-row:first-child{border-top:1.5px dashed var(--line)}
+.dim-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.d-emoji{font-size:19px}
+.d-name{font-size:16.5px;font-weight:600}
+.d-burst{
+  background:var(--red);color:#fff;font-size:11.5px;border-radius:999px;padding:2px 9px;letter-spacing:1px;
+  box-shadow:0 0 12px rgba(242,109,109,.55);
+}
+.d-score{margin-left:auto;font-family:var(--hand);font-size:24px;font-weight:700}
+.d-score.zero{color:#b9b2a5;font-style:italic;font-size:20px}
+.d-zero{font-size:16px}
+.d-bar{height:12px;background:#efe8da;border-radius:7px;overflow:visible;position:relative}
+.d-fill{display:block;height:100%;border-radius:7px;background:var(--mint);transform-origin:left center;position:relative}
+.d-fill.hot{background:var(--red)}
+.d-fill.none{background:transparent}
+.c-lines .c-line{font-size:16px;line-height:2;margin-bottom:14px}
+.c-idx{font-family:var(--hand);font-style:normal;color:var(--red);font-weight:700;margin-right:6px}
+.hl{
+  font-weight:600;padding:0 .12em;color:var(--ink);
+  background-image:linear-gradient(transparent 18%,rgba(251,231,161,.95) 18%,rgba(251,231,161,.95) 94%,transparent 94%);
+  background-repeat:no-repeat;background-size:100% 68%;background-position:0 62%;
+}
+.c-sign{text-align:right;font-size:14px;color:var(--ink-soft);margin-top:6px}
+/* 写在最后 · 手写便签 */
+#final-note{
+  position:relative;margin:38px auto 0;max-width:540px;background:#FFF7DF;border-radius:16px;
+  padding:28px 24px 22px;box-shadow:0 10px 26px rgba(43,43,43,.09);
+}
+#final-note .fn-tape{
+  position:absolute;top:-13px;left:50%;width:96px;height:26px;margin-left:-48px;
+  background:rgba(143,214,192,.68);border-radius:3px;transform:rotate(-2deg);
+}
+#final-note .fn-label{font-family:var(--hand);font-size:15px;letter-spacing:3px;color:#3f8a75;margin-bottom:10px}
+#final-note .fn-text{font-size:15.5px;line-height:2.05;color:var(--ink)}
+#final-note .fn-line{display:block;width:190px;height:12px;margin:14px auto 0}
+#final-note .fn-line path{stroke:var(--red);stroke-width:3;fill:none;stroke-linecap:round}
+#final-note .fn-mark{position:absolute;right:16px;bottom:12px;font-size:20px}
+.end-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.end-note{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:26px}
+.balloon-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+.balloon-layer span{position:absolute;bottom:-70px;font-size:32px;opacity:.85}
+
+/* ============ 抽屉（维度解释） ============ */
+#drawer{position:fixed;left:0;right:0;bottom:0;z-index:320;transform:translateY(105%);transition:transform .32s cubic-bezier(.3,1.1,.4,1)}
+#drawer.open{transform:translateY(0)}
+.drawer-mask{position:fixed;inset:0;z-index:315;background:rgba(43,43,43,.35);opacity:0;pointer-events:none;transition:opacity .3s}
+.drawer-mask.show{opacity:1;pointer-events:auto}
+.drawer-body{
+  background:#fff;border-radius:22px 22px 0 0;padding:24px 24px calc(26px + env(safe-area-inset-bottom));
+  max-width:760px;margin:0 auto;box-shadow:0 -10px 40px rgba(43,43,43,.12);
+}
+.drawer-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.drawer-head .d-emoji{font-size:24px}
+.drawer-head h4{font-family:var(--hand);font-size:21px}
+.drawer-score{margin-left:auto;font-family:var(--hand);font-size:22px;color:var(--red);font-weight:700}
+.drawer-desc{font-size:15px;color:var(--ink);line-height:1.9}
+.drawer-close{margin-top:18px;width:100%}
+
+/* ============ 批改序幕 ============ */
+#grading{
+  position:fixed;inset:0;z-index:300;background:var(--paper);display:none;
+  align-items:center;justify-content:center;flex-direction:column;gap:6px;
+  background-image:radial-gradient(rgba(43,43,43,.03) 1px,transparent 1px);background-size:22px 22px;
+}
+#grading.show{display:flex}
+.grading-pen{font-size:52px;position:relative}
+.grading-txt{font-family:var(--hand);font-size:20px;letter-spacing:2px;color:var(--ink-soft)}
+.grading-marks{position:absolute;inset:0;pointer-events:none}
+.grading-marks span{position:absolute;font-size:30px;font-family:var(--hand);font-weight:700}
+
+/* ============ 动效降级 ============ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media (max-width:420px){
+  .gate-code input{width:52px;height:60px;font-size:26px}
+  .stamp{width:112px;height:112px}
+  .stamp .st1{font-size:17px}
+}
+</style>
+</head>
+<body class="locked">
+
+<!-- ============ 门禁：访问验证 ============ -->
+<div id="gate">
+  <div class="gate-card" id="gate-card">
+    <svg class="lock-icon" viewBox="0 0 64 64" aria-hidden="true">
+      <path id="lock-shackle" d="M22 30 v-9 a10 10 0 0 1 20 0 v9" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+      <rect x="13" y="30" width="38" height="24" rx="7" fill="none" stroke="currentColor" stroke-width="4.5"/>
+      <circle cx="32" cy="41" r="4" fill="currentColor"/>
+      <path d="M32 45 v5" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <h2 class="gate-title">访问验证</h2>
+    <p class="gate-sub">做人考场重地，请出示 4 位访问码</p>
+    <div class="gate-code" id="gate-code">
+      <input inputmode="numeric" maxlength="1" autocomplete="off" aria-label="访问码第1位">
+      <input inputmode="numeric" maxlength="1" autocomplete="off" aria-label="访问码第2位">
+      <input inputmode="numeric" maxlength="1" autocomplete="off" aria-label="访问码第3位">
+      <input inputmode="numeric" maxlength="1" autocomplete="off" aria-label="访问码第4位">
+    </div>
+    <p class="gate-err" id="gate-err"></p>
+    <button class="btn btn-primary gate-btn" id="gate-btn">解锁成绩单</button>
+    <p class="gate-tip">忘记访问码？去问那位让你来考试的朋友</p>
+  </div>
+</div>
+
+<!-- ============ 主体（解锁前隐藏，防滚动防查看） ============ -->
+<main id="app">
+
+  <!-- 首页 -->
+  <section id="page-home" class="page">
+    <div class="float-layer" id="float-layer" aria-hidden="true"><span>✏️</span><span>📄</span><span>✨</span></div>
+    <div class="home-inner">
+      <div class="tape"></div>
+      <h1 class="home-title">你做人能得几分？</h1>
+      <svg class="underline-doodle" viewBox="0 0 320 16" preserveAspectRatio="none" aria-hidden="true">
+        <path id="title-wave" d="M4 9 Q 24 2 44 9 T 84 9 T 124 9 T 164 9 T 204 9 T 244 9 T 284 9 T 314 9"/>
+      </svg>
+      <p class="home-sub">HUMAN SCORE · 做人成绩单</p>
+      <p class="home-lead">做人二十几年，是时候量化一下了。损友出题 12 道，维度 7 个，红笔已上膛——看看你这做人的含金量，到底有几斤几两。</p>
+      <div class="home-btns">
+        <button class="btn btn-primary" id="btn-start">开始打分 ✏️</button>
+        <button class="btn btn-ghost" id="btn-how">怎么打分</button>
+      </div>
+      <p class="home-history" id="home-history"></p>
+      <p class="home-disclaimer">* 本测试纯属娱乐，不构成任何评价。</p>
+    </div>
+  </section>
+
+  <!-- 答题页 -->
+  <section id="page-quiz" class="page">
+    <div class="quiz-top">
+      <span class="q-section" id="q-section">💘 恋爱态度</span>
+      <span class="q-count" id="q-count">1 / 12</span>
+    </div>
+    <div class="q-progress"><i id="q-bar"></i></div>
+    <div class="q-card" id="q-card">
+      <h2 id="q-text"></h2>
+      <div id="q-opts"></div>
+      <div class="q-foot">
+        <button class="link-btn hidden" id="btn-back-home">← 不考了，回首页</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 结果页（竖向单幕滚动叙事） -->
+  <section id="page-result" class="page">
+    <div class="r-sec" id="rs-score"></div>
+    <div class="r-sec" id="rs-model"></div>
+    <div class="r-sec" id="rs-dims"></div>
+    <div class="r-sec" id="rs-comment"></div>
+    <div class="r-sec" id="rs-end"></div>
+  </section>
+
+</main>
+
+<!-- 批改序幕 -->
+<div id="grading">
+  <div class="grading-pen" id="grading-pen">🖍️</div>
+  <p class="grading-txt">正在批改你的做人试卷…</p>
+  <div class="grading-marks" id="grading-marks"></div>
+</div>
+
+<!-- toast / 海报模态 / 抽屉 -->
+<div id="toast" role="status"></div>
+<div class="modal hidden" id="poster-modal">
+  <div class="modal-mask" data-close-poster></div>
+  <div class="modal-body">
+    <p class="modal-tip">长按下方图片，保存你的做人成绩单 📌</p>
+    <img id="poster-img" alt="做人成绩单海报">
+    <button class="btn btn-ghost" data-close-poster>关闭</button>
+  </div>
+</div>
+<div class="drawer-mask" id="drawer-mask"></div>
+<div id="drawer">
+  <div class="drawer-body">
+    <div class="drawer-head">
+      <span class="d-emoji" id="dw-emoji"></span>
+      <h4 id="dw-name"></h4>
+      <span class="drawer-score" id="dw-score"></span>
+    </div>
+    <p class="drawer-desc" id="dw-desc"></p>
+    <button class="btn btn-primary drawer-close" id="dw-close">明白了</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+/* =====================================================================
+ * 「你做人能得几分」单文件应用
+ * 结构：工具 → 门禁 → 题库 → 词库/模板 → 抽题计分 → 页面流程 → 结果动画 → 海报
+ * ===================================================================== */
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+/* ---------- 动效开关：reduced-motion 或 GSAP 加载失败时自动降级 ---------- */
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ANIM = !!window.gsap && !REDUCED;
+if (ANIM && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+
+/* ---------- 存储三连降级：sessionStorage → localStorage → 内存 ---------- */
+const store=(()=>{
+  let mem=new Map(), S=null;
+  try{ sessionStorage.setItem('__t','1'); sessionStorage.removeItem('__t'); S=sessionStorage; }
+  catch(e){ try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); S=localStorage; }catch(e2){ S=null; } }
+  return {
+    get(k){ try{ return S?S.getItem(k):(mem.has(k)?mem.get(k):null);}catch(e){return mem.has(k)?mem.get(k):null;} },
+    set(k,v){ try{ if(S){S.setItem(k,v);return;} }catch(e){} mem.set(k,v); },
+    remove(k){ try{ if(S){S.removeItem(k);return;} }catch(e){} mem.delete(k); }
+  };
+})();
+
+/* ---------- crypto 随机工具（洗牌 / 取整） ---------- */
+function randInt(n){ // [0, n)
+  if(window.crypto && crypto.getRandomValues){
+    const lim=Math.floor(0xFFFFFFFF/n)*n, buf=new Uint32Array(1);
+    do{ crypto.getRandomValues(buf); }while(buf[0]>=lim);
+    return buf[0]%n;
+  }
+  return Math.floor(Math.random()*n);
+}
+const pick=arr=>arr[randInt(arr.length)];
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=randInt(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+
+/* ---------- 低帧率检测：持续 <38fps 时关闭漂浮/粒子 ---------- */
+let lowPerf=false, floatTweens=[];
+function watchFPS(){
+  if(REDUCED) return;
+  let n=0,t0=performance.now();
+  function loop(now){
+    n++;
+    const el=now-t0;
+    if(el>=2000){
+      if(el<5000 && n/(el/1000)<38){ lowPerf=true; stopFloaties(); return; }
+      n=0;t0=now;
+    }
+    if(!lowPerf) requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+}
+function stopFloaties(){ floatTweens.forEach(t=>t.kill()); floatTweens=[]; const f=$('#float-layer'); if(f) f.style.display='none'; }
+
+/* =====================================================================
+ * 门禁：4 位数字访问码
+ * ★★★ 访问码在这里改（必须 4 位纯数字），支持 ?code=XXXX 自动解锁 ★★★
+ * ===================================================================== */
+const ACCESS_CODE='2333'; // ←←← 硬编码访问码
+
+const gateEl=$('#gate'), gateCells=$$('#gate-code input'), gateErr=$('#gate-err');
+let gateBusy=false;
+
+function gateInputValue(){ return gateCells.map(c=>c.value).join(''); }
+function fillGate(v){ v.split('').forEach((ch,i)=>{ if(gateCells[i]) gateCells[i].value=ch; }); }
+
+function tryUnlock(){
+  const v=gateInputValue();
+  if(v.length<4){ gateErr.textContent='还差 '+(4-v.length)+' 位呢'; return; }
+  if(gateBusy) return; gateBusy=true;
+  if(v===ACCESS_CODE){
+    gateErr.textContent='';
+    unlockSuccess();
+  }else{
+    gateFail();
+  }
+}
+function gateFail(){
+  gateErr.textContent='访问码不对，再想想 🤔';
+  gateCells.forEach(c=>{c.value='';});
+  if(ANIM){
+    gsap.fromTo('#gate-card',{x:0},{keyframes:[{x:-11,duration:.07},{x:9,duration:.07},{x:-6,duration:.06},{x:4,duration:.06},{x:0,duration:.06}]});
+  }
+  gateCells[0].focus();
+  gateBusy=false;
+}
+function unlockSuccess(){
+  store.set('hs_unlocked','1'); // 解锁态存档：刷新后直接回首页（而非门禁）
+  if(ANIM){
+    gsap.to('#lock-shackle',{y:-7,duration:.3,ease:'power2.out'});
+    $('.lock-icon').classList.add('ok');
+    gsap.to(gateEl,{yPercent:-100,opacity:0,duration:.6,delay:.35,ease:'power2.inOut',onComplete:finishUnlock});
+  }else{ finishUnlock(); }
+}
+function finishUnlock(){
+  gateEl.classList.add('off');
+  document.body.classList.remove('locked');
+  showPage('home'); playHomeIntro();
+}
+gateCells.forEach((c,i)=>{
+  c.addEventListener('input',()=>{
+    c.value=c.value.replace(/\D/g,'').slice(-1);
+    gateErr.textContent='';
+    if(c.value && i<3) gateCells[i+1].focus();
+    if(gateInputValue().length===4) setTimeout(tryUnlock,260); // 填满自动校验
+  });
+  c.addEventListener('keydown',e=>{
+    if(e.key==='Backspace' && !c.value && i>0) gateCells[i-1].focus();
+    if(e.key==='Enter') tryUnlock();
+  });
+  c.addEventListener('paste',e=>{
+    e.preventDefault();
+    const d=(e.clipboardData.getData('text')||'').replace(/\D/g,'').slice(0,4);
+    fillGate(d); (gateCells[Math.min(d.length,3)]||gateCells[3]).focus();
+    if(d.length===4) setTimeout(tryUnlock,260);
+  });
+});
+ $('#gate-btn').addEventListener('click',tryUnlock);
+
+/* =====================================================================
+ * 数据：7 个做人维度 + 称号词库 + 评语模板
+ * ===================================================================== */
+const DIMS=[
+ {key:'lover',name:'做恋人',emoji:'💘',
+  desc:'你在感情里的上心程度与浪漫浓度。高分=行走的恋爱教科书，对象随口一句话能记半年；低分=心动来得慢，走得也慢，但胜在真实。',
+  mod:['外冷内热的','心动即上头的','嘴硬心软的','恋爱脑满级的','含糖量超标的','眼里只有一个人的'],
+  tag:['傲娇冰山','行走的情书','心动信号塔','双向奔赴选手','人间蜜糖','顶级捧场王'],
+  id:['攻','天花板','首席体验官','满级选手','本体','代言人'],
+  cm:{
+   hi:['做恋人这项你直接拉高均分，[[心动说来就来，行动跟得上心跳]]，随口一句话你能记半年，谁遇上谁沦陷。',
+       '恋爱脑浓度感人，[[嘴上嫌弃，身体诚实]]，对象的一举一动都在你的雷达里，靠谱得让人安心。',
+       '做恋人这项几乎满分，[[别人的心动是意外，你的是日常]]，被你放在心上的人，运气都不差。'],
+   mid:['做恋人属于中等偏上，[[嘴上偶尔敷衍，行动基本诚实]]，虽有小走神，但关键时刻从没掉过链子。',
+        '你的恋爱风格是[[慢热但保温]]，不制造烟花，但能一直焐着，这种温度其实更难得。',
+        '做恋人发挥稳定，[[不惊艳但很耐用]]，像一双合脚的鞋，越穿越知道多好。'],
+   lo:['做恋人这题扣得有点狠，[[心动还没开始，退路已经想好三条]]，不是不行，是还没遇到值得不管不顾的人。',
+       '恋爱技能点你加得不多，[[仪式感约等于在吗和吃了吗]]，但胜在真实，遇到对的人会自动升级。',
+       '做恋人浓度偏低，[[心动信号常年静音]]，别人恋爱你吃瓜，主打一个岁月静好。']}},
+ {key:'friend',name:'做朋友',emoji:'🤝',
+  desc:'朋友有难你是不是第一个冲的。高分=人间树洞兼深夜急救车，谁emo你都在线；低分=社交节能模式，交情全靠对方主动续费。',
+  mod:['有求必应的','义气拉满的','嘴损心热的','随叫随到的','可靠到离谱的','永远在线的'],
+  tag:['人间树洞','团宠担当','气氛组组长','嘴替本替','深夜急救车','人形充电宝'],
+  id:['挚友','团魂','扛把子','守门员','主心骨','钉子户'],
+  cm:{
+   hi:['做朋友你是天花板级别，[[别人喊救命，你喊冲啊]]，谁半夜emo你都在线，这份靠谱是稀缺资源。',
+       '朋友含金量超标，[[有事真上，有锅真接]]，朋友圈里你是那个@TA准没错的存在。',
+       '做朋友你是SSR级，[[把别人的事当自己的事上心]]，这种朋友建议列入保护名录。'],
+   mid:['做朋友中等水准，[[能陪聊也能救场，就是偶尔想隐身]]，交情都在，只是你主动得比较省电。',
+        '你的友情模式是[[响应慢但从不掉线]]，不天天黏着，但朋友知道你一直都在。',
+        '做朋友你不功不过，[[聚会能到，救场能来，就是从不组局]]，被动型选手但靠得住。'],
+   lo:['朋友这项你有点节能，[[有事说事，没事各自安好]]，交情没淡，就是全靠对方主动续费。',
+       '社交电量常年百分之十，[[聚会能推就推，消息挑着回]]，不是冷漠，是精力只留给少数人。',
+       '做朋友你走极简风，[[朋友圈三天可见，消息佛系已读]]，社交能耗管理大师。']}},
+ {key:'sepi',name:'做涩批',emoji:'🙈',
+  desc:'懂的都懂（推眼镜）。高分=群里车速的源头，表面正经内心百科全书；低分=绿色上网模范标兵，朋友讲的段子需要配翻译。',
+  mod:['表面清纯的','开车不眨眼的','张嘴就懂的','起步九档的','阅片量惊人的','深藏不露的'],
+  tag:['老司机','隐形车神','懂王','速读选手','百科全书','气氛破坏王'],
+  id:['导师','情报员','观察员','课代表','质检员','发言人'],
+  cm:{
+   hi:['涩批浓度检测超标，[[表面正经，车速起飞]]，群里那些懂的都懂，一半是从你这进货的。',
+       '这个维度你是资深选手，[[别人刚上车，你已到终点]]，知识储备惊人，全靠自律压制。',
+       '涩批含量持续超标，[[别人刚听懂，你已经能抢答]]，这知识面不收学费说不过去。'],
+   mid:['车速属于[[市区平稳，偶尔上快速路]]，该懂的时候都懂，只是装不懂装得很辛苦。',
+        '涩批指数刚刚好，[[懂而不说，笑而不语]]，分寸感拿捏得相当到位。',
+        '涩批指数处于安全区，[[懂三分，装七分]]，扮猪吃老虎的高段位选手。'],
+   lo:['涩批测试你几乎交白卷，[[别人开车，你在系安全带]]，绿色上网模范用户，建议保持。',
+       '这个维度你纯得离谱，[[荤段子飘过头顶只带走一阵风]]，朋友都需要给你配个翻译。',
+       '涩批维度干净得反光，[[别人开车你查地图]]，这份纯真很稀缺，建议保持。']}},
+ {key:'juanso',name:'做冤种',emoji:'🤡',
+  desc:'老好人含量检测：好事总轮不到你，锅总是先找到你。高分=团队荣誉背锅侠（是福气，但请心疼自己）；低分=人间清醒，没人能道德绑架你。',
+  mod:['有忙就帮的','钱包常空的','背锅第一线的','老好人附体的','心软到没边的','不会说No的'],
+  tag:['退堂鼓一级运动员','工具人','人形许愿池','接盘侠','气氛牺牲品','背锅侠'],
+  id:['本种','大冤种','特派员','志愿者','荣誉会员','十级学者'],
+  cm:{
+   hi:['冤种含量遥遥领先，[[有事你真上，锅来你真背]]，身边有你这种人是福气，但拜托你也心疼下自己。',
+       '冤种本种没跑了，[[不好意思拒绝，也舍不得计较]]，你的善良经常被白嫖，建议装个门槛。',
+       '冤种雷达疯狂报警，[[自己的事拖着，别人的事秒办]]，是好人，但好人也要心疼自己啊。'],
+   mid:['冤种值在安全区间，[[该帮的帮，不该背的偶尔也背背]]，老好人成分可控，问题不大。',
+        '你是[[有原则的好人]]，帮忙看心情也看对象，这是相当健康的做人姿势。',
+        '冤种值处于健康区间，[[帮人看心情，背锅看金额]]，进退有度，可持续发展。'],
+   lo:['冤种指数接近零，[[谁也别想让你白干活]]，边界感这玩意你玩得炉火纯青，佩服。',
+       '你属于[[人间清醒型选手]]，拒绝的话说得温柔但坚定，没人能道德绑架你。',
+       '冤种浓度无限趋零，[[想白嫖你比考编还难]]，谁教你的这份人间清醒。']}},
+ {key:'qingzhong',name:'做情种',emoji:'💌',
+  desc:'深情浓度与心动保质期。高分=一眼万年、念念不忘；低分=心动过期比酸奶还快，把感情保护得很好。',
+  mod:['一眼万年的','念念不忘的','深情到骨子里的','为爱发电的','心口装着玫瑰的','入戏太深的'],
+  tag:['深情批','白月光收藏家','意难平钉子户','痴心绝对','月光宝盒','爱情编剧'],
+  id:['文学主角','首席痴情人','传承人','掌门','研究员','遗珠'],
+  cm:{
+   hi:['情种属性藏不住，[[爱一个人恨不得写进备忘录每天打勾]]，深情不是你的错，是时代不配。',
+       '你的深情浓度超标，[[念念不忘，必有回响是你的信条]]，白月光在你这能住成永久产权。',
+       '情种浓度直接拉满，[[喜欢一个人能喜欢出年轮]]，一圈一圈全是真心。'],
+   mid:['深情走的是[[慢炖路线，火小但一直没关]]，不轰轰烈烈，但细水长流。',
+        '你是[[嘴硬心软的情种]]，说随便的时候心里已经排练了八十集内心戏。',
+        '深情浓度中等，[[心动说来就来，走心要排队]]，慢热但保真的浪漫派。'],
+   lo:['情种含量偏低，[[心动保质期比酸奶还短]]，不是无情，是把感情保护得比较好。',
+       '深情这题你略过得多，[[上头三分钟，下头一整天]]，冷静得像个情感审计员。',
+       '情种检测未出峰，[[心动的证据不足，冷静的证据一堆]]，情感界极简主义大师。']}},
+ {key:'shadiao',name:'做沙雕',emoji:'🃏',
+  desc:'快乐浓度与精神状态领先程度。高分=行走的快乐喷泉，再丧的场子都能盘活；低分=冷场艺术家，笑点长得比较高级。',
+  mod:['快乐就完事的','脑洞开天窗的','一本正经胡说的','自带笑点的','精神状态遥遥领先的','梗比钱多的'],
+  tag:['快乐喷泉','梗王','人间段子机','抽象艺术家','气氛永动机','气氛救援队'],
+  id:['掌门','大使','课代表','发电机','团宠','首席整活官'],
+  cm:{
+   hi:['沙雕浓度严重超标，[[精神状态遥遥领先]]，和你待一块笑点会被永久拉低，谢谢你的廉价快乐。',
+       '你是快乐本乐，[[再丧的场子你都能盘活]]，抽象但治愈，朋友们的多巴胺供应商。',
+       '沙雕含量持续爆表，[[快乐来得毫无逻辑]]，你的存在本身就是行走的快乐源泉。'],
+   mid:['沙雕值中规中矩，[[该正经正经，该抽象抽象]]，收放自如，合格的气氛组成员。',
+        '你的幽默属于[[分场合供电]]，熟了是段子手，生人是哑巴，问题不大。',
+        '沙雕指数中规中矩，[[偶尔抽象，大体正常]]，可控快乐型选手。'],
+   lo:['沙雕维度你几乎零分，[[冷笑话出来全场降温两度]]，不是不好笑，是笑点长得太高级。',
+       '快乐浓度有待充值，[[正经得让朋友想给你交学费]]，偶尔放开一次，全场都惊。',
+       '沙雕维度几乎空白，[[笑点自带安检，普通段子进不来]]，高冷笑匠认证。']}},
+ {key:'luren',name:'做路人',emoji:'🚶',
+  desc:'吃瓜淡定值。高分=看破不说破，热闹面前心如止水；低分=哪里热闹哪里有你，瓜田里的猹见了都喊劳模。',
+  mod:['事不关己的','深藏功与名的','看破不说破的','淡定过马路的','节能模式常开的','置身事外的'],
+  tag:['隐身高手','气氛绝缘体','吃瓜群众','围观专业户','人间旁观者','扫地僧'],
+  id:['NPC','观察员','路人甲','体验官','背景板','编外人员'],
+  cm:{
+   hi:['路人属性满级，[[看破不说破，路过不停留]]，这份淡定在吃瓜界属于高阶修行。',
+       '你是围观界的扫地僧，[[热闹面前心如止水]]，瓜再大，也大不过你心里的与我无关。',
+       '路人属性点到满级，[[热闹是他们的，你什么都没有]]，佛系观战十级学者。'],
+   mid:['路人值处于平均线，[[热闹偶尔凑，吃瓜不站队]]，情绪稳定得让人安心。',
+        '你属于[[选择性围观]]，感兴趣的瓜啃到皮都不剩，没兴趣的直接目不斜视。',
+        '路人值中等，[[瓜按需吃，热闹按心情凑]]，弹性围观选手。'],
+   lo:['路人指数几乎为零，[[哪里热闹哪里有你]]，说是路人，你分明是每场热闹的常驻嘉宾。',
+       '你完全坐不住，[[瓜田里的猹见了你都喊劳模]]，吃瓜热情值得写进简历。',
+       '路人指数直接跌停，[[没有一场热闹能逃过你]]，人形热搜探测器。']}},
+];
+const DIM_MAP=Object.fromEntries(DIMS.map(d=>[d.key,d]));
+
+/* ---------- 开头 / 结尾评语模板（{T} 会替换为总分） ---------- */
+const T_OPEN=[
+ [ '先深呼吸，{T} 分——[[做人这门课，你还在补考边缘蹦迪]]，但先别急着难过，往下看，你的闪光点离谱得很。',
+   '{T} 分，说实话我笑了三秒，然后[[认真帮你翻出了不少场外加分项]]，损友滤镜全开，继续往下看。',
+   '{T} 分，[[样样都会一点，样样都不深究]]，均衡型选手，别急，你的隐藏强项在下面。' ],
+ [ '{T} 分，[[做人及格线上方安全漂浮]]，属于老师想多给两分、但实在找不到理由的类型，稳中带点可惜。',
+   '{T} 分——[[分数不上不下，人倒是挺讨喜]]，这份报告帮你找找强在哪、漏在哪，往下翻。',
+   '{T} 分，[[做人成绩中游，气质上游]]，各项批注已就位，请过目。' ],
+ [ '{T} 分！[[做人这门课你是真听讲了]]，红笔都想给你画朵小红花，细节拆解放在下面了。',
+   '{T} 分，阅卷时我多次点头，[[这做人水平放在朋友圈里相当能打]]，且听我细细道来。',
+   '{T} 分，[[这门课你不但及格，还坐第一排]]，强在哪，红笔都圈好了。' ],
+ [ '{T} 分？！[[做人天花板大概说的就是你]]，阅卷人当场想拜师，请收下这份颤抖的批注。',
+   '{T} 分——[[已经不需要我评了，但礼数不能少]]，批注已写好，我是跪着看完的。',
+   '{T} 分，[[卷面工整，做人圆满]]，批注写得我手都酸了，快往下看。' ]
+];
+const T_CLOSE=[
+ '最后说句掏心窝的：[[分数是玩笑，你这个人是真的]]，按自己的节奏活着，就已经很了不起了。',
+ '记住，[[会做人不等于讨好所有人]]，你已经做得很好了，剩下的交给时间和火锅。',
+ '做人嘛，[[没有标准答案，只有你自己的活法]]，这一卷你答得漂亮，下一卷继续随意发挥。',
+ '反正记住，[[做人先做自己，剩下的随缘]]，你已经很棒了，这局我说的算。'
+];
+/* 「写在最后」暖心结语（[[...]] 为高亮短语），逐字保留原文 */
+const FINAL_NOTE_TPL='其实无论怎么努力，人总会有自己无能为力的时候。毕竟不是每个人都是完美的满分大佬，[[做人这张考卷大家都难免会在不同的方向犯错]]，我们只能扮演好每一个角色，[[问心无愧的做自己比做他人评价里的你更重要]]呀';
+
+/* =====================================================================
+ * 题库：120 个手写场景（恋爱/社交 60 + 日常/脑回路 60）
+ * 每场景 4 个专属选项（带维度权重），× 4 个提问角度 = 480 道题干唯一题目
+ * 维度短码：L恋人 F朋友 S涩批 J冤种 Q情种 D沙雕 R路人
+ * ===================================================================== */
+const SC_LOVE=[
+["对象深夜发来一句“在吗”",[["秒回：在的在的，一直都在","Q"],["装睡，明早再回","R"],["“在，但先说好，我很贵”","D"],["先反问：是不是出什么事了","L"]],"love"],
+["朋友圈刷到前任官宣新恋情",[["手滑点了个赞","D"],["深呼吸，划走不看了","R"],["截图发好友群里细品","S"],["心里咯噔一下，又没事人一样","Q"]],"love"],
+["暧昧对象问“你觉得我怎么样”",[["认真列出TA的十个优点","Q"],["“挺好的，当朋友不错”","R"],["“你猜？”然后盯着TA笑","S"],["反问：你先说说你对我什么感觉","L"]],"love"],
+["对象生气说“我没生气”",[["立刻哄，奶茶鲜花全安排","Q"],["“哦，那没事了”去打游戏","R"],["直接抱住说对不起","L"],["逐字分析TA的标点符号","D"]],"love"],
+["朋友深夜哭诉被分手",[["陪聊到天亮，第二天顶着黑眼圈","J"],["“TA就是垃圾”开骂两小时","F"],["十分钟讲清问题所在","R"],["发一堆搞笑表情包哄TA笑","D"]],"social"],
+["群里抢红包你手气最佳",[["默默收下，深藏功与名","R"],["立刻回发一个更大的","F"],["截图发朋友圈炫耀","D"],["“谢谢老板”彩虹屁刷屏","J"]],"social"],
+["暗恋的人找你帮忙搬家",[["推掉所有安排，全勤出场","Q"],["“可以，管饭就行”","D"],["帮完活默默不提辛苦","J"],["找借口婉拒，怕露馅","R"]],"love"],
+["对象问你掉水里先救谁",[["“我妈会游泳，我救你”","L"],["现场做起了受力分析","D"],["“我不会让这种事发生”深情对视","Q"],["装没听见，火速转移话题","R"]],"love"],
+["相亲对象条件很好但没感觉",[["还是婉拒，不耽误彼此","L"],["再见一面，万一有感觉呢","Q"],["条件摆这了，处！","R"],["“先看照片再说，我挑的”","S"]],"love"],
+["对象说你变了",[["紧张复盘最近哪里做错了","Q"],["“人都会成长的”讲道理","R"],["变着法哄到TA笑为止","L"],["“变帅了还是变可爱了？”","D"]],"love"],
+["情人节对象忘了送礼物",[["嘴上说没事，心里记小本本","Q"],["直接说委屈，要补偿","L"],["顺势敲诈一顿大餐","D"],["正好，我也没准备","R"]],"love"],
+["朋友聚会你被起哄表演节目",[["硬着头皮来了一段","J"],["全场最嗨，直接开专场","D"],["微笑摆手：下次一定","R"],["拉个朋友一起上，分摊火力","F"]],"social"],
+["对象想看你手机聊天记录",[["坦然递过去","L"],["“可以，先给我看你的”","D"],["秒删所有聊天再给","S"],["“这是原则问题”严词拒绝","R"]],"love"],
+["有人当众夸你真会做人",[["“哪里哪里”谦虚三连","J"],["“谢谢，我也这么觉得”","D"],["笑着把话题岔开","R"],["被夸的话记在心里一整天","Q"]],"social"],
+["暧昧对象半夜emo找你聊",[["一直陪聊到TA睡着","Q"],["顺势表白：有我在","L"],["发语音哄，声音放软","S"],["“睡吧，明天就好了”","R"]],"love"],
+["对象问这条裙子显胖吗",[["“你穿什么都好看”","L"],["认真点评搭配细节","R"],["“胖的是裙子，不是你”","D"],["“嗯……换一件吧”诚实过头","J"]],"love"],
+["好友脱单后消失三个月",[["尊重祝福，等TA回归","R"],["群里阴阳：重色轻友","D"],["失恋安慰套餐提前备好","F"],["默默给TA动态全点赞","Q"]],"social"],
+["冷战进入第三天",[["先低头，认怂求和","Q"],["比谁憋得久，绝不先开口","R"],["做一桌TA爱吃的破冰","L"],["朋友圈发伤感歌词暗讽","D"]],"love"],
+["朋友把你的丑照发到群里",[["威胁删图，否则发TA的","F"],["“这张拍出了我的灵魂”","D"],["跟着哈哈，心在滴血","J"],["假装没看见，内心记仇","R"]],"social"],
+["收到暗恋对象的婚礼请柬",[["随份子，微笑赴约","J"],["借口出差，不去","R"],["真心祝福TA，转身哭一场","Q"],["准备一段震惊全场的致辞","D"]],"love"],
+["对象问你到底爱不爱TA",[["每次都秒答：爱","Q"],["“先给爱下个定义”","D"],["抱住TA不说话","L"],["“都问八百遍了”有点烦","R"]],"love"],
+["深夜对方发来睡了吗",[["“没，在等你”","Q"],["“睡了”（其实没有）","R"],["“睡不着，聊五毛的？”","D"],["“有话直说，我听着”","L"]],"love"],
+["网恋对象提出要奔现",[["激动订票，连夜做攻略","Q"],["先视频验货再说","S"],["“再等等，我头发没长好”","D"],["认真评估后坦诚相见","L"]],"love"],
+["对象的前任是绝世大美人",[["“那是TA没眼光”稳TA心","L"],["暗暗较劲，提升自己","Q"],["偷偷翻TA前任主页研究","S"],["关我什么事，心真大","R"]],"love"],
+["群里有人@你问八卦",[["直播式吃瓜播报","D"],["私聊提醒当事人撤回","F"],["已读不回，装在忙","R"],["被追问急了全招了","J"]],"social"],
+["朋友借五百块迟迟不还",[["不好意思催，装忘了","J"],["直接说：最近手头紧","F"],["发“在吗借我500”试探","D"],["当买个教训，心里拉黑","R"]],"social"],
+["对象生气摔门而出",[["追出去，淋雨也要跟着","Q"],["让TA静静，过会儿去哄","L"],["关门瞬间把门反锁","D"],["继续打游戏，气消自回","R"]],"love"],
+["有人表白但你只想做朋友",[["温柔讲清楚，不吊着人","L"],["“你再想想，我不急”","S"],["从此见面装路人","R"],["怕伤TA心，答应试试","J"]],"love"],
+["对象生日你忘了买礼物",[["连夜手写一封长信","Q"],["坦白从宽，自罚三倍","D"],["电商加急加同城闪送","L"],["假装惊喜还在路上","R"]],"love"],
+["深夜对方说想你了",[["“我也是”，然后打车过去","Q"],["“想我就对了”","L"],["截图收藏反复看","D"],["“睡吧，梦里见”","R"]],"love"],
+["好朋友和你喜欢的人看对眼",[["退出成全，独自消化","J"],["大方撮合，真心祝福","F"],["先下手为强，抢先表白","L"],["装没事，慢慢疏远","R"]],"love"],
+["对象吃醋了但死不承认",[["配合演戏：那我离TA远点","L"],["故意多聊两句气一气TA","D"],["抱住说“我只看你”","Q"],["静静等TA自己招了","R"]],"love"],
+["朋友约饭但你只想瘫着",[["硬去，社交电量当场耗尽","J"],["直说改天，今天想躺着","F"],["人到场，魂在充电","D"],["已读不回，直接装睡","R"]],"social"],
+["暧昧期对方忽冷忽热",[["TA热你就热，冷你就冷","R"],["加倍主动，捂热TA","Q"],["“这盘我接了”开启拉扯","S"],["直接问清：处不处，给个准话","L"]],"love"],
+["对象做了黑暗料理让你尝",[["闭眼吞下，夸有创意","Q"],["建议一起点外卖","R"],["“我尝一口，你喝一口”互换","D"],["抢过锅铲当场露一手","L"]],"love"],
+["相亲对象全程只聊自己",[["微笑听完，之后不再联系","R"],["主动找话题，救活全场","L"],["直接打断：轮到说我了","D"],["结束时抢着买单互不亏欠","J"]],"love"],
+["老同学突然对你嘘寒问暖",[["热情回应，叙旧三小时","F"],["“要结婚了？份子钱多少”","D"],["简单回复，保持距离","R"],["心里一暖，记着这份惦记","Q"]],"social"],
+["朋友问TA是不是不喜欢我",[["实话实说，劝TA止损","F"],["帮TA逐条分析聊天记录","D"],["只安慰，绝不站队","R"],["陪着骂到TA气消为止","Q"]],"social"],
+["对象说我们冷静一下吧",[["“冷静可以，别冷静没了”","Q"],["给足空间，隔天送早餐","L"],["疯狂发消息确认还爱不爱","J"],["“好”（心想正好开黑）","R"]],"love"],
+["对象让你朋友圈晒合照",[["秒发，配长篇小作文","Q"],["发了，三天后仅自己可见","D"],["“我朋友圈都是客户”","R"],["发！并且置顶一个月","L"]],"love"],
+["深夜刷到前任的社交账号",[["一条一条翻完才睡","Q"],["秒关，眼不见为净","R"],["发现TA胖了，安心睡去","D"],["纠结要不要点个赞","J"]],"night"],
+["朋友结婚该随多少份子",[["按行情给足，人还到场帮忙","F"],["给到关系价，肉疼但甘愿","J"],["人不到，钱到位","R"],["抢着当伴郎伴娘凑热闹","D"]],"social"],
+["和你抢电视遥控器",[["让TA看，自己刷手机","R"],["划拳定胜负，输的看广告","D"],["抱着TA顺手把遥控器摸走","S"],["陪TA看TA喜欢的剧","Q"]],"love"],
+["聊天时对方一直回哦",[["不停换话题努力救场","J"],["“哦”回去，谁怕谁","D"],["直接问：是不是不想聊了","L"],["顺坡下驴，结束对话","R"]],"social"],
+["对象问分手后你会想我吗",[["“没有分手这个选项”","L"],["认真设想然后红了眼眶","Q"],["“会，想到你欠我的一百块”","D"],["“想这干嘛，睡觉”","R"]],"love"],
+["暧昧对象找你修电脑",[["上门服务，顺手修了水管","J"],["远程指挥，保持神秘感","S"],["“重启试试”三连","D"],["修完顺势约一顿饭","L"]],"love"],
+["群里通知发了没人回",[["打头阵：收到！","J"],["跟在别人后面回","R"],["发个敬礼表情包","D"],["私聊提醒大家记得回","F"]],"social"],
+["对象问前任和我谁好",[["“我失忆了，不记得”","D"],["“当然是TA…开玩笑，是你”","S"],["认真列出你的十个优点","Q"],["“别问，问就是送命题”","R"]],"love"],
+["朋友在你面前猛夸别人",[["“TA哪里好了”暗自较劲","D"],["认同并补充TA更多优点","F"],["表面附和，内心受伤","J"],["微笑着换个话题","R"]],"social"],
+["对象说去看你喜欢的电影",[["“看你想看的，我都可以”","Q"],["各买各的票，分开看","D"],["提前查影评安排全套约会","L"],["“在家看不香吗”","R"]],"love"],
+["对象问你和游戏谁重要",[["“当然是你，但这把不能挂”","D"],["当场卸载游戏表忠心","Q"],["“游戏能重开，你不能”","L"],["“这题超纲了”火速转移","R"]],"love"],
+["纪念日当天你在外地出差",[["视频连线烛光晚餐","Q"],["礼物早寄到，手写卡压轴","L"],["“回来补过，双倍”先画饼","D"],["忙到忘记，次日加倍道歉","J"]],"love"],
+["对象突然查岗问你在哪",[["实时共享定位自证清白","L"],["“在想你”糊弄过去","D"],["反问：你怎么突然查岗","R"],["秒拍周围环境发过去","J"]],"love"],
+["暧昧对象给你起了外号",[["连夜想个更好的外号回敬","Q"],["表面淡定，内心放烟花","L"],["“叫哥，有奖励”顺杆爬","D"],["借着外号聊到半夜","S"]],"love"],
+["对象和游戏队友吵起来了",[["帮对象骂回去，火力全开","F"],["理性分析到底谁不对","R"],["“消消气，我带你上分”","D"],["陪TA吐槽到气消为止","Q"]],"love"],
+["对方已读不回两小时",[["连发一串“？？？”","J"],["淡定等，忙完自然回","R"],["脑补完整部背叛大戏","Q"],["“失踪人口回归了吗”","D"]],"love"],
+["见家长被问工资多少",[["如实汇报，底气十足","R"],["往高了报，撑住场面","D"],["打太极：够花，也够孝顺","S"],["紧张到说错自己的数","J"]],"face"],
+["对象问我们会永远吗",[["“会，我说话算话”","Q"],["“先把今天过好”","R"],["认真规划起两个人的以后","L"],["“永远是多久？先打个样”","D"]],"love"],
+["对象提议换成情侣头像",[["连夜P好一整套情头","Q"],["“换！要可爱一点的”","L"],["换了一天又偷偷换回来","R"],["换成两只沙雕土拨鼠","D"]],"love"],
+["深夜对方说睡不着",[["打电话给TA唱摇篮曲","Q"],["“数羊，一只羊两只羊…”","D"],["“正好，聊到天亮”","L"],["“喝口热牛奶，晚安”","R"]],"night"]
+];
+
+const SC_DAILY=[
+["电梯里撞见老板",[["热情寒暄，全程营业","J"],["假装认真看手机","R"],["“老板也亲自坐电梯啊”","D"],["帮忙按楼层，顺便搭话","F"]],"face"],
+["外卖迟到四十分钟",[["催单三连，最后还是给好评","J"],["理解天气不好，再等等","F"],["“已经气饱了，不吃了”","D"],["流程化投诉，一气呵成","R"]],"daily"],
+["开会时困到眼皮打架",[["疯狂记笔记掩饰点头","D"],["掐大腿保持清醒","J"],["顺其自然，睡出境界","R"],["跟同桌使眼色求掩护","F"]],"daily"],
+["网购收到货不对板",[["找客服理论，依法维权","R"],["“凑合用吧”自我安慰","J"],["拍开箱视频发网上吐槽","D"],["问客服：是不是给我的惊喜","S"]],"daily"],
+["考试前一晚才开始复习",[["通宵爆肝，主打一个奇迹","J"],["裸考，赌的就是运气","R"],["复习五分钟，手机两小时","D"],["边复习边给同学讲题","F"]],"daily"],
+["手机掉进了马桶",[["徒手捞，捞完继续用","D"],["心痛三秒，当场下单新的","R"],["埋进大米，玄学救机","S"],["原地站着思考人生","J"]],"daily"],
+["排队被人插队",[["当场指出：请排队","F"],["默默往后退了半步","J"],["大声跟朋友吐槽给TA听","D"],["装没看见，随TA去","R"]],"face"],
+["理发师把头剪废了",[["“挺好的，短点精神”嘴硬","J"],["要求补救，不行就免单","R"],["拍照发群：新发型打几分","D"],["帽子一戴，谁也不爱","S"]],"face"],
+["深夜饿了家里只剩挂面",[["加蛋加葱，摆盘拍照","D"],["点外卖，配送费比面贵","J"],["白水煮面，吃出修行感","R"],["深夜放毒，拍照馋朋友圈","S"]],"night"],
+["游戏队友开局就挂机",[["一打五，虽败犹荣","J"],["心平气和点举报","R"],["全程贴脸输出队友","D"],["截图发群里公开处刑","S"]],"daily"],
+["早上闹钟响了八遍",[["每个按掉，最后冲刺出门","J"],["醒了就起，从不赖床","R"],["设八个别名闹钟互相接龙","D"],["让对象打电话叫醒","L"]],"daily"],
+["收到一句在吗没有下文",[["“在，怎么了？”秒回","J"],["不回，等TA说事","R"],["“不在”（已读乱回）","D"],["脑补十种可能，开始焦虑","Q"]],"daily"],
+["网上和人观点不合",[["三百字小作文开始对线","D"],["“你说得对”光速下播","R"],["心平气和摆事实讲道理","F"],["越吵越上头，气到失眠","Q"]],"daily"],
+["洗澡洗到一半没热水",[["尖叫着冲完最后一分钟","D"],["冷静裹浴巾，检查热水器","R"],["硬扛着洗完，练出抗寒体质","J"],["发朋友圈现场控诉","S"]],"daily"],
+["新鞋出门就被踩了一脚",[["“没事没事”先笑出来","J"],["盯着对方，等一个道歉","R"],["“没事，新鞋踩踩就宽松了”","D"],["心疼一整天，反复擦鞋","Q"]],"face"],
+["走路撞上了玻璃门",[["环顾四周，假装刚好路过","D"],["揉揉头，大方自嘲","F"],["记住这扇门，下次绕道","J"],["面无表情，疼也忍着走开","R"]],"face"],
+["刷短视频根本停不下来",[["一抬头已经凌晨两点","J"],["定时关闭，说关就关","R"],["边刷边记离谱知识","D"],["刷到心动的人，逐帧研究","S"]],"night"],
+["购物节清空了购物车",[["凑满减凑到天亮","J"],["只买清单内的，绝不多花","R"],["买完秒删购物APP防手滑","D"],["付款时心跳加速堪比恋爱","S"]],"daily"],
+["摸鱼被老板路过看见",[["秒切工作界面，手指如飞","D"],["坦然对视，毫无波澜","R"],["顺手递上正好在做的报表","J"],["心跳爆表，一下午没敢动","Q"]],"face"],
+["健身卡办了只去过两次",[["卡在钱包里积灰到过期","R"],["“明天一定去”说了三百天","J"],["自拍倒是拍了不少","D"],["转手卖给朋友，回血一半","S"]],"daily"],
+["深夜emo发朋友圈又秒删",[["删完还检查三遍访客记录","Q"],["本来就没打算让人看见","R"],["五分钟后：手滑了哈哈","D"],["好友截图：删了我也看见了","F"]],"night"],
+["做梦梦到考试没复习",[["惊醒翻书确认毕业证还在","D"],["庆幸只是梦，接着睡","R"],["发群里问大家都梦到过没","F"],["一整天都心有余悸","Q"]],"night"],
+["坐地铁坐过了站",[["顺路逛逛没去过的出口","D"],["面无表情坐回去","R"],["下车狂奔回来","J"],["发定位给朋友：我在冒险","S"]],"daily"],
+["第二杯半价但你一个人",[["买两杯，第二杯给明天的自己","J"],["问旁边陌生人要不要拼","D"],["“半价也是钱”，转身走","R"],["拍照发给那个TA：帮你占了","Q"]],"daily"],
+["点外卖选择困难半小时",[["永远销量第一，从不纠结","R"],["纠结到饿过头随便点","J"],["做成表格逐项打分","D"],["拉群投票，让民主决定","F"]],"daily"],
+["扫码关注才能点餐",[["关注注册授权一气呵成","J"],["坚持让店员报菜名","D"],["拒绝消费，换一家","R"],["吃完立刻取关，白嫖式关注","S"]],"daily"],
+["手机电量只剩百分之一",[["全屋找充电器，健步如飞","J"],["关机保电，与世无争","R"],["群发“手机要没了”","D"],["百分之一也要发完那条消息","Q"]],"night"],
+["分享欲爆棚但没人回消息",[["连发十条，自问自答","D"],["转战朋友圈，静待有缘人","J"],["收起手机，自我消化","R"],["直接打电话，听声就行","F"]],"night"],
+["减肥第三天就想放弃",[["“吃完这顿算欺骗餐”","D"],["想想夏天，含泪吃水煮菜","J"],["本来就没打算真减","R"],["对着美食照望梅止渴","S"]],"daily"],
+["存钱计划坚持了一周",[["第八天全部花光庆祝一下","D"],["继续存，Excel记到小数点","J"],["计划？什么计划？","R"],["存的钱转头拿去给喜欢的人买礼物","Q"]],"daily"],
+["计划表写满三天就吃灰",[["第四天撕掉重写，仪式感拉满","D"],["吃灰就吃灰，日子照过","R"],["自责十分钟，接着吃灰","J"],["拉朋友组打卡群互相监督","F"]],"daily"],
+["新年flag立了又倒",[["明年接着立，主打传承","D"],["从来不立，无坚不摧","R"],["倒了就发个朋友圈纪念","S"],["悄悄实现一个，惊艳所有人","Q"]],"night"],
+["深夜网购冲动下单",[["早上醒来火速退款","D"],["买都买了，好好享受","R"],["一夜八单，全是限时优惠","J"],["先加购物车哄自己睡觉","Q"]],"night"],
+["看剧忍不住开倍速",[["三倍速，主打高效","D"],["该跳的跳，该品的一帧不落","R"],["边看边给朋友剧透式解说","S"],["只看高甜片段反复品味","Q"]],"daily"],
+["蹲厕所半小时出不来",[["腿麻了才发现时间","J"],["定时五分钟，说到做到","R"],["带着支架进去，配置齐全","D"],["在里面回完了所有消息","F"]],"daily"],
+["别人说话时你走神了",[["“嗯嗯对”蒙混过关","D"],["坦白：刚刚没听清，再说一遍？","R"],["疯狂点头假装共鸣","J"],["想的是TA昨天说的另一句话","Q"]],"face"],
+["拍照五分钟修图两小时",[["九宫格精修，配文随手拍","D"],["原图直出，真实至上","R"],["修到半夜，就差一点完美","J"],["只修合照里别人的部分","S"]],"face"],
+["出门后总觉得没锁门",[["回去检查，三次起步","J"],["锁了，我信我自己","R"],["拍照留证，下次直接看","D"],["一路复盘锁门动作","Q"]],"daily"],
+["假期最后一天狂赶工",[["通宵爆肝，奇迹交差","J"],["早就做完，安心睡觉","R"],["边赶边发誓下次早点","D"],["拉朋友线上组队赶工","F"]],"daily"],
+["房间很乱但心里有数",[["乱而有序，要什么秒找到","D"],["乱到极致就大扫除重启","R"],["每周一次仪式性收纳","J"],["朋友来了进入“别坐那”模式","S"]],"daily"],
+["一句话让全场突然安静",[["再补一句，让全场更安静","D"],["假装咳嗽掩饰尴尬","J"],["“全当我没说”光速滑跪","S"],["微笑转移话题，完美救场","F"]],"face"],
+["被夸的时候不知道怎么接",[["“谢谢，我也觉得”","D"],["“哪里哪里”无限谦虚","J"],["大方收下：我会继续努力","R"],["耳根通红，开心一整周","Q"]],"face"],
+["朋友讲笑话只有你没笑",[["礼貌假笑，营业到位","J"],["“我没懂，再讲一遍”","D"],["三小时后想通了笑出声","S"],["面无表情：确实不好笑","R"]],"face"],
+["突然被点名发言",[["站起来先说“我简单说两句”","D"],["心跳如鼓，但讲得还行","Q"],["侃侃而谈，全是干货","F"],["“我赞同”三连混过去","R"]],"face"],
+["面对镜头表情管理失败",[["越紧张越想笑","D"],["机械比耶，万年剪刀手","J"],["把抓拍最自然那张狂发","S"],["能躲就躲，镜头绝缘体","R"]],"face"],
+["想好的话一开口就忘",[["“等下，我刚才要说啥”","D"],["掏出备忘录当场念","R"],["临场发挥，越扯越远","S"],["深呼吸重来，一字不差","Q"]],"daily"],
+["明明很困但舍不得睡",[["“再刷十分钟”乘以N","J"],["熬的是自由，不是夜","D"],["舍不得结束和TA的聊天","Q"],["定好闹钟，准点睡","R"]],"night"],
+["下载一堆资料从没打开",[["收藏等于学会的忠实信徒","D"],["占满网盘，内心充实","J"],["定期清理，只留有用的","R"],["分享给朋友，一起吃灰","F"]],"daily"],
+["深夜开始思考人生意义",[["越想越清醒，直接想到天亮","Q"],["想不明白，先睡再说","R"],["当场写下三千字小作文","D"],["拉朋友开卧谈会","F"]],"night"],
+["打了个喷嚏全场看你",[["大方来一句：保重身体是我","D"],["小声抱歉，火速低头","J"],["假装是旁边的人打的","S"],["稳如泰山，继续做事","R"]],"face"],
+["公司群发红包你手慢了",[["假装刚才在开会","R"],["哀嚎：就差0.01秒","D"],["下次自己发个大的找场子","F"],["截图留念，越看越心酸","J"]],"daily"],
+["放门口的快递被人拿走",[["贴纸条：兄弟你拿错了","D"],["调监控，一查到底","R"],["自认倒霉，默默重买","J"],["发朋友圈全城寻件","S"]],"daily"],
+["自动售货机吞了你的钱",[["拍两下，居然真掉了出来","D"],["打客服电话认真维权","R"],["再投一次，赌它良心发现","J"],["拍照发网上提醒避雷","S"]],"daily"],
+["开会点名让你提意见",[["先夸一圈，意见是没有","J"],["真提了，全场突然安静","D"],["“我补充一点”说了堆废话","S"],["“我再想想”成功滑走","R"]],"face"],
+["白T恤溅上了火锅油",[["当场石化，脸比锅还红","J"],["纸巾蘸水优雅自救","R"],["顺势再泼两下搞抽象","D"],["拍照发群：绝版泼墨款","S"]],"daily"],
+["下班前一分钟被派活",[["微笑接下，内心风暴","J"],["“明天处理”光速关机","R"],["边收包边答应，明天再说","D"],["问清轻重再决定接不接","F"]],"face"],
+["聚会时大家都在低头玩手机",[["提议玩游戏救活气氛","F"],["自己也掏出手机加入","R"],["“你们聊，我听着呢”","D"],["默默干饭，一言不发","J"]],"social"],
+["周末计划了整整六件事",[["一觉醒来全鸽了","J"],["件件落实，效率惊人","R"],["只完成了“睡到自然醒”","D"],["拉朋友监督完成一半","F"]],"daily"],
+["半夜楼上传来弹珠声",[["脑补一部悬疑大戏","D"],["戴耳塞，与我无关","R"],["上楼敲门友好交流","F"],["越想越怕，开灯到天亮","J"]],"night"],
+["体检报告不敢点开看",[["先点开最吓人的那项","D"],["让朋友帮我看结果","J"],["闭眼点开，虚惊一场","R"],["收藏起来，立志早睡","S"]],"daily"]
+];
+
+/* ---------- 提问角度（每类 4 个，场景 × 角度拼接题干） ---------- */
+const ANG_LOVE =["你的第一反应是？","此刻你会怎么做？","这题你会怎么解？","心里真实想法是？"];
+const ANG_DAILY=["你的第一反应是？","请开始你的表演：","你会怎么办？","心里是怎么想的？"];
+/* 章节标签（按题目 topic + 角度奇偶循环复用 5 个标签） */
+const SECTION_TAGS={
+  love:['💘 恋爱态度','🌙 深夜模式'], social:['🤝 朋友相处','😎 面子工程'],
+  daily:['🧠 日常脑回路','😎 面子工程'], face:['😎 面子工程','🧠 日常脑回路'],
+  night:['🌙 深夜模式','🧠 日常脑回路']
+};
+
+/* ---------- 12 道手写基准题（占用“前6场景 × 角度0”的组合位，保证总数 = 场景数×4） ---------- */
+const BASE=[
+ {t:"对象深夜发来“在吗”，你的第一反应是？",p:0,si:0},
+ {t:"刷到前任官宣新恋情，你的第一反应是？",p:0,si:1},
+ {t:"暧昧对象问你觉得TA怎么样，你会？",p:0,si:2},
+ {t:"对象嘴上说没生气，你打算怎么办？",p:0,si:3},
+ {t:"朋友深夜哭诉被分手，你会怎么做？",p:0,si:4},
+ {t:"群里抢红包手气最佳，接下来你会？",p:0,si:5},
+ {t:"电梯里撞见老板，你的第一反应是？",p:1,si:0},
+ {t:"外卖迟到四十分钟，你会怎么办？",p:1,si:1},
+ {t:"开会困到眼皮打架，你会怎么做？",p:1,si:2},
+ {t:"网购收到货不对板，你会怎么办？",p:1,si:3},
+ {t:"考前一晚才开始复习，你会怎么做？",p:1,si:4},
+ {t:"手机掉进马桶，你的第一反应是？",p:1,si:5}
+];
+
+const DK={L:'lover',F:'friend',S:'sepi',J:'juanso',Q:'qingzhong',D:'shadiao',R:'luren'};
+
+/* ---------- 组装题库（场景数×4 题 + 选项旋转防规律） ---------- */
+function buildBank(){
+  const conv=opts=>opts.map(o=>[o[0],DK[o[1]]]);
+  const rot=(a,k)=>{k=((k%4)+4)%4;return a.slice(a.length-k).concat(a.slice(0,a.length-k));};
+  const hash=s=>{let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h;};
+  const bank=[];
+  BASE.forEach(b=>{ // 基准题：题干手写，选项引用对应场景（组合位：场景si<6 × 角度0）
+    const sc=(b.p?SC_DAILY:SC_LOVE)[b.si];
+    bank.push({text:b.t,opts:rot(conv(sc[1]),hash(b.t)),topic:sc[2],ai:0});
+  });
+  [[SC_LOVE,ANG_LOVE],[SC_DAILY,ANG_DAILY]].forEach(([pool,angles])=>{
+    pool.forEach((sc,si)=>{
+      angles.forEach((ang,ai)=>{
+        if(si<6&&ai===0) return; // 该组合已被手写基准题占用，跳过避免重复
+        const text=sc[0]+ang;
+        bank.push({text,opts:rot(conv(sc[1]),hash(text)),topic:sc[2],ai});
+      });
+    });
+  });
+  return bank;
+}
+const BANK=buildBank();
+const ALL_IDX=BANK.map((_,i)=>i);
+
+/* =====================================================================
+ * 已抽题目索引池（硬性规则1：sessionStorage → localStorage → 内存）
+ * ===================================================================== */
+function loadDrawn(){
+  try{ const a=JSON.parse(store.get('hs_drawn')||'[]');
+    return Array.isArray(a)?a.filter(n=>Number.isInteger(n)&&n>=0&&n<BANK.length):[];
+  }catch(e){ return []; }
+}
+function saveDrawn(arr){ store.set('hs_drawn',JSON.stringify(arr)); }
+function coversAllDims(idxs){
+  const s=new Set();
+  idxs.forEach(i=>BANK[i].opts.forEach(o=>s.add(o[1])));
+  return DIMS.every(d=>s.has(d.key));
+}
+/* 抽 12 题：crypto 洗牌 → 剔除已抽池 → 覆盖校验（不满足重抽）；剩余<12 时自动重置池子 */
+function drawQuestions(){
+  let pool=loadDrawn();
+  const basePool=[...pool];
+  let remaining=ALL_IDX.filter(i=>!basePool.includes(i));
+  if(remaining.length<12){ pool=[]; saveDrawn([]); remaining=[...ALL_IDX]; } // 池子接近抽干 → 重置
+  let picks=null;
+  for(let a=0;a<300;a++){
+    const cand=shuffle([...remaining]).slice(0,12);
+    if(coversAllDims(cand)){ picks=cand; break; }
+  }
+  if(!picks) picks=shuffle([...remaining]).slice(0,12); // 兜底：极小概率
+  console.assert(coversAllDims(picks),'[抽题] 本卷 12 题未覆盖全部 7 维度（兜底分支）');
+  saveDrawn(pool.concat(picks)); // 抽出即入池：多次测试尽量遇到新题
+  return picks.map(i=>BANK[i]);
+}
+
+/* ---------- 历史成绩存档（仅用于首页“已批张数”统计） ---------- */
+function loadHistory(){ try{ return JSON.parse(store.get('hs_history')||'[]')||[]; }catch(e){ return []; } }
+function pushHistory(entry){
+  const h=loadHistory(); h.push(entry);
+  store.set('hs_history',JSON.stringify(h.slice(-50)));
+}
+
+/* =====================================================================
+ * 计分（命中型模型） / 称号 / 评语
+ * =====================================================================
+ * 旧版用 raw ÷ 理论满分 归一化——12 题里某维度通常只出现 5~7 次，
+ * 选 1~2 次就被除以满分，分数被结构性压在低位，且人与人拉不开差距。
+ * 新版改为“命中率”模型：该维度被选中的次数 ÷ 该维度出现过的题数，
+ * 经小样本平滑后映射到 0-100：
+ *   · 次次都选（风格一致）→ 90~100，可触发“爆表”
+ *   · 偶尔选 → 40~70
+ *   · 一次没选 → 干瘪 0
+ * 总分 = 最高维度 55% + 次高维度 35% + 七维均值 10%，映射到 150–499：
+ * 主攻风格越鲜明，总分越高（典型 300~400，极限 470+），差异感明显。
+ * ===================================================================== */
+function computeScores(){
+  const picks={},chances={},raw={};
+  DIMS.forEach(d=>{picks[d.key]=0;chances[d.key]=0;raw[d.key]=0;});
+  quiz.questions.forEach((q,qi)=>{
+    const seen=new Set();
+    q.opts.forEach(o=>{ if(!seen.has(o[1])){seen.add(o[1]);chances[o[1]]++;} }); // 该维度在本卷出现过的题数
+    const sel=q.opts[quiz.answers[qi]];
+    picks[sel[1]]++;
+    raw[sel[1]]+=8+randInt(5); // 每选中一次 +8~+12：折算成 ±2 的手感微调
+  });
+  const scores={};
+  DIMS.forEach(d=>{
+    const k=d.key;
+    if(picks[k]===0){ scores[k]=0; return; }            // 一次没选：干瘪 0
+    const ratio=(picks[k]+0.3)/(chances[k]+0.6);        // 命中率 + 小样本平滑
+    const w=raw[k]/picks[k]-10;                          // 随机权重偏差（-2 ~ +2）
+    scores[k]=Math.max(0,Math.min(100,Math.round(ratio*100+w)));
+  });
+  /* 总分：主攻维度定基调，全面程度做微调 → 150–499 */
+  const arr=DIMS.map(d=>scores[d.key]).sort((a,b)=>b-a);
+  const top=arr[0]/100, second=arr[1]/100;
+  const mean=arr.reduce((a,b)=>a+b,0)/(DIMS.length*100);
+  const total=Math.max(150,Math.min(499,Math.round(150+(0.55*top+0.35*second+0.10*mean)*349)));
+  return {scores,total};
+}
+
+/* 称号：按最高 2 个维度从对应词库随机组合，保证复测新鲜感 */
+function makeTitle(scores){
+  const sorted=[...DIMS].map(d=>({d,s:scores[d.key]}))
+    .sort((a,b)=>b.s-a.s||(randInt(2)?1:-1));
+  const d1=sorted[0].d,d2=sorted[1].d;
+  const mod=pick(d1.mod);
+  const tag=pick(randInt(10)<3?d2.tag:d1.tag);
+  const id =pick(randInt(10)<4?d2.id :d1.id);
+  return {title:`【${mod}${tag}${id}】`,top:[d1.key,d2.key]};
+}
+
+/* 评语：按总分段开头 + 最高/最低维度句 + 温暖结尾，[[...]] 为高亮短语 */
+function pickDimSentence(dim,score){
+  const cm=DIM_MAP[dim].cm;
+  return pick(score>=70?cm.hi:score>=30?cm.mid:cm.lo);
+}
+const plainLen=s=>s.replace(/\[\[|\]\]/g,'').length;
+function buildComment(total,scores){
+  const sorted=[...DIMS].map(d=>({k:d.key,s:scores[d.key]})).sort((a,b)=>b.s-a.s||(randInt(2)?1:-1));
+  const band= total<300?0 : total<380?1 : total<450?2 : 3;
+  const open=pick(T_OPEN[band]).replace('{T}',total);
+  const sents=[open,
+    pickDimSentence(sorted[0].k,sorted[0].s),
+    pickDimSentence(sorted[1].k,sorted[1].s),
+    pickDimSentence(sorted[6].k,sorted[6].s),
+    pickDimSentence(sorted[5].k,sorted[5].s),
+    pick(T_CLOSE)];
+  let len=plainLen(sents.join(''));
+  if(len>250){ sents.splice(4,1); len=plainLen(sents.join('')); }        // 超长：去掉第二低分句
+  if(len<150){ sents.splice(3,0,pickDimSentence(sorted[2].k,sorted[2].s)); } // 过短：补第三高分句
+  return sents;
+}
+/* [[高亮]] → tokens */
+function parseTpl(s){
+  return s.split(/\[\[(.+?)\]\]/).map((t,i)=>({t,hl:i%2===1})).filter(x=>x.t!=='');
+}
+const FINAL_TOKENS=parseTpl(FINAL_NOTE_TPL); // 「写在最后」便签的高亮分词（页面与海报共用）
+
+/* =====================================================================
+ * 页面切换与流程状态（全部内存态：刷新必然回到门禁/首页）
+ * ===================================================================== */
+const pages=['home','quiz','result'];
+function showPage(name){
+  pages.forEach(p=>$('#page-'+p).classList.toggle('active',p===name));
+  window.scrollTo(0,0);
+}
+let quiz={questions:[],answers:[],idx:0};
+let autoTimer=null;
+let result=null; // {scores,total,title,comment,tokens,order}
+
+function killResultFx(){
+  if(window.ScrollTrigger) ScrollTrigger.getAll().forEach(t=>t.kill());
+  balloonTweens.forEach(t=>t.kill()); balloonTweens=[];
+  const b=$('.balloon-layer'); if(b) b.remove();
+}
+let balloonTweens=[];
+
+/* ---------- 首页 ---------- */
+function playHomeIntro(){
+  if(!ANIM) return;
+  gsap.from('.home-title',{y:30,opacity:0,duration:.6,ease:'power2.out'});
+  const wave=$('#title-wave'), L=wave.getTotalLength?wave.getTotalLength():400;
+  gsap.fromTo(wave,{strokeDasharray:L,strokeDashoffset:L},{strokeDashoffset:0,duration:1,delay:.3,ease:'power2.inOut'});
+  gsap.from('.home-sub,.home-lead',{y:16,opacity:0,duration:.5,delay:.45,stagger:.12});
+  gsap.from('.home-btns .btn',{y:16,opacity:0,duration:.45,delay:.65,stagger:.1});
+  startFloaties();
+}
+function startFloaties(){
+  if(lowPerf||REDUCED) return;
+  $$('#float-layer span').forEach((s,i)=>{
+    floatTweens.push(gsap.to(s,{y:gsap.utils.random(-26,-14),rotation:gsap.utils.random(-14,14),
+      duration:2.6+i*.7,yoyo:true,repeat:-1,ease:'sine.inOut',delay:i*.5}));
+  });
+}
+function refreshHomeHistory(){
+  const n=loadHistory().length;
+  $('#home-history').textContent=n>0?`损友已经批过你 ${n} 张成绩单，恩怨未了`:'';
+}
+ $('#btn-start').addEventListener('click',()=>{ killResultFx(); startQuiz(); });
+ $('#btn-how').addEventListener('click',()=>{
+  toast('怎么打分：随机抽 12 道情境题（尽量不重复），你的每个选择都会给对应维度记一笔——某个风格你选得越频繁、越一致，该维度得分就越高（次次都选可冲爆表），从不选择则为 0。七个维度得分合成 150–499 的做人总分，并颁发专属做人型号与损友批注。',6000);
+});
+
+/* ---------- 答题 ---------- */
+function startQuiz(){
+  quiz.questions=drawQuestions();
+  quiz.answers=new Array(12).fill(-1);
+  quiz.idx=0;
+  clearTimeout(autoTimer);
+  showPage('quiz');
+  renderQuestion(true);
+}
+function currentSectionTag(q){
+  return (SECTION_TAGS[q.topic]||SECTION_TAGS.daily)[q.ai%2];
+}
+function renderQuestion(first){
+  const qi=quiz.idx,q=quiz.questions[qi];
+  $('#q-section').textContent=currentSectionTag(q);
+  $('#q-count').textContent=`${qi+1} / 12`;
+  $('#q-bar').style.width=((qi)/12*100)+'%';
+  $('#q-text').textContent=q.text;
+  $('#btn-back-home').classList.toggle('hidden',qi!==0); // 第一题可返回首页
+  const wrap=$('#q-opts'); wrap.innerHTML='';
+  const letters=['A','B','C','D'];
+  q.opts.forEach((o,oi)=>{
+    const b=document.createElement('button');
+    b.className='opt'+(quiz.answers[qi]===oi?' sel':'');
+    b.type='button';
+    b.innerHTML=`<span class="abc">${letters[oi]}</span><span class="opt-main">${o[0]}</span>`;
+    b.addEventListener('click',()=>chooseOption(qi,oi));
+    wrap.appendChild(b);
+  });
+  if(ANIM){
+    gsap.fromTo('#q-card',{opacity:0,x:26},{opacity:1,x:0,duration:.34,ease:'power2.out'});
+    gsap.from('#q-opts .opt',{y:14,opacity:0,duration:.32,delay:.08,stagger:.06,ease:'power2.out'});
+  }
+}
+function chooseOption(qi,oi){
+  clearTimeout(autoTimer);               // 重选会重置自动跳转计时
+  quiz.answers[qi]=oi;
+  $$('#q-opts .opt').forEach((el,i)=>el.classList.toggle('sel',i===oi));
+  if(qi===11){
+    autoTimer=setTimeout(buildResult,800); // 最后一题答完：稍作停顿后自动公布成绩
+  }else{
+    autoTimer=setTimeout(()=>{ quiz.idx++; renderQuestion(); },400); // 约 400ms 自动进入下一题
+  }
+}
+ $('#btn-back-home').addEventListener('click',()=>{
+  clearTimeout(autoTimer); killResultFx();
+  quiz={questions:[],answers:[],idx:0};
+  showPage('home'); refreshHomeHistory();
+});
+
+/* =====================================================================
+ * 结果页：动画叙事（序幕 → 手写总分+盖章 → 型号 → 维度得分 → 批注 → 尾声）
+ * ===================================================================== */
+function buildResult(){
+  const {scores,total}=computeScores();
+  const {title}=makeTitle(scores);
+  const comment=buildComment(total,scores);
+  const tokens=comment.map(s=>parseTpl(s));
+  pushHistory({t:total,title,at:Date.now()}); // 存档仅供首页统计
+  result={scores,total,title,comment,tokens};
+  renderResultDOM();
+  runGradingOverlay(()=>{ showPage('result'); playScoreScene(); setupScrollScenes(); });
+}
+function renderResultDOM(){
+  const {scores,total,title}=result;
+  /* 幕一：总分 + 印章 */
+  $('#rs-score').innerHTML=`
+    <div class="r-kicker">— 做人总分 —</div>
+    <div class="score-stage">
+      <svg class="score-svg" viewBox="0 0 460 300" aria-label="总分 ${total} 分">
+        <text class="s-stroke" x="230" y="232" text-anchor="middle">${total}</text>
+        <text class="s-fill" x="230" y="232" text-anchor="middle">${total}</text>
+      </svg>
+      <span class="pen-tip" aria-hidden="true">✒️</span>
+      <div class="stamp"><span class="st1">做人成绩单</span><span class="st2">HUMAN SCORE · 已阅</span></div>
+    </div>
+    <p class="r-hint">往下翻，看损友批注 ↓</p>`;
+  /* 幕二：型号 */
+  $('#rs-model').innerHTML=`
+    <p class="r-lead">经过反复比对与激烈讨论，你的做人型号是——</p>
+    <div class="model" id="model-text">${title}</div>`;
+  /* 幕三：各维度得分（按分数从高到低排序） */
+  const order=[...DIMS].sort((a,b)=>scores[b.key]-scores[a.key]||DIMS.indexOf(a)-DIMS.indexOf(b));
+  result.order=order.map(d=>d.key); // 海报同步使用该排序
+  $('#rs-dims').innerHTML=`
+    <h3 class="r-title"><span class="pen-wiggle">📊</span> 各维度得分</h3>
+    <p class="r-sub">已按得分从高到低排好 · 点每一项，看损友的具体解释</p>
+    <div class="dim-list">${order.map(d=>{
+      const s=scores[d.key];
+      const cls=s>=90?'hot':(s===0?'none':'');
+      return `<div class="dim-row" data-dim="${d.key}" role="button" tabindex="0" aria-label="${d.name} ${s} 分，查看解释">
+        <div class="dim-head">
+          <span class="d-emoji">${d.emoji}</span><span class="d-name">${d.name}</span>
+          ${s>=90?'<span class="d-burst">爆表!</span>':''}
+          <span class="d-score ${s===0?'zero':''}">${s===0?'干瘪 0':s}</span>
+          ${s===0?'<span class="d-zero">🥀</span>':''}
+        </div>
+        <div class="d-bar"><i class="d-fill ${cls}" style="width:${s}%"></i></div>
+      </div>`;
+    }).join('')}</div>`;
+  $$('#rs-dims .dim-row').forEach(row=>{
+    row.addEventListener('click',()=>openDrawer(row.dataset.dim));
+    row.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();openDrawer(row.dataset.dim);} });
+  });
+  /* 幕四：损友批注 + 写在最后 */
+  $('#rs-comment').innerHTML=`
+    <h3 class="r-title"><span class="pen-wiggle">🖊️</span> 损友批注</h3>
+    <svg class="r-squiggle" viewBox="0 0 240 12" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M4 8 Q 34 2 64 8 T 124 8 T 184 8 T 236 8"/>
+    </svg>
+    <p class="r-sub">以下内容嘴毒心软，请配合红笔滤镜阅读</p>
+    <div class="c-lines">${result.comment.map((s,i)=>
+      `<p class="c-line"><i class="c-idx">${i+1}.</i>${
+        result.tokens[i].map(tk=>tk.hl?`<span class="hl">${tk.t}</span>`:tk.t).join('')
+      }</p>`).join('')}</div>
+    <p class="c-sign">—— 一位嘴毒心软的损友</p>
+    <div id="final-note">
+      <span class="fn-tape"></span>
+      <p class="fn-label">✉️ 写在最后</p>
+      <p class="fn-text">${FINAL_TOKENS.map(t=>t.hl?`<span class="hl">${t.t}</span>`:t.t).join('')}</p>
+      <svg class="fn-line" viewBox="0 0 240 12" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M4 8 Q 34 2 64 8 T 124 8 T 184 8 T 236 8"/>
+      </svg>
+      <span class="fn-mark" aria-hidden="true">🌱</span>
+    </div>`;
+  /* 幕五：尾声 */
+  $('#rs-end').innerHTML=`
+    <div class="end-btns">
+      <button class="btn btn-primary" id="btn-save">保存成绩单 📮</button>
+      <button class="btn btn-ghost" id="btn-again">再考一次 🔁</button>
+    </div>
+    <p class="end-note">做人之路道阻且长，且行且珍惜 🎈</p>`;
+  $('#btn-save').addEventListener('click',savePoster);
+  $('#btn-again').addEventListener('click',()=>{ killResultFx(); startQuiz(); });
+}
+
+/* ---------- 阅卷序幕 ---------- */
+function runGradingOverlay(done){
+  const ov=$('#grading');
+  ov.classList.add('show');
+  const finish=()=>{ ov.classList.remove('show'); done(); };
+  if(!ANIM){ setTimeout(finish,300); return; }
+  const marks=$('#grading-marks'); marks.innerHTML='';
+  '✓ ✓ ✗ ✓ ？'.split(' ').forEach(m=>{
+    const s=document.createElement('span'); s.textContent=m;
+    s.style.left=(15+randInt(70))+'%'; s.style.top=(20+randInt(55))+'%';
+    s.style.color=m==='✓'?'#F26D6D':'#b9b2a5';
+    marks.appendChild(s);
+  });
+  const tl=gsap.timeline({onComplete:finish});
+  tl.from(ov,{opacity:0,duration:.25})
+    .fromTo('#grading-pen',{x:-90,rotation:-24},{x:90,rotation:14,duration:.5,ease:'power1.inOut',yoyo:true,repeat:1},'<')
+    .from('#grading-marks span',{scale:0,opacity:0,duration:.3,stagger:.14,ease:'back.out(2)'},'<.2')
+    .to(ov,{opacity:0,duration:.3,delay:.5});
+}
+
+/* ---------- 幕一：手写描边总分 + 印章 ---------- */
+function playScoreScene(){
+  window.scrollTo(0,0);
+  if(!ANIM) return;
+  const stroke=$('.s-stroke'), fill=$('.s-fill'), tip=$('.pen-tip');
+  const L=4200; // 覆盖三位数字的笔画总长
+  const tl=gsap.timeline();
+  tl.from('.r-kicker',{y:14,opacity:0,duration:.45,ease:'power2.out'})
+    .set(stroke,{attr:{'stroke-dasharray':L,'stroke-dashoffset':L}})
+    .set(fill,{opacity:0}).set(tip,{opacity:1})
+    .to(stroke,{attr:{'stroke-dashoffset':0},duration:1.5,ease:'power2.inOut'})
+    .fromTo(tip,{left:'14%'},{left:'82%',duration:1.5,ease:'power2.inOut'},'<')
+    .to(fill,{opacity:1,duration:.4},'-=0.35')
+    .to(tip,{opacity:0,duration:.2})
+    .from('.stamp',{scale:2.7,opacity:0,rotation:12,duration:.42,ease:'power3.in'},'+=0.15')
+    .fromTo('#rs-score',{x:0},{x:3,duration:.06,repeat:5,yoyo:true,clearProps:'x'},'-=0.05') // 盖章落定微震
+    .from('.r-hint',{opacity:0,y:10,duration:.4},'+=0.1');
+}
+
+/* ---------- 幕二~幕五：ScrollTrigger 滚动叙事（进入视口才创建动画/粒子，懒渲染） ---------- */
+function setupScrollScenes(){
+  if(!ANIM||!window.ScrollTrigger) return;
+  /* 型号逐字弹出回正 */
+  ScrollTrigger.create({trigger:'#rs-model',start:'top 78%',once:true,onEnter:()=>{
+    const el=$('#model-text'), text=el.textContent.trim();
+    el.innerHTML=[...text].map(c=>`<span class="m-ch">${c}</span>`).join('');
+    gsap.from('.m-ch',{scale:2.1,opacity:0,rotation:()=>gsap.utils.random(-24,24),filter:'blur(4px)',
+      duration:.5,stagger:.07,ease:'back.out(2)'});
+  }});
+  /* 维度得分：标题 + 能量条 + 数字滚动 + 爆表炸裂 / 干瘪 0 */
+  ScrollTrigger.create({trigger:'#rs-dims',start:'top 72%',once:true,onEnter:()=>{
+    gsap.from('#rs-dims .r-title',{y:16,opacity:0,duration:.5,ease:'power2.out'});
+    gsap.from('#rs-dims .r-sub',{y:10,opacity:0,duration:.5,delay:.12});
+    playDims();
+  }});
+  /* 批注区标题 + 红笔波浪线描画 */
+  ScrollTrigger.create({trigger:'#rs-comment',start:'top 75%',once:true,onEnter:()=>{
+    gsap.from('#rs-comment .r-title',{y:16,opacity:0,duration:.5,ease:'power2.out'});
+    gsap.from('#rs-comment .r-sub',{y:10,opacity:0,duration:.5,delay:.12});
+    const p=$('#rs-comment .r-squiggle path');
+    if(p){
+      const L=p.getTotalLength();
+      gsap.fromTo(p,{attr:{'stroke-dasharray':L,'stroke-dashoffset':L}},
+        {attr:{'stroke-dashoffset':0},duration:.7,delay:.15,ease:'power2.inOut'});
+    }
+  }});
+  /* 批注逐句：模糊滑入 + 序号弹跳 + 荧光笔划过 */
+  $$('#rs-comment .c-line').forEach(p=>{
+    ScrollTrigger.create({trigger:p,start:'top 86%',once:true,onEnter:()=>{
+      gsap.fromTo(p,{opacity:0,x:-18,filter:'blur(3px)'},
+        {opacity:1,x:0,filter:'blur(0px)',duration:.6,ease:'power2.out'});
+      const idx=p.querySelector('.c-idx');
+      if(idx) gsap.from(idx,{scale:0,rotation:-40,duration:.45,delay:.1,ease:'back.out(2.5)'});
+      p.querySelectorAll('.hl').forEach((h,j)=>
+        gsap.fromTo(h,{backgroundSize:'0% 68%'},{backgroundSize:'100% 68%',duration:.55,delay:.35+j*.22,ease:'power2.out'}));
+    }});
+  });
+  /* 签名滑入 */
+  ScrollTrigger.create({trigger:'#rs-comment .c-sign',start:'top 92%',once:true,
+    onEnter:()=>gsap.from('.c-sign',{opacity:0,x:16,rotation:2,duration:.5,ease:'power2.out'})});
+  /* 「写在最后」便签：胶带 → 便签落定 → 高亮划过 → 🌱 弹出 → 红笔波浪线 */
+  ScrollTrigger.create({trigger:'#final-note',start:'top 82%',once:true,onEnter:()=>{
+    const line=$('#final-note .fn-line path');
+    const L=line?line.getTotalLength():0;
+    const tl=gsap.timeline();
+    tl.from('#final-note .fn-tape',{scaleX:0,duration:.4,ease:'power2.out'})
+      .fromTo('#final-note',{opacity:0,y:26,rotation:-3.5,scale:.96},
+        {opacity:1,y:0,rotation:-1,scale:1,duration:.65,ease:'back.out(1.6)'},'-=0.2')
+      .from('#final-note .fn-label',{opacity:0,y:8,duration:.4},'-=0.25')
+      .fromTo('#final-note .hl',{backgroundSize:'0% 68%'},
+        {backgroundSize:'100% 68%',duration:.6,stagger:.28,ease:'power2.out'},'-=0.1')
+      .from('#final-note .fn-mark',{scale:0,rotation:60,duration:.5,ease:'back.out(3)'},'-=0.3');
+    if(line) tl.fromTo(line,{attr:{'stroke-dasharray':L,'stroke-dashoffset':L}},
+      {attr:{'stroke-dashoffset':0},duration:.7,ease:'power2.inOut'},'-=0.4');
+  }});
+  /* 尾声：按钮弹入 + 🎈 过场 */
+  ScrollTrigger.create({trigger:'#rs-end',start:'top 80%',once:true,onEnter:()=>{
+    gsap.from('.end-btns .btn',{scale:.7,opacity:0,duration:.4,stagger:.12,ease:'back.out(2)'});
+    gsap.from('.end-note',{opacity:0,y:12,duration:.6,delay:.3});
+    startBalloons();
+  }});
+  ScrollTrigger.refresh();
+}
+function playDims(){
+  const rows=$$('#rs-dims .dim-row'); // 已按得分降序：最高分最先充能
+  let maxRow=null;
+  rows.forEach((row,i)=>{
+    const score=result.scores[row.dataset.dim];
+    const fill=row.querySelector('.d-fill');
+    gsap.fromTo(fill,{scaleX:0},{scaleX:1,duration:.9,delay:i*.12,ease:'power3.out'}); // 能量条充能
+    const num=row.querySelector('.d-score'), target={v:0};
+    const shown = score===0 ? '干瘪 0' : String(score);
+    gsap.to(target,{v:score,duration:.9,delay:i*.12,ease:'power3.out', // 数字滚动计数
+      onUpdate:()=>{ if(score>0) num.textContent=Math.round(target.v); }});
+    if(!ANIM) num.textContent=shown;
+    if(score===0){
+      gsap.from(row.querySelector('.d-zero'),{scale:0,rotation:-30,duration:.5,delay:i*.12+.5,ease:'back.out(2.4)'});
+    }
+    if(score>=90 && (!maxRow||result.scores[row.dataset.dim]>result.scores[maxRow.dataset.dim])) maxRow=row;
+  });
+  if(maxRow){ // 最高分项冲顶“爆表”发光炸裂 🎉
+    const d=.12*rows.length+.9;
+    gsap.fromTo(maxRow.querySelector('.d-burst'),{scale:0},{scale:1,duration:.45,delay:d,ease:'back.out(3)'});
+    burstParticles(maxRow,d+.1);
+    const party=document.createElement('span');
+    party.textContent='🎉'; party.style.cssText='margin-left:6px;font-size:18px';
+    maxRow.querySelector('.d-name').appendChild(party);
+    gsap.from(party,{scale:0,rotation:40,duration:.5,delay:d+.05,ease:'back.out(3)'});
+  }
+}
+function burstParticles(anchor,delay){ // 一次性粒子（触发时才创建，动画完自毁）
+  if(lowPerf) return;
+  const r=anchor.getBoundingClientRect();
+  const colors=['#F26D6D','#FBE7A1','#8FD6C0'];
+  const host=document.createElement('div');
+  host.style.cssText=`position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:60`;
+  document.body.appendChild(host);
+  for(let i=0;i<14;i++){
+    const p=document.createElement('i');
+    const sz=5+randInt(5);
+    p.style.cssText=`position:absolute;left:${r.left+r.width*.35}px;top:${r.top+r.height/2}px;
+      width:${sz}px;height:${sz}px;border-radius:50%;background:${pick(colors)}`;
+    host.appendChild(p);
+    gsap.to(p,{x:gsap.utils.random(-130,130),y:gsap.utils.random(-120,60),
+      opacity:0,duration:.8+Math.random()*.5,delay:delay,ease:'power2.out'});
+  }
+  gsap.delayedCall(delay+1.5,()=>host.remove());
+}
+function startBalloons(){
+  if(lowPerf) return;
+  const layer=document.createElement('div'); layer.className='balloon-layer';
+  document.body.appendChild(layer);
+  for(let i=0;i<4;i++){
+    const b=document.createElement('span');
+    b.textContent=pick(['🎈','🎈','🎊']);
+    b.style.left=(8+randInt(84))+'%';
+    layer.appendChild(b);
+    balloonTweens.push(gsap.fromTo(b,{y:0,opacity:.9},
+      {y:-(window.innerHeight+160),rotation:gsap.utils.random(-16,16),
+       duration:7+randInt(5),repeat:-1,delay:randInt(4),ease:'none',
+       onRepeat:()=>{b.style.left=(8+randInt(84))+'%';}}));
+  }
+}
+
+/* =====================================================================
+ * 成绩单海报：Canvas 1080px 宽长图（dpr 绘制 / 移动端高度 ≤4000）
+ * ===================================================================== */
+function rr(ctx,x,y,w,h,r){ // 圆角矩形（roundRect 降级 quadraticCurveTo）
+  r=Math.min(r,w/2,h/2);
+  if(ctx.roundRect){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); return; }
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+const measureCanvas=document.createElement('canvas').getContext('2d');
+function commentLines(tokens,maxW,size){ // 评语逐字折行估算（高亮用粗体测量）
+  const f=`${size}px "PingFang SC","Microsoft YaHei",sans-serif`;
+  const fb=`bold ${size}px "PingFang SC","Microsoft YaHei",sans-serif`;
+  let lines=1,x=0;
+  tokens.forEach(tok=>{
+    measureCanvas.font=tok.hl?fb:f;
+    for(const ch of tok.t){
+      if(ch==='\n'){lines++;x=0;continue;}
+      const w=measureCanvas.measureText(ch).width;
+      if(x+w>maxW){lines++;x=0;}
+      x+=w;
+    }
+  });
+  return lines;
+}
+function makePosterCanvas(){
+  const dpr=Math.min(3,window.devicePixelRatio||1);
+  const W=1080,PAD=92,CW=W-PAD*2;
+  const hand=`"Kaiti SC","STKaiti","KaiTi","楷体","PingFang SC",serif`;
+  const flat=result.comment.map(s=>s+'\n').join(''); // 句末强制换行
+  const tokens=parseTpl(flat);
+  /* 「写在最后」便签参数（先算行数，才能算总高） */
+  const nTokens=FINAL_TOKENS;
+  const nSize=27,nLH=46,nX=PAD+24,nW=CW-48,nPadX=42;
+  const nLines=commentLines(nTokens,nW-nPadX*2,nSize);
+  const boxH=130+nLines*nLH;
+  let cSize=30,cLH=54,lines=commentLines(tokens,CW,cSize);
+  const est=()=>PAD+120+50+40+56+270+34+86+56+66+DIMS.length*84+52+60
+            +lines*cLH+64+66+boxH+112+PAD+40;
+  if(est()>3900){ cSize=24;cLH=44;lines=commentLines(tokens,CW,cSize); } // 移动端高度保护
+  const H=Math.min(4000,Math.round(est()));
+  const cv=document.createElement('canvas');
+  cv.width=W*dpr; cv.height=H*dpr;
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  /* 逐字绘制带高亮的文本（返回最后一条基线 y） */
+  function drawTokens(toks,x0,y0,maxW,size,lh){
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    let x=x0,y=y0;
+    toks.forEach(tok=>{
+      ctx.font=(tok.hl?'bold ':'')+size+'px "PingFang SC","Microsoft YaHei",sans-serif';
+      for(const ch of tok.t){
+        if(ch==='\n'){x=x0;y+=lh;continue;}
+        const w=ctx.measureText(ch).width;
+        if(x+w>x0+maxW){x=x0;y+=lh;}
+        ctx.fillStyle=tok.hl?'#F26D6D':'#2B2B2B'; // 高亮短语红色渲染
+        ctx.fillText(ch,x,y);
+        x+=w;
+      }
+    });
+    return y;
+  }
+  /* 纸底 + 点阵纹理 */
+  ctx.fillStyle='#FBF8F2'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(43,43,43,.028)';
+  for(let y=30;y<H;y+=26) for(let x=(y/26%2)*13;x<W;x+=26){ ctx.fillRect(x,y,1.4,1.4); }
+  /* 顶部胶带 */
+  ctx.save(); ctx.translate(W/2,44); ctx.rotate(-0.04);
+  ctx.fillStyle='rgba(251,231,161,.9)'; rr(ctx,-90,-16,180,32,4); ctx.fill(); ctx.restore();
+  /* 标题区 */
+  let y=PAD+40;
+  ctx.fillStyle='#F26D6D'; ctx.textAlign='center';
+  ctx.font=`700 86px ${hand}`; ctx.fillText('做人成绩单',W/2,y);
+  y+=48;
+  ctx.fillStyle='#7a756c'; ctx.font='26px sans-serif';
+  ctx.fillText('HUMAN SCORE · 趣味做人鉴定报告',W/2,y);
+  y+=42; ctx.strokeStyle='#e7e0d2'; ctx.setLineDash([10,8]); ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.setLineDash([]);
+  /* 总分 */
+  y+=62; ctx.fillStyle='#F26D6D'; ctx.font=`600 34px ${hand}`; ctx.fillText('— 做 人 总 分 —',W/2,y);
+  y+=206; ctx.font=`700 218px ${hand}`; ctx.fillText(String(result.total),W/2,y);
+  /* 印章 */
+  ctx.save(); ctx.translate(W/2+300,y-190); ctx.rotate(-0.22);
+  ctx.strokeStyle='rgba(242,109,109,.9)'; ctx.lineWidth=6;
+  ctx.beginPath(); ctx.arc(0,0,86,0,Math.PI*2); ctx.stroke();
+  ctx.lineWidth=2; ctx.setLineDash([6,5]);
+  ctx.beginPath(); ctx.arc(0,0,72,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(242,109,109,.92)'; ctx.textAlign='center';
+  ctx.font=`700 34px ${hand}`; ctx.fillText('做人成绩单',0,-4);
+  ctx.font='14px sans-serif'; ctx.fillText('HUMAN SCORE · 已阅',0,26);
+  ctx.restore();
+  /* 型号 */
+  y+=70; ctx.fillStyle='#2B2B2B'; ctx.font=`700 46px ${hand}`;
+  ctx.fillText(result.title,W/2,y);
+  y+=52; ctx.strokeStyle='#e7e0d2'; ctx.setLineDash([10,8]);
+  ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.setLineDash([]);
+  /* 各维度得分（与页面一致：按分数降序） */
+  y+=64; ctx.textAlign='left';
+  ctx.fillStyle='#2B2B2B'; ctx.font=`700 40px ${hand}`; ctx.fillText('📊 各维度得分',PAD,y);
+  y+=26;
+  result.order.forEach(k=>{
+    const d=DIM_MAP[k], s=result.scores[k];
+    y+=84;
+    ctx.font='36px sans-serif'; ctx.fillText(d.emoji,PAD,y-8);
+    ctx.fillStyle='#2B2B2B'; ctx.font='600 30px sans-serif'; ctx.fillText(d.name,PAD+50,y-10);
+    ctx.fillStyle='#EFE8DA'; rr(ctx,330,y-32,470,24,12); ctx.fill();          // 底槽
+    if(s>0){ ctx.fillStyle=s>=90?'#F26D6D':'#8FD6C0';                          // 充能条
+      rr(ctx,330,y-32,470*s/100,24,12); ctx.fill(); }
+    ctx.fillStyle=s>=90?'#F26D6D':(s===0?'#b9b2a5':'#2B2B2B');
+    ctx.textAlign='right'; ctx.font=`700 38px ${hand}`;
+    ctx.fillText(s===0?'干瘪 0':(s>=90?s+' 爆表!':String(s)),W-PAD,y-6);
+    ctx.textAlign='left';
+  });
+  /* 损友批注 */
+  y+=70; ctx.strokeStyle='#e7e0d2'; ctx.setLineDash([10,8]);
+  ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.setLineDash([]);
+  y+=64; ctx.fillStyle='#2B2B2B'; ctx.font=`700 40px ${hand}`; ctx.fillText('🖊️ 损友批注',PAD,y);
+  y+=30;
+  const endY=drawTokens(tokens,PAD,y,CW,cSize,cLH);
+  y=endY+56;
+  ctx.textAlign='right'; ctx.fillStyle='#7a756c'; ctx.font='28px sans-serif';
+  ctx.fillText('—— 一位嘴毒心软的损友',W-PAD,y);
+  /* 写在最后 · 手写便签 */
+  y+=66;
+  ctx.fillStyle='#FFF7DF'; rr(ctx,nX,y,nW,boxH,18); ctx.fill();
+  ctx.strokeStyle='rgba(43,43,43,.07)'; ctx.lineWidth=2; ctx.stroke();
+  ctx.save(); ctx.translate(W/2,y); ctx.rotate(-0.035);                       // 薄荷胶带
+  ctx.fillStyle='rgba(143,214,192,.72)'; rr(ctx,-56,-14,112,28,4); ctx.fill(); ctx.restore();
+  ctx.textAlign='left'; ctx.fillStyle='#3f8a75'; ctx.font=`700 30px ${hand}`;
+  ctx.fillText('✉️ 写在最后',nX+nPadX,y+60);
+  const noteEnd=drawTokens(nTokens,nX+nPadX,y+108,nW-nPadX*2,nSize,nLH);
+  ctx.strokeStyle='rgba(242,109,109,.75)'; ctx.lineWidth=4; ctx.lineCap='round'; // 红笔波浪装饰
+  ctx.beginPath(); ctx.moveTo(W/2-100,noteEnd+28);
+  ctx.quadraticCurveTo(W/2,noteEnd+16,W/2+100,noteEnd+28); ctx.stroke();
+  ctx.font='34px sans-serif'; ctx.fillText('🌱',nX+nW-70,noteEnd+34);
+  /* 页脚 */
+  y=noteEnd+28+78;
+  ctx.textAlign='center'; ctx.fillStyle='#7a756c'; ctx.font='24px sans-serif';
+  const d=new Date();
+  ctx.fillText(`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} · 做人研究所 监制`,W/2,y);
+  ctx.fillText('本测试纯属娱乐，不构成任何评价',W/2,y+38);
+  return cv;
+}
+async function savePoster(){
+  const btn=$('#btn-save'); if(btn) btn.disabled=true;
+  toast('正在生成你的成绩单海报…',1800);
+  try{
+    const cv=makePosterCanvas();
+    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+    const file=new File([blob],'做人成绩单.png',{type:'image/png'});
+    const canShare=navigator.canShare&&navigator.canShare({files:[file]});
+    if(canShare){
+      try{ await navigator.share({files:[file],title:'我的做人成绩单'}); return; }catch(e){ if(e&&e.name==='AbortError') return; }
+    }
+    const url=URL.createObjectURL(blob);
+    if(matchMedia('(pointer:coarse)').matches){ // 移动端兜底：模态内嵌图，长按保存
+      $('#poster-img').src=url;
+      $('#poster-modal').classList.remove('hidden');
+    }else{ // 桌面端直接下载
+      const a=document.createElement('a');
+      a.href=url; a.download='做人成绩单.png'; a.click();
+    }
+  }catch(e){ toast('海报生成失败了，再试一次？'); }
+  finally{ if(btn) btn.disabled=false; }
+}
+ $$('#poster-modal [data-close-poster]').forEach(el=>
+  el.addEventListener('click',()=>$('#poster-modal').classList.add('hidden')));
+
+/* =====================================================================
+ * 抽屉（维度解释，移动端友好） / toast
+ * ===================================================================== */
+function openDrawer(key){
+  const d=DIM_MAP[key], s=result?result.scores[key]:0;
+  $('#dw-emoji').textContent=d.emoji;
+  $('#dw-name').textContent=d.name;
+  $('#dw-score').textContent=s+' 分';
+  $('#dw-desc').textContent=d.desc;
+  $('#drawer').classList.add('open');
+  $('#drawer-mask').classList.add('show');
+}
+function closeDrawer(){ $('#drawer').classList.remove('open'); $('#drawer-mask').classList.remove('show'); }
+ $('#dw-close').addEventListener('click',closeDrawer);
+ $('#drawer-mask').addEventListener('click',closeDrawer);
+let toastTimer=null;
+function toast(msg,dur=2800){
+  const el=$('#toast'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),dur);
+}
+
+/* =====================================================================
+ * 初始化：刷新永远回到门禁（未解锁）或首页（已解锁）
+ * 不恢复答题进度、不恢复结果页；beforeunload 无任何挽留逻辑
+ * ===================================================================== */
+(function init(){
+  store.remove('hs_progress'); // 兜底清理可能存在的旧进度字段
+  watchFPS();
+  const unlocked=store.get('hs_unlocked')==='1';
+  if(unlocked){
+    gateEl.classList.add('off');
+    document.body.classList.remove('locked');
+    showPage('home'); refreshHomeHistory(); playHomeIntro();
+  }else{
+    showPage('home'); // 保持结构就绪但 body.locked 使主体不可见不可滚动
+    setTimeout(()=>gateCells[0].focus(),200);
+    /* 支持 ?code=XXXX 自动填充并解锁 */
+    const m=location.search.match(/[?&]code=(\d{4})/);
+    if(m){ fillGate(m[1]); setTimeout(tryUnlock,350); }
+  }
+})();
+
+/* =====================================================================
+ * 文件末尾校验：题库 480 题且唯一 / 场景选项组独立 / 7 维全覆盖
+ * 称号与评语词库达标 / 门禁码为 4 位纯数字
+ * ===================================================================== */
+(function runChecks(){
+  const SC_TOTAL=SC_LOVE.length+SC_DAILY.length;
+  console.assert(SC_TOTAL===120,`[题库] 场景池应为 120，实际 ${SC_TOTAL}`);
+  console.assert(BANK.length===SC_TOTAL*4,`[题库] 应恰好 ${SC_TOTAL*4} 题，实际 ${BANK.length}`);
+  console.assert(new Set(BANK.map(q=>q.text)).size===BANK.length,'[题库] 存在重复题干');
+  const allScenes=[...SC_LOVE,...SC_DAILY];
+  const fp=new Set(allScenes.map(s=>s[1].map(o=>o[0]).join('¦')));
+  console.assert(fp.size===SC_TOTAL,'[题库] 场景选项组存在重复');
+  const dimSet=new Set(); allScenes.forEach(s=>s[1].forEach(o=>dimSet.add(DK[o[1]])));
+  console.assert(DIMS.every(d=>dimSet.has(d.key)),'[题库] 7 维度未全覆盖：'+DIMS.filter(d=>!dimSet.has(d.key)).map(d=>d.name).join('、'));
+  console.assert(DIMS.every(d=>d.mod.length>=4&&d.tag.length>=4&&d.id.length>=4),'[词库] 称号词库不达标（每库需≥4）');
+  console.assert(DIMS.every(d=>d.cm.hi.length>=3&&d.cm.mid.length>=3&&d.cm.lo.length>=3),'[词库] 评语模板不达标（每档需≥3）');
+  console.assert(T_OPEN.every(g=>g.length>=3)&&T_CLOSE.length>=4,'[词库] 开头/结尾模板不达标');
+  console.assert(FINAL_TOKENS.length>=3&&FINAL_NOTE_TPL.indexOf('[[')>0,'[词库] 「写在最后」结语缺失或无高亮短语');
+  console.assert(/^\d{4}$/.test(ACCESS_CODE),`[门禁] 访问码须为 4 位纯数字，当前：${ACCESS_CODE}`);
+})();
+</script>
+</body>
+</html>
