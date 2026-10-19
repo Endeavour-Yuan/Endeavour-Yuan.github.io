@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F0F2">
+<title>测测你能渣到什么程度｜渣渣检测中心</title>
+<!-- GSAP CDN：加载失败不影响功能，仅动画降级 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+:root{
+  --bg:#F7F0F2; --ink:#2B2B2B; --paper:#FFFDF9;
+  --coral:#F26D6D; --coral-deep:#E14D4D;
+  --mint:#8FD6C0; --butter:#FBE7A1;
+}
+*{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ overflow-x:hidden; }
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);
+  background-image:radial-gradient(rgba(43,43,43,.055) 1.2px, transparent 1.3px);
+  background-size:24px 24px;
+  color:var(--ink); line-height:1.6;
+  min-height:100vh; min-height:100dvh;
+}
+body.locked{ overflow:hidden; height:100vh; height:100dvh; }
+body.app-locked #app{ display:none; }
+button{ font-family:inherit; touch-action:manipulation; }
+img{ max-width:100%; }
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.01s !important; transition-duration:.01s !important; }
+}
+
+/* ===== 通用 ===== */
+.page{ display:none; max-width:680px; margin:0 auto; padding:20px 18px 34px; }
+.page.active{ display:block; }
+.btn{
+  border:2.5px solid var(--ink); border-radius:999px; font-weight:800;
+  cursor:pointer; min-height:44px; letter-spacing:1px;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn-main{
+  background:var(--coral); color:#fff; box-shadow:0 5px 0 var(--ink);
+  padding:14px 38px; font-size:20px; font-size:clamp(17px,4.4vw,20px);
+}
+.btn-main:active{ transform:translateY(4px); box-shadow:0 1px 0 var(--ink); }
+.btn-ghost{
+  background:var(--paper); color:var(--ink); box-shadow:0 4px 0 var(--ink);
+  padding:11px 24px; font-size:16px; font-size:clamp(14px,3.8vw,16px);
+}
+.btn-ghost:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--ink); }
+.hidden{ display:none !important; }
+.home-note{ text-align:center; font-size:12px; color:rgba(43,43,43,.5); margin-top:24px; letter-spacing:.5px; }
+.sec-cap{
+  display:inline-block; background:var(--butter); border:2.5px solid var(--ink);
+  border-radius:999px; padding:7px 20px; font-weight:900;
+  font-size:clamp(15px,4vw,18px); transform:rotate(-1.5deg);
+  box-shadow:3px 3px 0 rgba(43,43,43,.18);
+}
+.tape{
+  position:absolute; width:92px; height:26px; background:rgba(251,231,161,.9);
+  border:1.5px dashed rgba(43,43,43,.22); border-radius:3px; pointer-events:none;
+}
+.boot-error{
+  display:none; margin-top:14px; padding:10px 12px;
+  border:2px dashed var(--coral-deep); border-radius:10px;
+  font-size:12.5px; color:var(--coral-deep); font-weight:700;
+  line-height:1.5; word-break:break-all; text-align:left;
+}
+.boot-error.show{ display:block; }
+
+/* ===== 门禁 ===== */
+#gate{
+  position:fixed; top:0; left:0; right:0; bottom:0; z-index:60;
+  display:grid; place-items:center;
+  background:var(--bg);
+  background-image:radial-gradient(rgba(43,43,43,.055) 1.2px, transparent 1.3px);
+  background-size:24px 24px; padding:20px;
+}
+.gate-card{
+  position:relative; background:var(--paper); border:3px solid var(--ink);
+  border-radius:26px; box-shadow:9px 9px 0 rgba(43,43,43,.85);
+  padding:44px 34px 34px; width:min(430px,90vw); text-align:center;
+}
+.gate-card .tape.t1{ top:-13px; left:26px; transform:rotate(-7deg); }
+.gate-card .tape.t2{ top:-13px; right:26px; transform:rotate(6deg); }
+.gate-lock{ font-size:44px; }
+.gate-title{ font-size:26px; font-weight:900; margin-top:8px; letter-spacing:3px; }
+.gate-sub{ font-size:13px; color:rgba(43,43,43,.55); margin-top:4px; letter-spacing:2px; }
+#gate-input{
+  display:block; width:100%; margin:26px auto 8px;
+  border:0; border-bottom:3px solid var(--ink); background:transparent;
+  font-size:46px; font-size:clamp(38px,10vw,46px); font-weight:900; text-align:center;
+  letter-spacing:.45em; text-indent:.45em; outline:none; color:var(--ink);
+  caret-color:var(--coral); border-radius:4px;
+}
+#gate-input::placeholder{ color:rgba(43,43,43,.22); }
+#gate-input.shake{ animation:gshake .5s ease; }
+@keyframes gshake{
+  10%,90%{ transform:translateX(-2px);} 20%,80%{ transform:translateX(4px);}
+  30%,50%,70%{ transform:translateX(-8px);} 40%,60%{ transform:translateX(8px);}
+}
+.gate-err{
+  font-size:14px; font-weight:700; color:var(--coral-deep);
+  opacity:0; transform:translateY(-4px); transition:opacity .4s ease, transform .4s ease;
+  min-height:22px;
+}
+.gate-err.show{ opacity:1; transform:translateY(0); }
+#gate-btn{ margin-top:16px; width:100%; }
+.gate-hint{ margin-top:18px; font-size:12px; color:rgba(43,43,43,.45); }
+
+/* ===== 首页 ===== */
+#page-home{ position:relative; overflow:hidden; min-height:92vh; min-height:92dvh; }
+.float-emojis{ position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:0; }
+.float-emojis span{ position:absolute; font-size:30px; opacity:.4; user-select:none; }
+.float-emojis span:nth-child(1){ top:10%; left:8%; }
+.float-emojis span:nth-child(2){ top:24%; right:10%; }
+.float-emojis span:nth-child(3){ top:46%; left:4%; }
+.float-emojis span:nth-child(4){ top:58%; right:6%; }
+.float-emojis span:nth-child(5){ top:74%; left:12%; }
+.float-emojis span:nth-child(6){ top:36%; right:28%; }
+.home-inner{ position:relative; z-index:1; text-align:center; padding-top:5vh; }
+.badge-cap{
+  display:inline-block; background:var(--paper); border:2px solid var(--ink);
+  border-radius:999px; padding:6px 18px; font-size:12px; font-weight:700;
+  letter-spacing:2.5px; box-shadow:3px 3px 0 rgba(43,43,43,.15); transform:rotate(-1.2deg);
+}
+.home-title{
+  font-size:56px; font-size:clamp(38px,10vw,60px); font-weight:900; line-height:1.25;
+  margin-top:18px; letter-spacing:2px;
+}
+.home-title .zh{
+  font-style:normal; color:var(--coral); display:inline-block;
+  transform:rotate(-6deg) translateY(2px); font-size:1.16em;
+  text-shadow:3px 3px 0 rgba(43,43,43,.18);
+}
+.squiggle{ display:block; width:min(300px,70vw); margin:6px auto 0; }
+.home-sub{ max-width:420px; margin:16px auto 0; font-size:clamp(14.5px,3.9vw,16px); color:rgba(43,43,43,.75); }
+.home-cta{ margin-top:24px; display:flex; flex-direction:column; align-items:center; gap:12px; }
+
+/* ===== 答题页 ===== */
+.q-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:4px 2px 10px; }
+.q-chip{
+  background:var(--butter); border:2.5px solid var(--ink); border-radius:999px;
+  padding:7px 16px; font-weight:800; font-size:clamp(13px,3.5vw,15px);
+  box-shadow:2.5px 2.5px 0 rgba(43,43,43,.16);
+}
+.q-count{ font-weight:900; font-size:clamp(15px,4vw,18px); }
+.q-count b{ color:var(--coral); font-size:1.35em; }
+.q-count i{ font-style:normal; color:rgba(43,43,43,.5); font-size:.85em; }
+.q-progress{ height:14px; border:2.5px solid var(--ink); border-radius:999px; background:var(--paper); overflow:hidden; }
+.q-progress-fill{
+  height:100%; width:0; border-radius:999px;
+  background:linear-gradient(90deg,#F26D6D,#FBE7A1,#8FD6C0,#F26D6D);
+  background-size:300% 100%; animation:qflow 2.6s linear infinite;
+  transition:width .35s ease;
+}
+@keyframes qflow{ to{ background-position:300% 0; } }
+.q-back{
+  margin-top:10px; background:transparent; border:none; font-size:14px;
+  font-weight:700; color:rgba(43,43,43,.55); min-height:44px; cursor:pointer; padding:0;
+}
+.q-back.ghost{ visibility:hidden; pointer-events:none; }
+.q-card{
+  position:relative; background:var(--paper); border:3px solid var(--ink);
+  border-radius:22px; box-shadow:6px 6px 0 rgba(43,43,43,.16);
+  padding:26px 20px 22px; margin-top:4px;
+}
+.q-card .tape{ top:-14px; left:50%; margin-left:-46px; transform:rotate(-3deg); }
+.q-num{ font-size:13px; font-weight:900; color:var(--coral); letter-spacing:3px; }
+.q-title{
+  font-size:24px; font-size:clamp(19px,5.2vw,24px); font-weight:900;
+  margin:6px 0 16px; line-height:1.5; min-height:2.4em;
+}
+.q-opts{ display:flex; flex-direction:column; gap:10px; }
+.opt{
+  display:flex; align-items:center; gap:12px; text-align:left;
+  background:var(--paper); border:2.5px solid var(--ink); border-radius:16px;
+  padding:11px 13px; min-height:50px; cursor:pointer; width:100%;
+  box-shadow:3px 3px 0 rgba(43,43,43,.13);
+  transition:transform .12s ease, background .15s ease, border-color .15s ease;
+}
+.opt:active{ transform:translateY(2px); }
+.opt.on{ background:var(--butter); border-color:var(--coral); box-shadow:3px 3px 0 rgba(242,109,109,.4); transform:rotate(-.6deg); }
+.opt-mark{
+  flex:0 0 24px; height:24px; border:2.5px solid var(--ink); border-radius:50%;
+  display:grid; place-items:center; font-size:13px; font-weight:900; color:transparent; background:#fff;
+}
+.opt.on .opt-mark{ background:var(--coral); border-color:var(--coral); color:#fff; }
+.opt-text{ flex:1; font-size:clamp(14px,3.8vw,16px); font-weight:600; line-height:1.45; }
+.btn-report{ width:100%; margin-top:16px; }
+
+/* ===== 结果页 ===== */
+#page-result{ max-width:700px; padding:0 16px; }
+.rs{
+  position:relative; min-height:66vh; min-height:66dvh;
+  display:grid; place-items:center; align-content:center;
+  padding:30px 0; gap:14px;
+}
+#rs-lab{ position:relative; overflow:hidden; min-height:0; padding:36px 0 14px; }
+#page-result.lab-phase #rs-lab{ min-height:100vh; min-height:100dvh; }
+#page-result.lab-phase .rs:not(#rs-lab){ display:none; }
+#bubble-canvas{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+.lab-inner{ position:relative; z-index:1; text-align:center; display:grid; gap:12px; justify-items:center; }
+.sample-tag{
+  display:inline-block; background:var(--paper); border:2px solid var(--ink);
+  border-radius:999px; padding:6px 16px; font-size:12px; font-weight:800;
+  letter-spacing:2px; transform:rotate(2deg); box-shadow:2px 2px 0 rgba(43,43,43,.16);
+}
+#flask-wrap svg{ display:block; }
+.lab-line{ font-size:clamp(16px,4.4vw,19px); font-weight:800; letter-spacing:1px; min-height:1.8em; }
+.lab-line.done{ color:#3AA98A; }
+.scroll-hint{
+  font-size:13px; font-weight:700; color:rgba(43,43,43,.45); letter-spacing:2px;
+  animation:hintbob 1.6s ease-in-out infinite;
+  opacity:0; visibility:hidden;
+  transition:opacity .6s ease .2s, visibility 0s linear .2s;
+}
+.scroll-hint.show{ opacity:1; visibility:visible; transition:opacity .6s ease .2s, visibility 0s; }
+@keyframes hintbob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(7px);} }
+.btn-skip{
+  margin-top:0; background:none; border:none; font-size:12px; font-weight:700;
+  color:rgba(43,43,43,.42); text-decoration:underline dotted; cursor:pointer;
+  min-height:44px; padding:0;
+}
+.btn-skip.hide{ display:none; }
+
+.idx-zone{ display:grid; gap:16px; justify-items:center; text-align:center; width:100%; }
+#numWrap{ transform:rotate(-2deg); }
+#numWrap svg{ width:clamp(210px,56vw,360px); height:auto; display:block; }
+.num-label{ font-size:13px; font-weight:900; letter-spacing:4px; color:rgba(43,43,43,.55); margin-top:4px; }
+.gauge-svg{ width:min(280px,70vw); height:auto; display:block; }
+
+.v-zone{ display:grid; gap:14px; justify-items:center; text-align:center; width:100%; }
+.v-title{ font-size:clamp(28px,8vw,42px); font-weight:900; letter-spacing:2px; line-height:1.3; }
+.vchar{ display:inline-block; }
+.v-emoji{ display:inline-block; font-size:.85em; }
+.stamp-wrap{ position:relative; margin-top:2px; }
+.stamp{
+  display:inline-block; padding:10px 22px; border:3px solid var(--coral-deep);
+  color:var(--coral-deep); border-radius:14px; font-weight:900;
+  font-size:clamp(21px,5.6vw,29px); letter-spacing:3px; transform:rotate(-7deg);
+  box-shadow:inset 0 0 0 2.5px rgba(225,77,77,.22);
+}
+.stamp-post{ position:absolute; right:-30px; top:-24px; font-size:26px; }
+.meter{ width:min(430px,100%); }
+.meter-legend{ display:flex; justify-content:space-between; font-size:13px; font-weight:800; margin-bottom:8px; }
+.meter-legend b{ font-size:15px; }
+.lg-bad b{ color:var(--coral-deep); }
+.lg-good b{ color:#3AA98A; }
+.meter-track{ position:relative; height:28px; border:2.5px solid var(--ink); border-radius:999px; background:var(--paper); overflow:hidden; }
+.bar-bad{
+  position:absolute; left:0; top:0; bottom:0;
+  background:repeating-linear-gradient(-45deg,#F26D6D 0 10px,#F58C8C 10px 20px);
+  border-radius:999px 0 0 999px;
+}
+.bar-good{
+  position:absolute; right:0; top:0; bottom:0;
+  background:repeating-linear-gradient(-45deg,#8FD6C0 0 10px,#ABE3D0 10px 20px);
+  border-radius:0 999px 999px 0;
+}
+.v-range{ font-size:12.5px; color:rgba(43,43,43,.5); letter-spacing:1px; }
+
+.list-sub{ font-size:13px; color:rgba(43,43,43,.55); text-align:center; }
+#r-list{ list-style:none; display:grid; gap:10px; width:min(470px,100%); }
+.list-item{
+  display:flex; align-items:center; gap:12px; background:var(--paper);
+  border:2.5px solid var(--ink); border-radius:16px; padding:10px 13px;
+  box-shadow:3px 3px 0 rgba(43,43,43,.13); min-height:48px;
+}
+.li-emoji{ font-size:22px; flex:none; }
+.li-text{ flex:1; font-size:clamp(14px,3.8vw,16px); font-weight:600; line-height:1.5; }
+.li-badge{ flex:none; width:30px; height:30px; border-radius:50%; display:grid; place-items:center; border:2.5px solid var(--ink); font-weight:900; font-size:14px; }
+.li-badge.yes{ background:var(--mint); }
+.li-badge.no{ background:#FFD9D9; color:var(--coral-deep); }
+
+.cmt-paper{
+  position:relative; width:min(560px,100%); background:var(--paper);
+  border:2.5px solid var(--ink); border-radius:16px;
+  box-shadow:6px 6px 0 rgba(43,43,43,.14); padding:22px 18px 16px 24px;
+}
+.cmt-paper::before{
+  content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+  border-radius:inherit; pointer-events:none;
+  background-image:repeating-linear-gradient(transparent 0 40px, rgba(43,43,43,.07) 40px 41.6px);
+}
+.cmt-paper::after{
+  content:''; position:absolute; left:14px; top:12px; bottom:12px; width:0;
+  border-left:2px dashed rgba(242,109,109,.4);
+}
+.cmt-paper .tape{ top:-14px; left:50%; margin-left:-46px; transform:rotate(-3deg); }
+.cmt-line{ position:relative; font-size:clamp(15.5px,4.2vw,17.5px); line-height:1.85; margin-bottom:9px; font-weight:500; }
+.cmt-line:last-child{ margin-bottom:0; }
+mark.hl{
+  background-image:linear-gradient(#FBE7A1,#FBE7A1); background-repeat:no-repeat;
+  background-size:0% 62%; background-position:0 68%; color:inherit;
+  padding:0 2px; border-radius:2px; font-weight:800;
+  transition:background-size .65s cubic-bezier(.22,.9,.35,1) .15s;
+}
+mark.hl.on{ background-size:100% 62%; }
+
+.end-zone{ text-align:center; display:grid; gap:12px; justify-items:center; width:100%; }
+.end-big{ font-size:clamp(26px,7vw,34px); font-weight:900; }
+.end-sub{ font-size:clamp(14.5px,3.9vw,16.5px); color:rgba(43,43,43,.75); }
+.end-cta{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:2px; }
+.end-how{
+  background:none; border:none; font-size:13px; font-weight:700;
+  color:rgba(43,43,43,.5); text-decoration:underline dotted; cursor:pointer; min-height:44px;
+}
+.end-meta{ font-size:12px; color:rgba(43,43,43,.42); letter-spacing:1px; }
+.balloons{ font-size:26px; letter-spacing:16px; padding-left:16px; }
+
+/* ===== toast / 抽屉 / 海报弹层 ===== */
+#toast{
+  position:fixed; top:18px; left:50%; transform:translate(-50%,-30px); z-index:90;
+  opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease;
+  max-width:min(520px,90vw);
+}
+#toast.show{ opacity:1; transform:translate(-50%,0); }
+#toast span{
+  display:block; background:var(--ink); color:#FFFDF9; font-size:14px; font-weight:600;
+  padding:12px 20px; border-radius:14px; box-shadow:4px 4px 0 rgba(43,43,43,.25); line-height:1.55;
+}
+#drawer-mask,#poster-modal{ position:fixed; top:0; left:0; right:0; bottom:0; z-index:80; background:rgba(43,43,43,.42); display:none; }
+#drawer-mask.show,#poster-modal.show{ display:block; }
+#drawer{
+  position:fixed; left:0; right:0; bottom:0; z-index:85; background:var(--paper);
+  border:3px solid var(--ink); border-bottom:none; border-radius:26px 26px 0 0;
+  padding:28px 26px calc(24px + env(safe-area-inset-bottom));
+  transform:translateY(105%); transition:transform .38s cubic-bezier(.22,.9,.34,1);
+  max-width:680px; margin:0 auto; max-height:78vh; max-height:78dvh; overflow-y:auto;
+}
+#drawer.show{ transform:translateY(0); }
+#drawer h3{ font-size:20px; font-weight:900; margin-bottom:12px; }
+#drawer ol{ padding-left:22px; display:grid; gap:9px; font-size:14.5px; color:rgba(43,43,43,.85); }
+#drawer p{ font-size:13.5px; color:rgba(43,43,43,.6); margin:12px 0 16px; }
+.pm-card{
+  position:fixed; top:auto; left:0; right:0; bottom:0; z-index:86; background:var(--paper);
+  border:3px solid var(--ink); border-bottom:none; border-radius:26px 26px 0 0;
+  padding:24px 22px calc(28px + env(safe-area-inset-bottom));
+  max-width:560px; margin:0 auto; max-height:88vh; max-height:88dvh; display:grid; gap:12px;
+  transform:translateY(105%); transition:transform .38s cubic-bezier(.22,.9,.34,1);
+}
+.pm-card.show{ transform:translateY(0); }
+.pm-card h3{ font-size:19px; font-weight:900; text-align:center; }
+.pm-tip{ text-align:center; font-size:13px; font-weight:700; color:var(--coral-deep); }
+.pm-imgwrap{ overflow-y:auto; border:2.5px dashed rgba(43,43,43,.3); border-radius:14px; padding:8px; background:rgba(43,43,43,.04); }
+#pm-img{
+  display:block; width:100%; border-radius:8px;
+  touch-action:pan-y; -webkit-touch-callout:default; user-select:auto; -webkit-user-select:auto;
+}
+.pm-cta{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+@media (min-width:700px){
+  .pm-card{
+    top:0; bottom:0; margin:auto; height:fit-content;
+    border-radius:26px; border-bottom:3px solid var(--ink);
+    transform:translateY(24px); opacity:0; transition:all .3s ease;
+  }
+  .pm-card.show{ transform:translateY(0); opacity:1; }
+}
+</style>
+</head>
+<body class="locked app-locked">
+
+<!-- ============ 门禁弹层 ============ -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="tape t1"></div><div class="tape t2"></div>
+    <div class="gate-lock">🔒</div>
+    <h2 class="gate-title">访问验证</h2>
+    <p class="gate-sub">SCUM INDEX · 渣渣检测中心</p>
+    <input id="gate-input" type="tel" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="• • • •" aria-label="请输入4位访问码">
+    <p class="gate-err" id="gate-err">访问码不对，再想想？</p>
+    <button id="gate-btn" class="btn btn-main">解锁检测 🗝️</button>
+    <p class="gate-hint">输入 4 位访问码，验证通过后直接开始检测</p>
+    <p id="boot-error" class="boot-error"></p>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- ============ 首页 ============ -->
+  <section id="page-home" class="page">
+    <div class="float-emojis" aria-hidden="true">
+      <span>💔</span><span>🎣</span><span>🌊</span><span>✨</span><span>🐟</span><span>🧪</span>
+    </div>
+    <div class="home-inner">
+      <div class="badge-cap">SCUM INDEX · 渣渣检测中心</div>
+      <h1 class="home-title">你能<em class="zh">渣</em>到<br>什么程度？</h1>
+      <svg class="squiggle" viewBox="0 0 260 22" aria-hidden="true">
+        <path d="M4,14 C30,4 50,20 76,12 C102,4 130,20 156,12 C182,4 210,20 236,10 C248,7 254,9 256,11"
+              fill="none" stroke="#F26D6D" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <p class="home-sub">12 道情境题，三分钟，出具一份不太正经、但意外很准的渣渣检测报告。看看你是绝世好薯，还是被误伤的纯爱战士。</p>
+      <div class="home-cta">
+        <button id="btn-start" class="btn btn-main">开始检测 🧪</button>
+        <button id="btn-how" class="btn btn-ghost">怎么检测？</button>
+      </div>
+      <p class="home-note">本测试纯属娱乐，不构成对任何人的真实评价。</p>
+    </div>
+  </section>
+
+  <!-- ============ 答题页 ============ -->
+  <section id="page-quiz" class="page">
+    <header class="q-head">
+      <div class="q-chip" id="q-chip">💘 恋爱底线</div>
+      <div class="q-count"><b id="q-now">1</b><i> / 12</i></div>
+    </header>
+    <div class="q-progress"><div class="q-progress-fill" id="q-fill"></div></div>
+    <button id="btn-back" class="q-back">← 不测了，回首页</button>
+    <div class="q-card" id="q-card">
+      <div class="tape"></div>
+      <div class="q-num" id="q-num">Q01</div>
+      <h2 class="q-title" id="q-title"></h2>
+      <div class="q-opts" id="q-opts"></div>
+      <button id="btn-report" class="btn btn-main btn-report hidden">出具检测报告 ✨</button>
+    </div>
+    <p class="home-note">本测试纯属娱乐，不构成对任何人的真实评价。</p>
+  </section>
+
+  <!-- ============ 结果页 ============ -->
+  <section id="page-result" class="page">
+    <section class="rs" id="rs-lab">
+      <canvas id="bubble-canvas"></canvas>
+      <div class="lab-inner">
+        <div class="sample-tag" id="sample-tag">样本 SCUM-0000</div>
+        <div id="flask-wrap"></div>
+        <p class="lab-line" id="lab-line">正在化验你的渣渣样本…</p>
+        <div class="scroll-hint" id="scroll-hint">往下滚动 · 接收判决 ⌄</div>
+        <button id="btn-skip" class="btn-skip">跳过序幕 ⏭</button>
+      </div>
+    </section>
+    <section class="rs" id="rs-index">
+      <div class="idx-zone">
+        <span class="sec-cap">渣渣指数 · 全场公布 📊</span>
+        <div>
+          <div id="numWrap"></div>
+          <p class="num-label" id="num-label" style="text-align:center">SCUM INDEX</p>
+        </div>
+        <div id="gauge-wrap"></div>
+      </div>
+    </section>
+    <section class="rs" id="rs-verdict">
+      <div class="v-zone">
+        <span class="sec-cap">判定结果 · 还有救吗 📮</span>
+        <div class="v-title" id="v-title"></div>
+        <div class="stamp-wrap" id="stamp-wrap"></div>
+        <div class="meter">
+          <div class="meter-legend">
+            <span class="lg-bad">渣化程度 <b id="m-bad">0%</b></span>
+            <span class="lg-good">救赎进度 <b id="m-good">0%</b></span>
+          </div>
+          <div class="meter-track">
+            <div class="bar-bad" id="bar-bad"></div>
+            <div class="bar-good" id="bar-good"></div>
+          </div>
+        </div>
+        <p class="v-range" id="v-range"></p>
+      </div>
+    </section>
+    <section class="rs" id="rs-list">
+      <span class="sec-cap">渣渣行为清单 📋</span>
+      <p class="list-sub" id="list-sub"></p>
+      <ul id="r-list"></ul>
+    </section>
+    <section class="rs" id="rs-comment">
+      <div style="display:grid;gap:12px;justify-items:center;width:100%">
+        <span class="sec-cap">检测员锐评 🖊️</span>
+        <p class="list-sub">嘴毒，但爱你。高亮的地方，重点背诵。</p>
+        <div class="cmt-paper">
+          <div class="tape"></div>
+          <div id="r-cmt"></div>
+        </div>
+      </div>
+    </section>
+    <section class="rs" id="rs-end">
+      <div class="end-zone">
+        <p class="end-big">报告读完啦。</p>
+        <p class="end-sub">无论渣不渣，都祝你遇到那个值得的人。🫶</p>
+        <div class="end-cta">
+          <button id="btn-save" class="btn btn-main">保存报告 🖼️</button>
+          <button id="btn-again" class="btn btn-ghost">再测一次 🔄</button>
+        </div>
+        <button id="btn-howcalc" class="end-how">这分数是怎么算的？</button>
+        <p class="end-meta" id="end-meta"></p>
+        <div class="balloons" id="balloons" aria-hidden="true">🎈🎈🎈</div>
+        <p class="home-note">本测试纯属娱乐，不构成对任何人的真实评价。</p>
+      </div>
+    </section>
+  </section>
+</div>
+
+<!-- ============ toast / 抽屉 / 海报弹层 ============ -->
+<div id="toast"><span></span></div>
+<div id="drawer-mask"></div>
+<aside id="drawer">
+  <h3>渣渣指数是怎么算的？🧮</h3>
+  <ol>
+    <li>题库共 412 道：12 道手工基准题 + 100 个场景程序化扩展出的 400 道，每次从中抽 12 道。</li>
+    <li>每个选项背后都藏着 0–10 的"渣度权重"——答题时不提示，全靠结果揭晓。</li>
+    <li>渣渣指数 = 权重总和 ÷ 120 × 100，四舍五入取整。</li>
+    <li>指数落入 10 个类型之一，对应不同的"还有救吗"结论。</li>
+  </ol>
+  <p>做完的题目会进"已抽池"，连测多轮尽量遇到新题；刷新页面永远回到入口，历史报告仅作本机存档统计。</p>
+  <button id="btn-drawer-close" class="btn btn-ghost">知道了</button>
+</aside>
+<div id="poster-modal">
+  <div class="pm-card" id="pm-card">
+    <h3>你的渣渣检测报告 📄</h3>
+    <p class="pm-tip" id="pm-tip">长按图片保存到相册</p>
+    <div class="pm-imgwrap"><img id="pm-img" alt="渣渣检测报告长图"></div>
+    <div class="pm-cta">
+      <button id="btn-pm-save" class="btn btn-ghost">下载 PNG</button>
+      <button id="btn-pm-close" class="btn btn-main">收下 ✨</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * 守护层：纯 ES5，独立于主业务脚本。
+ * 捕获全局错误显示到红框 / 主脚本异常时门禁兜底 / 正常时让位
+ * 本层不触碰 sessionStorage / localStorage，沙箱环境安全
+ * ============================================================ */
+(function () {
+  'use strict';
+  function showErr(msg) {
+    try {
+      var d = document.getElementById('boot-error');
+      if (d) { d.textContent = String(msg); d.style.display = 'block'; }
+    } catch (e) {}
+  }
+  window.addEventListener('error', function (e) {
+    showErr('脚本启动出错：' + (e && e.message ? e.message : '未知错误') + '（把这段文字发给开发者即可定位）');
+  });
+  function simpleUnlock() {
+    var inp = document.getElementById('gate-input');
+    var v = ((inp && inp.value) || '').replace(/\D/g, '');
+    if (v !== '2026') {
+      var err = document.getElementById('gate-err');
+      if (inp) { inp.value = ''; inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake'); }
+      if (err) { err.textContent = '访问码不对，再想想？'; err.classList.remove('show'); void err.offsetWidth; err.classList.add('show'); }
+      return;
+    }
+    var gate = document.getElementById('gate');
+    if (gate) gate.style.display = 'none';
+    document.body.className = '';
+    var home = document.getElementById('page-home');
+    if (home) home.className = 'page active';
+  }
+  function gateTap() {
+    if (window.__tryUnlock) { window.__tryUnlock(); return; }
+    simpleUnlock();
+  }
+  function bindGate() {
+    var b = document.getElementById('gate-btn');
+    var inp = document.getElementById('gate-input');
+    if (b) b.addEventListener('click', gateTap);
+    if (inp) inp.addEventListener('keydown', function (e) { if ((e.keyCode || 0) === 13) gateTap(); });
+  }
+  function checkMain() {
+    setTimeout(function () {
+      if (!window.__SCUM_OK) {
+        var d = document.getElementById('boot-error');
+        if (d && d.style.display !== 'block') {
+          showErr('主脚本未成功启动：可能浏览器内核过旧或代码复制不完整。可先点解锁进入基础模式。');
+        }
+      }
+    }, 1500);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { bindGate(); checkMain(); });
+  } else { bindGate(); checkMain(); }
+})();
+</script>
+
+<script>
+'use strict';
+/* ============================================================
+ * 0. 工具 & 存储（sessionStorage → localStorage → 内存 三级降级）
+ *    所有对 storage 属性的触碰都在 try 保护圈内（沙箱安全）
+ * ============================================================ */
+var $ = function (s) { return document.querySelector(s); };
+var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var store = (function () {
+  var backend = null, mem = {}, mode = 'memory';
+  try {
+    sessionStorage.setItem('__t', '1');
+    sessionStorage.removeItem('__t');
+    backend = sessionStorage;
+    mode = 'session';
+  } catch (e) {
+    try {
+      localStorage.setItem('__t', '1');
+      localStorage.removeItem('__t');
+      backend = localStorage;
+      mode = 'local';
+    } catch (e2) { backend = null; mode = 'memory'; }
+  }
+  return {
+    mode: mode,
+    get: function (k) {
+      try {
+        var v = backend ? backend.getItem(k) : (mem[k] === undefined ? null : mem[k]);
+        return v === null ? null : JSON.parse(v);
+      } catch (e3) { return null; }
+    },
+    set: function (k, v) {
+      try {
+        var s = JSON.stringify(v);
+        if (backend) backend.setItem(k, s); else mem[k] = s;
+      } catch (e4) {}
+    },
+  };
+})();
+
+function randInt(max) {
+  if (window.crypto && crypto.getRandomValues) {
+    var buf = new Uint32Array(1), limit = Math.floor(4294967296 / max) * max, x;
+    do { crypto.getRandomValues(buf); x = buf[0]; } while (x >= limit);
+    return x % max;
+  }
+  return Math.floor(Math.random() * max);
+}
+function cryptoShuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = randInt(i + 1), t = arr[i];
+    arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function onTap(el, fn) {
+  if (!el) return;
+  var sx = 0, sy = 0, active = false, lastFire = 0;
+  el.addEventListener('pointerdown', function (e) { sx = e.clientX; sy = e.clientY; active = true; });
+  el.addEventListener('pointerup', function (e) {
+    if (!active) return;
+    active = false;
+    if (Math.hypot(e.clientX - sx, e.clientY - sy) > 14) return;
+    lastFire = Date.now();
+    fn(e);
+  });
+  el.addEventListener('pointercancel', function () { active = false; });
+  el.addEventListener('click', function (e) {
+    if (Date.now() - lastFire < 600) return;
+    lastFire = Date.now();
+    fn(e);
+  });
+}
+function toast(msg, dur) {
+  var el = $('#toast');
+  el.firstElementChild.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function () { el.classList.remove('show'); }, dur || 2800);
+}
+
+/* ============================================================
+ * 1. 门禁配置
+ * ============================================================ */
+/* ★★★ 访问码在这里改：4 位纯数字 ★★★ */
+var ACCESS_CODE = '2026';
+
+/* ============================================================
+ * 2. 题库 · 12 道手工基准题（w 为 0–10 渣度权重，答题时不显示倾向）
+ * ============================================================ */
+var BASE_QUESTIONS = [
+  { title: '同时被两个人表白，你会？', options: [
+    {t:'全都婉拒，先冷静想想',w:2},{t:'都不表态，先处成朋友',w:6},
+    {t:'选心动的，另一个保持距离',w:1},{t:'都吊着，谁先行动选谁',w:9}]},
+  { title: '前任深夜发"在吗"，你会？', options: [
+    {t:'装睡不回，明早说"刚看到"',w:5},{t:'秒回"在"，聊到天亮',w:3},
+    {t:'回一句"有事说事"',w:2},{t:'回"在"，顺便叙旧拉扯',w:8}]},
+  { title: '心动对象问"你喜欢我吗"？', options: [
+    {t:'大方承认，喜欢就是喜欢',w:0},{t:'"想多了吧"，嘴硬三连',w:4},
+    {t:'"你猜？"先把人吊住',w:7},{t:'"我对谁都这样"，稳住全场',w:9}]},
+  { title: '对象突然查岗问"你在哪"？', options: [
+    {t:'如实汇报，顺手开视频',w:0},{t:'说个大概，细节不提',w:5},
+    {t:'"在家里"，其实在朋友局上',w:8},{t:'按预案上报，分身早安排好',w:10}]},
+  { title: '朋友问"TA 是不是喜欢你"？', options: [
+    {t:'"我也想知道"，求助攻',w:1},{t:'"别瞎说"，转头偷着乐',w:3},
+    {t:'"普通朋友"，替 TA 打掩护',w:7},{t:'"是又怎样"，顺便收下心意',w:9}]},
+  { title: '"广撒网才不掉队"，你认同吗？', options: [
+    {t:'不认同，一条鱼值得一片海',w:0},{t:'单身期广撒网没毛病',w:6},
+    {t:'认同，嘴上却说"看缘分"',w:8},{t:'认同，你就是撒网大队长',w:10}]},
+  { title: '恋爱中你更像哪一种？', options: [
+    {t:'心动就上，输了也不亏',w:1},{t:'心动但怂，等对方先动',w:4},
+    {t:'边缘试探，有戏再动',w:7},{t:'全线铺开，择优录取',w:10}]},
+  { title: '对象生日和兄弟局撞了？', options: [
+    {t:'陪对象，兄弟改天补',w:0},{t:'两头跑，累死自己',w:2},
+    {t:'先陪对象，再溜去兄弟局',w:7},{t:'叫对象来兄弟局，一举两得',w:9}]},
+  { title: '有人造谣你对象的位置？', options: [
+    {t:'先信一半，自己求证',w:3},{t:'立马维护，谣言退散',w:0},
+    {t:'表面维护，暗记小本本',w:7},{t:'顺势查岗，翻个底朝天',w:10}]},
+  { title: '恋爱中"留后路"，你干过吗？', options: [
+    {t:'从不，爱就全心全意',w:0},{t:'想想而已，没干过',w:3},
+    {t:'聊天记录定期清理',w:8},{t:'后路就是我的主路',w:10}]},
+  { title: '"已读不回"对你来说是？', options: [
+    {t:'看到就想回，忍不住',w:0},{t:'忙起来真顾不上',w:2},
+    {t:'偶尔用用，调调节奏',w:7},{t:'战术工具，天天在用',w:9}]},
+  { title: '对象问起还没准备的礼物？', options: [
+    {t:'坦白忘了，连夜补上',w:1},{t:'"保密"，其实还没下单',w:5},
+    {t:'"在路上"，开始疯狂搜索',w:7},{t:'提议改过下个节日',w:9}]},
+];
+
+/* ============================================================
+ * 3. 题库 · 两套场景池（50 + 50），场景 × 4 角度 = 400 道程序化题
+ * ============================================================ */
+var LOVE_SCENES_RAW = [
+['心动的人要你微信','秒通过，当晚考古 TA 朋友圈',2,'通过，但憋半小时才回',6,'通过后发条仅 TA 可见的朋友圈',9,'假装没看到，次日说没电了',7],
+['对象要看你手机','直接递，密码一并告诉',0,'给看，全程站旁边盯梢',5,'反问"相互信任不好吗"',8,'提前删掉聊天、相册、红包',10],
+['暧昧对象突然不回消息','该干嘛干嘛，等 TA 想回',1,'疯狂翻记录找自己的错',2,'发条朋友圈测试 TA',7,'点开另一个聊天框营业',9],
+['前任朋友圈晒新恋情','点赞，祝 TA 幸福',1,'装没看见，难受一晚上',3,'当晚发精修自拍配 emo 文案',8,'群发暧昧对象"在吗"',10],
+['心动的人问"我们算什么"','大方说"我在追你呀"',0,'"你说是就是"，把球踢回去',6,'"朋友之上恋人未满"',8,'"看你想算什么"',10],
+['心动的人说"现在不想恋爱"','行，那就做朋友',1,'每天早安晚安等 TA',3,'嘴上答应，继续拉扯',7,'"没事"，转头约下一个',10],
+['心动的人让你帮搬家','早起帮忙，搬完请 TA 吃饭',0,'去是去，路上排练表白',2,'搬完发朋友圈"累了值了"',7,'先问"就我一个人吗"',9],
+['心动的人喝醉打给你','保持通话劝 TA 喝水',1,'录下来第二天放给 TA 听',6,'趁机说平时不敢说的话',8,'心疼，但先截图发群里',10],
+['暧昧对象没定关系还约别人','当面问清，谈不拢就撤',1,'装不知道，对 TA 更好',4,'我也同步接触别人',9,'"没定关系"，各玩各的',10],
+['心动的人要你假扮对象见家长','拒绝，这忙会出大事',1,'帮，但说好不许假戏真做',5,'答应，表现到满分',7,'答应，顺便研究转正攻略',10],
+['心动的人发来 60 秒语音方阵','一条条听完认真回',0,'戴耳机听，还做笔记',2,'转文字看完回"听到啦"',6,'挑第一条，其余装忙',8],
+['心动的人换了 CP 感头像','无所谓，头像自由',1,'熬夜找 TA 和谁用一对',3,'连夜换一个能配上 TA 的',8,'群发"我头像怎么样"',9],
+['心动的人说"想你了"','回"我也想你了"',0,'截图反复看再回复',3,'回"哦？"让 TA 多说说',7,'截图发群："又来一个"',10],
+['心动的人生病给你发消息','请假买药送过去',0,'外卖送药附小作文',2,'"多喝热水"隔两小时再问',6,'嘴上心疼，手上空空',9],
+['深夜心动的人约你散步','叫上共同朋友一起去',1,'一个人赴约，心跳超速',2,'去，纠结穿哪套',5,'答应后顺手再约一场',9],
+['心动的人让你删异性好友','删什么删，社交自由',0,'让 TA 也删，公平交易',5,'嘴上答应，分组还在',8,'答应，但小号都在',10],
+['心动的人玩"谁先动心谁输"','不玩，喜欢要光明正大',0,'玩，偷偷希望 TA 先输',3,'玩到认真，嘴硬不认',6,'微笑应战，你从没输过',10],
+['心动的人备注你是全名','备注是 TA 的自由',1,'心里咯噔，表面淡定',3,'当场改 TA 备注"未来对象"',4,'无所谓，TA 在你这是"3 号"',10],
+['心动的人生日到了','提前一个月准备礼物',0,'精挑礼物附手写卡片',1,'群里凑份子自己出头',6,'发个红包意思意思',8],
+['心动的人问你和前任谁好看','"你，没有可比性"',0,'"都好看，你更耐看"',2,'"提 TA 干嘛"敷衍过去',6,'认真夸前任一个优点',9],
+['心动的人深夜 emo 找你','打电话听到 TA 睡着',0,'陪聊到凌晨顶着黑眼圈',1,'回"怎么了"等 TA 倾诉',7,'安慰完截图研究软肋',10],
+['心动的人说"我们星座不合"','那算算八字',1,'心想"借口真老套"',4,'塔罗说我们天作之合',6,'巧了，你星座全能配',10],
+['心动的人拉你拼双人游戏','全程护航输了背锅',1,'认真打，输了请奶茶',2,'故意放水让 TA 带飞',3,'边打边撩，双排变约会',9],
+['心动的人说你像 TA 家长','反思自己太唠叨',2,'"那叫声来听听"',6,'顺势说"那得孝顺我"',8,'超纲，先观察 TA 怎么对家长',9],
+['异地心动的人说今晚有聚会','"玩得开心，到家说一声"',0,'表面大方半夜刷 TA 圈',4,'"几点结束有谁有异性吗"',7,'嘴上说玩转头查定位',10],
+['心动的人要和你 AA 演唱会','AA 挺好，一人一张连座',1,'我全包，TA 请吃饭就行',2,'AA 可以，票务归我管',7,'答应 AA 转头约了别人',10],
+['心动的人让你帮 P 图','认真修，夸原图也好看',1,'精修到朋友圈 99+',2,'修完发圈炫耀作品',6,'帮 P 完"顺手"要素颜照',10],
+['心动的人要给你介绍对象','"不用，我看上你了"',0,'"好啊"心想 TA 在试探',4,'先看看照片再说',8,'"介绍吧"多认识不亏',10],
+['心动的人把你设成特别关心','激动回关所有动态',0,'默默记下对 TA 更好',1,'截图发圈还屏蔽 TA',7,'"+1 而已"，你有专属分组',10],
+['心动的人朋友圈仅你不可见','直接问 TA 怎么回事',1,'胡思乱想一晚不敢问',3,'用小号加 TA 看完再说',9,'正常，你的分组更精细',10],
+['心动的人凌晨问"睡了吗"','"没睡，怎么了"',1,'秒回"在"心动一整晚',2,'憋十分钟再回',7,'回"刚看到"其实盯了一小时',8],
+['心动的人和你朋友聊得火热','正常社交不干涉',1,'难受但假装大度',3,'旁敲侧击问聊了啥',6,'无所谓，鱼塘讲生态平衡',10],
+['心动的人问"游戏和我哪个重要"','退出游戏秒回"你"',0,'"游戏能暂停，不能没你"',2,'"都重要，别让我选"',5,'"下局带我"完美避题',8],
+['心动的人坦白"谈过很多次"','过去都过去了',0,'有经验才知道怎么对你好',2,'"多到什么程度？展开讲讲"',5,'"巧了，我也是"其实你更多',9],
+['心动的人说"生日别送礼物"','听话，改请 TA 吃饭',1,'"口是心非吧"礼物照送',2,'真不送，看 TA 生不生气',8,'不送，改发 52.0 红包钓鱼',9],
+['心动的人发"在吗"又撤回','"看到啦，说吧"',1,'装没看到等 TA 再发',7,'"怎么撤回啦"戳破尴尬',2,'不回，让 TA 再撤一次试试',8],
+['心动的人让你陪 TA 相亲镇场','拒绝，这忙帮不得',1,'去替 TA 把关',3,'全程发光让相亲对象看上我',9,'答应，顺便认识相亲圈',10],
+['心动的人说想一起看海','请假订票明天就走',0,'"好啊"开始存钱',1,'"先看完这场电影再说"',6,'"下周不行，答应了别人"',9],
+['心动的人半夜发来一首情歌','听完回"我也想你"',1,'单曲循环到天亮回"好听"',2,'截图存进证据合集',6,'回"这歌我也发过别人"',10],
+['心动的人问网恋靠谱吗','靠谱，遇到你就靠谱',0,'看人，慢热更稳',2,'"还行，我试过"赶紧圆场',8,'挺靠谱，我同时网过两个',10],
+['心动的人开口借钱数目不小','问清用途能帮就帮',1,'借，但写好借条',2,'先不表态看 TA 急不急',7,'哭穷，其实刚买了新手机',10],
+['你发现 TA 把你照片设成背景','心跳漏拍直接挑明',0,'"背景不错人更好看"',3,'装没看见用小号观察',6,'无感，你背景每周一换',10],
+['TA 跟别人好上还要你祝福','"祝福不了，我先追了"',0,'说祝福，转身 emo 一周',2,'那我抢先一步表白',1,'"祝福，随个份子意思一下"',9],
+['TA 要把好朋友介绍给你','期待，多认识朋友',1,'想多了，TA 让自己人验货',3,'"介绍可以，别后悔"',8,'来者不拒，人脉越广越好',10],
+['心动的人深夜说"我到家了"','"报平安就好，快休息"',1,'"到家就好，做个好梦"',0,'"怎么这么晚"查岗三连',6,'"明天叫早吗"铺下长线',8],
+['心动的人发你俩合照配"嘿嘿"','开心疯了立刻也发',0,'截图反复看评论区',2,'"发我干嘛"嘴硬心甜',4,'先看这条屏蔽了谁',10],
+['心动的人说"我对感情很专一"','"我也是，双向奔赴"',0,'"那我先考察考察"',2,'"上一位听众现在怎样了"',6,'"巧了，我每段都专一"',10],
+['心动的人突然要和你视频','秒接，头发乱也接',1,'找好光线角度再接',4,'"稍等"跑下楼洗头',3,'挂断装信号差，其实在别的视频里',10],
+['心动的人在你和 TA 好友间摇摆','公平竞争各自表达',1,'真心退让成全 TA 们',0,'表面退出暗中发力',8,'"小孩才做选择"都先处着',10],
+['TA 说你是第一个心动的','"那就别浪费心动"',0,'"我信"眼睛发光',1,'"这话排练了多久"',5,'深情回应，今天听第二遍了',10],
+];
+
+var SOCIAL_SCENES_RAW = [
+['朋友的对象半夜找你聊心事','劝 TA 直接找朋友本人',1,'听完第二天提醒朋友',2,'聊到凌晨心里起波澜',6,'"这可是你自己找我的"',9],
+['有人当众表白你朋友 TA 慌了','上前解围帮朋友挡下',1,'看戏给眼神支持',2,'起哄拍视频发群里',8,'趁乱表白朋友喜欢的人',10],
+['同事甩锅给你领导在场','当场摆证据有理有据',1,'先接锅私下再算账',3,'微笑背锅记小本本',5,'反手甩给实习生',10],
+['朋友的对象跟你表白','严词拒绝，考虑告诉朋友',1,'拒绝但选择保密',4,'拒绝但记录舍不得删',7,'"让我考虑一下"考虑三天',10],
+['撞见朋友的对象和别人牵手','拍照取证告诉朋友',1,'暗示朋友自己发现',3,'装没看见怕被怪',5,'走过去打招呼"换人了？"',9],
+['网友找你借钱应急','直接拉黑，经典开局',0,'不借钱但请顿饭',2,'借小额买断这段关系',6,'不借但顺势暧昧',9],
+['朋友让你帮圆谎骗 TA 对象','拒绝，谎言迟早穿帮',1,'帮一次下不为例',4,'帮，收点封口奶茶',7,'帮，聊天记录留好',10],
+['相亲对象问你为什么单身','"宁缺毋滥"',1,'开玩笑混过去',3,'"忙事业"其实忙聊天列表',8,'"缘分未到"转得飞快',7],
+['相亲对象提出 AA','AA 很正常',1,'我买单显风度',2,'AA 但心里默默扣分',6,'"那打包盒钱谁出"',8],
+['有人群里 @ 你表白','私聊回应留体面',1,'群里幽默私聊认真',2,'已读不回让 TA 消化',7,'截图发群"看，又来"',10],
+['老同学深夜找你叙旧','正常聊聊完就睡',1,'聊到"当年我暗恋过你"',6,'"叙旧可以别翻旧账"',2,'叙旧是假鱼塘巡逻是真',9],
+['朋友的对象给你发晚安','回"晚安"当群发礼貌',1,'不回截图留观察',4,'回"晚安呀"加波浪号',7,'回完顺手给别人也回一遍',10],
+['有人请你饭局但你看出目的','婉拒，无事献殷勤',1,'去了饭桌上挑明',2,'吃归吃装傻到底',8,'吃完看能不能反钓',10],
+['答应朋友的事突然不想做了','提前说明认真道歉',0,'硬着头皮做完',1,'玩消失等 TA 自己发现',8,'找人顶包',7],
+['有人当面拆穿朋友吹的牛','打圆场找台阶',1,'沉默事不关己',5,'补一刀"上次吹更大"',9,'帮圆回来编得更圆',6],
+['朋友凌晨两点找你哭失恋','到场带啤酒纸巾',0,'视频陪到 TA 睡着',1,'电话安慰明早再看',3,'"早说过 TA 不行"先补刀',8],
+['你知道相亲对象同时约别人','没定关系各自自由',2,'直接问 TA 怎么想',1,'暗自较劲加个赛',7,'正常，你今晚也有场',10],
+['同事打听领导的八卦','不知道不聊',0,'听可以传不行',2,'三分说成五分',8,'反问"你听谁说的"钓话',9],
+['有人让你帮忙送情书','送到守口如瓶',1,'婉拒，情书要自己送',2,'帮，路上先拍照吃瓜',6,'帮，顺便摸清 TA 情史',10],
+['你发现朋友的恋人装单身','转告朋友附证据',1,'先找本人给机会坦白',2,'吃瓜静观',5,'记下来以后用得上',9],
+['有人拜托你试探 TA 对象','拒绝，试探即伤害',0,'劝他们好好沟通',1,'帮，只报客观事实',4,'帮，报告加戏跌宕起伏',9],
+['有人深夜错发你"宝，睡了吗"','回"发错了"提醒',1,'不回等 TA 自己发现',2,'回"还没怎么了"看聊出什么',7,'回"没呢"配张自拍',10],
+['朋友拜托你保密一件事','烂在肚子里',0,'只告诉枕头和日记',2,'一周后拿去换情报',8,'秘密就是用来流通的',10],
+['酒局上有人一直敬酒搭讪','喝一杯坐回朋友堆',1,'以茶代酒表态',0,'喝归喝微信不给',4,'喝完加微信"多个朋友"',9],
+['你被误会成第三者','找当事人解释清楚',1,'甩聊天记录自证',2,'懒得解释清者自清',3,'有点爽说明魅力没减',10],
+['朋友的对象找你帮忙瞒事','帮小忙但要求 TA 坦白',1,'婉拒别把我架中间',2,'帮，多个人情多条路',6,'帮，这事成了拿捏筹码',10],
+['有人问你"TA 是不是喜欢我"','客观分析有一说一',1,'"你俩的事别扯我"',2,'看请不请奶茶再定口径',7,'两边传话当信息中枢',10],
+['有人劝你广撒网别吊死','"我乐意树荫凉快"',0,'听着有理回家想了半宿',4,'嘴上拒绝身体很诚实',8,'"这话我三年前就悟了"',10],
+['邻居总找借口给你送吃的','礼尚往来亲手做回礼',1,'道谢保持礼貌距离',2,'收下顺便让 TA 修灯',6,'来者不拒邻居不嫌多',9],
+['朋友请你当恋爱军师','只看聊天不替 TA 定论',1,'认真分析劝和不劝分',2,'图个乐当嘴炮军师',6,'当着当着自己上了',10],
+['有人发"在吗"又半天没下文','"在，直接说事"',1,'等 TA 憋出下文',2,'"不在"已读乱回',5,'截图发圈还屏蔽 TA',9],
+['朋友的"对家"拜托你保密','该守还是守',0,'守口如瓶但远离圈子',2,'忍不住给朋友递话',8,'两边吃消息坐庄渔利',10],
+['同事在你们之间传话拱火','找当事人当面核对',1,'不理谣言止于智者',2,'反向喂假消息',7,'顺水推舟引到别人身上',10],
+['有人让你陪 TA 相亲撑场面','提前对好台词',2,'当电灯泡帮 TA 把关',1,'去了抢了 TA 风头',8,'答应，自己也留个联系方式',10],
+['陌生人问路顺带要微信','"路在这微信没有"',0,'给了多个朋友正常',3,'看脸决定给不给',7,'给了备注"路过的缘分 7 号"',10],
+['朋友对象过生日你知道 TA 想要啥','主动说促成惊喜',0,'等 TA 来问再说',2,'卖关子收情报费',6,'不说，等他翻车',9],
+['聚会上有人一直给你夹菜','道谢并婉拒划界限',1,'正常吃朋友间热情',2,'全盘接收眼神拉丝',8,'回夹一个加微信深聊',10],
+['你帮了大忙 TA 想请客','婉拒举手之劳',0,'去吃顺便带饮料',1,'"记我个人情就行"',6,'饭桌上谈条件',9],
+['有人每天点赞你朋友圈','礼貌回访',1,'无感点赞自由',2,'试探评论钓 TA 出来',7,'"养鱼日常维护"回赞三连',10],
+['朋友的对象是你前任','大方相处坦荡做人',1,'保持距离避嫌要紧',0,'距离有了记录也留着',5,'边酸边搅和',9],
+['领导让你"美化"汇报数据','拒绝数据要真实',0,'美化但注明口径',3,'美化到自己都快信了',8,'美化完留备份当护身符',10],
+['有人挑拨你和你对象的关系','当面三人对质',1,'不理时间会证明',2,'表面感激心里记账',5,'反手挑拨 TA 和朋友',9],
+['朋友问"我是不是胖了"','"衣服缩水了"善意谎言',2,'实话附运动计划',1,'"不胖，滤镜装不下你了"',5,'转头发群里"都来评评"',9],
+['有人深夜想借你肩膀哭一会','借，加纸巾热牛奶',1,'借，聊完就送 TA 回家',2,'借，从肩膀借到天亮',7,'借，顺便"要不要处一下"',10],
+['有对象的人对你示好','划清界限',0,'疏远但做不到断联',4,'不主动不拒绝',9,'双向奔赴',10],
+['朋友的对象总找你修电脑','喊上朋友一起去',1,'正常邻里朋友互助',2,'"修电脑之王"随叫随到',6,'修完暗示朋友换电脑',8],
+['有人打听你朋友的情史','让 TA 问本人',0,'只说公开信息',2,'讲个大概添点花边',7,'出售完整时间线带截图',10],
+['你看到朋友群里吐槽你','装没看到当面聊感受',1,'难受但慢慢观察',3,'截图存进证据库',7,'建个群反向吐槽',10],
+['醉酒表白的人第二天装失忆','提醒 TA 负责',2,'等 TA 清醒自己说',1,'不戳破留作话柄',8,'"那我可自由发挥记忆了"',9],
+['朋友对象问"TA 靠谱吗"','说优点提醒多沟通',1,'不掺和让 TA 自己看',2,'"总体靠谱"意味深长',6,'挑拨两句再圆回去',10],
+];
+
+function toScene(row) {
+  var opts = [];
+  for (var i = 1; i < row.length; i += 2) opts.push({ t: row[i], w: row[i + 1] });
+  return { name: row[0], opts: opts };
+}
+var LOVE_SCENES = LOVE_SCENES_RAW.map(toScene);
+var SOCIAL_SCENES = SOCIAL_SCENES_RAW.map(toScene);
+
+var LOVE_ANGLES = [
+  function (s) { return s + '，你会？'; },
+  function (s) { return '别装了，' + s + '你会……'; },
+  function (s) { return '真心话：' + s + '你会？'; },
+  function (s) { return '朋友打赌，' + s + '你会？'; },
+];
+var SOCIAL_ANGLES = [
+  function (s) { return s + '，你会？'; },
+  function (s) { return '换你上场：' + s + '你会？'; },
+  function (s) { return '灵魂拷问，' + s + '你会？'; },
+  function (s) { return '这时候，' + s + '你会？'; },
+];
+
+function buildSceneQuestions() {
+  var out = [];
+  function gen(scenes, angles) {
+    scenes.forEach(function (s) {
+      angles.forEach(function (mk) {
+        out.push({ title: mk(s.name), options: s.opts.map(function (o) { return { t: o.t, w: o.w }; }), src: s.name });
+      });
+    });
+  }
+  gen(LOVE_SCENES, LOVE_ANGLES);
+  gen(SOCIAL_SCENES, SOCIAL_ANGLES);
+  return out;
+}
+var SCENE_QUESTIONS = buildSceneQuestions();
+var QUESTION_BANK = BASE_QUESTIONS.concat(SCENE_QUESTIONS); /* 412 题 */
+
+/* ============================================================
+ * 4. 大档模板（评语/清单按 5 大档）+ 10 类型称号（结果展示细分）
+ * ============================================================ */
+var TIERS = [
+  { min: 0, max: 20, name: '绝世好薯', emoji: '🥔', verdict: '根本不用救', color: '#4EBB98',
+    openers: ['先说结论：本次样本纯度爆表，检测员看完都心软了。', '报告出来了：你渣度低到仪器差点测不出来。'],
+    body: '你不是渣，你是{{行走的真心批发商}}。别人对你好三分，你回敬十分；聊天记录干净得能直接{{拿去当恋爱教材}}。有人朝你抛暧昧的钩子，你不接招，还认真琢磨"TA 是不是遇到难处了"——这份单纯，让职业钓手都想给你发一张{{好人卡}}。但你软肋也很明显：你{{交出真心太快}}，别人一句晚安你就沦陷，一句"在吗"你就把未来五十年都脑补完了，{{被渣到伤心流泪}}的概率，比奶茶抽到第二杯半价还高。嘴上说着"下次绝不心软"，对方一道歉，你又屁颠屁颠原谅了。',
+    tails: ['把真心留给同样肯掏心窝子的人，你值得。', '认真爱一个人，永远比当海王酷多了。'],
+    list: [
+      { d: true,  e: '💬', t: '聊天记录坦荡到能投屏给全家看' },
+      { d: true,  e: '🐟', t: '主动放生过送上门的暧昧' },
+      { d: true,  e: '💝', t: '把"我喜欢你"打了又删、删了又打' },
+      { d: false, e: '🙅', t: '同时回三个人"晚安"——一个都聊费劲' },
+      { d: false, e: '🎣', t: '用"在忙"当欲擒故纵的借口' },
+      { d: true,  e: '🚑', t: '被渣了还复盘自己哪里做得不够好' },
+      { d: false, e: '🕶️', t: '朋友圈分组可见玩得炉火纯青' },
+    ] },
+  { min: 21, max: 40, name: '心动口嗨型', emoji: '💬', verdict: '还有救，赶紧的', color: '#E8B93C',
+    openers: ['别紧张，先把"海王"两个字从你身上摘下来。', '检测完毕：你的渣是纸老虎，风一吹就倒。'],
+    body: '拆穿你吧：你的渣，{{九成停留在嘴上}}。和朋友聊起暧昧，你把拉扯话术分析得头头是道；可对方真靠近一步，你立刻{{结巴装死}}。看到心动的人会多看两眼，心里小剧场演了三十集，{{实际连招呼都不敢打}}。前任深夜发"在吗"，你嘴上回"有事说事"，握手机的手却诚实地抖了三抖——典型{{心动但不动手}}。你偶尔嘴痒，说两句似是而非的暧昧话，说完自己先愧疚，连夜撤回重写——渣也渣不起来，说安分又谈不上，你就是{{口嗨型准恋爱脑}}，伤不到别人，但容易被"会撩的"吃得死死的。',
+    tails: ['下次心动，试着笨拙地直接一点，真诚比话术动人多了。', '嘴硬可以，别让真心的机会从嘴边溜走。'],
+    list: [
+      { d: true,  e: '🗣️', t: '和朋友复盘过"拉扯话术"，实践为零' },
+      { d: true,  e: '📝', t: '写过暧昧小作文，发出去之前删了' },
+      { d: true,  e: '🌙', t: '深夜想找前任，最后发了条仅自己可见' },
+      { d: false, e: '🍷', t: '同时和两个人互道晚安' },
+      { d: true,  e: '👀', t: '朋友圈只发某个人能看懂的歌' },
+      { d: false, e: '🎣', t: '真的抛过钩——你是抛竿都不敢抛的类型' },
+      { d: false, e: '📵', t: '冷处理过对自己心动的人' },
+    ] },
+  { min: 41, max: 60, name: '摇摆不定型', emoji: '🌫️', verdict: '半只脚在悬崖边', color: '#F0954A',
+    openers: ['注意，样本出现"暧昧结晶"沉淀。', '前方高能：你的检测曲线开始飘忽不定了。'],
+    body: '体检结果：你的暧昧边界感，{{糊得像隔夜的水彩画}}。你享受被喜欢的感觉，鱼塘不大但{{换水很勤}}：这个聊两周，那个热三天，谁冷了你就去找下一个热的。别人对你示好，你不接也不拒，一句"再看看"把人吊得稳稳的，{{苗圃不大，幼苗培育中}}。你反应很快，对方话里有话你三秒就懂，懂了还要装三分傻，这种{{装傻式拉扯}}你玩得相当顺手。嘴上说"只是朋友"，行动上却享受暧昧的全部福利，还给自己留了条"我又没承诺过什么"的后路——这叫{{虚情，但不敢负责}}；夜深人静你也会心虚：万一 TA 们互相认识怎么办？',
+    tails: ['模糊的温柔最伤人，别拿别人的真心练手。', '想清楚再靠近，摇摆不是魅力，是消耗。'],
+    list: [
+      { d: true,  e: '⏰', t: '回消息讲究"不能显得太积极"' },
+      { d: true,  e: '💬', t: '对不同的人说过同一句"我还挺心动的"' },
+      { d: true,  e: '🌊', t: '谁热络就偏向谁' },
+      { d: false, e: '📵', t: '拉黑过暧昧对象——舍不得，都靠冷处理' },
+      { d: true,  e: '🗂️', t: '同时聊着两个以上，备注用代号' },
+      { d: true,  e: '🎭', t: '嘴上说"再看看"，心里在等更好的' },
+      { d: false, e: '🫥', t: '被戳穿时大方承认——你会先装傻' },
+    ] },
+  { min: 61, max: 80, name: '熟练拉扯型', emoji: '🎣', verdict: '抢救室排队中', color: '#F26D6D',
+    openers: ['检测员扶了扶眼镜：这个样本，有点东西。', '实验室警报响了两声，被我按掉了，坐下说。'],
+    body: '说正经的，你段位不低了。消息回得{{永远比对方慢半拍}}，但每条都精准踩在人心痒的点上；朋友圈看似随手记录，其实{{定向投放、精准引流}}。你深谙忽冷忽热的节奏，忙起来人间蒸发，闲下来又把人哄得团团转。那句"我只对你这样"，{{复制粘贴痕迹略重}}——同一套情话，你对不止一个人讲过。你不是不会动心，是动心之前先算{{沉没成本}}；这套操作短期很爽，长期看是{{在别人的真心里刷经验值}}——等你哪天想认真了，可能已经忘了怎么不设防地喜欢一个人，海王的尽头，是空网。',
+    tails: ['把广撒网的本事收一收，专一的段位其实更高。', '别等真心动了才发现，自己早忘了怎么认真。'],
+    list: [
+      { d: true,  e: '📱', t: '聊天置顶按"优先级"管理' },
+      { d: true,  e: '🕶️', t: '"在忙"两个字回过所有人' },
+      { d: true,  e: '🎯', t: '忽冷忽热的节奏拿捏得像呼吸' },
+      { d: true,  e: '🧃', t: '情话分版本存在备忘录里' },
+      { d: false, e: '🚑', t: '被识破后老实承认——换个小号重来' },
+      { d: true,  e: '📉', t: '感情里永远先算退出成本' },
+      { d: true,  e: '🧊', t: '降温效率高到对方以为是自己先冷的' },
+    ] },
+  { min: 81, max: 100, name: '究极海王', emoji: '👑', verdict: '建议直接放生', color: '#D64550',
+    openers: ['检测仪冒烟了，检测员沉默三秒，开始写报告。', '恭喜？本中心开馆以来，你是第一个把量程跑满的。'],
+    body: '行，不装了：你就是本中心想收藏的{{稀有样本}}。多线操作还能记住每个人的忌口和生日，置顶聊天按紧急程度分层管理，{{分手预案比恋爱计划还周全}}。别人心动是心跳加速，你心动是{{风险评估}}；别人表白看气氛，你表白看"成单率"。你确实迷人——毕竟每句情话都是{{拿别人的真心练出来的}}，字字都有前任作者。但海里最孤独的就是海王：你渣过的人会走，真心你的人会被你熬走，偌大鱼塘最后{{只剩你自己的倒影}}。',
+    tails: ['收网吧，被一个人坚定选择，才是最高级的浪漫。', '别拿别人的真心练手，认真爱一个人才是真酷。'],
+    list: [
+      { d: true,  e: '🗂️', t: '暧昧对象备注精确到"认识地点 + 月份"' },
+      { d: true,  e: '📆', t: '分手预案比约会计划还详细' },
+      { d: true,  e: '🎣', t: '鱼塘分层管理，还搞优胜劣汰' },
+      { d: false, e: '💔', t: '为一个人失眠过——你只为自己失眠' },
+      { d: true,  e: '🎭', t: '"我只对你这样"说过 N 遍' },
+      { d: false, e: '🫣', t: '把真心话完整说出口过' },
+      { d: true,  e: '🧭', t: '同时赴约还能对齐两套说辞不走漏' },
+    ] },
+];
+function tierOf(i) {
+  for (var k = 0; k < TIERS.length; k++) if (i >= TIERS[k].min && i <= TIERS[k].max) return TIERS[k];
+  return TIERS[TIERS.length - 1];
+}
+
+var TYPES = [
+  { min: 0,   max: 10,  name: '纯爱战士',   emoji: '🛡️', verdict: '根本不用救',     color: '#3AA98A' },
+  { min: 11,  max: 20,  name: '绝世好薯',   emoji: '🥔', verdict: '无药可救地纯良', color: '#4EBB98' },
+  { min: 21,  max: 30,  name: '心动口嗨型', emoji: '💬', verdict: '还有救，赶紧的',   color: '#C9A437' },
+  { min: 31,  max: 40,  name: '嘴硬心软型', emoji: '🍬', verdict: '还有救，但别拖',   color: '#E8B93C' },
+  { min: 41,  max: 50,  name: '摇摆不定型', emoji: '🌫️', verdict: '半只脚在悬崖边',   color: '#EDA23F' },
+  { min: 51,  max: 60,  name: '边界模糊型', emoji: '🧭', verdict: '悬崖边蹦迪中',     color: '#F0954A' },
+  { min: 61,  max: 70,  name: '熟练拉扯型', emoji: '🎣', verdict: '抢救室排队中',     color: '#EE8080' },
+  { min: 71,  max: 80,  name: '专业拉扯型', emoji: '🧲', verdict: '抢救优先级最高',   color: '#F26D6D' },
+  { min: 81,  max: 90,  name: '究极海王',   emoji: '👑', verdict: '建议直接放生',     color: '#E55468' },
+  { min: 91,  max: 100, name: '海王之王',   emoji: '🌊', verdict: '放生都嫌费水',     color: '#D64550' },
+];
+function typeOf(i) {
+  for (var k = 0; k < TYPES.length; k++) if (i >= TYPES[k].min && i <= TYPES[k].max) return TYPES[k];
+  return TYPES[TYPES.length - 1];
+}
+var CHAPTERS = ['💘 恋爱底线', '🎣 暧昧边界', '📱 聊天记录', '🌙 深夜行为', '🏃 责任现场'];
+
+function parseHL(s) {
+  var segs = [], re = /\{\{([^}]*)\}\}/g, last = 0, m;
+  while ((m = re.exec(s))) {
+    if (m.index > last) segs.push({ t: s.slice(last, m.index), hl: false });
+    segs.push({ t: m[1], hl: true });
+    last = m.index + m[0].length;
+  }
+  if (last < s.length) segs.push({ t: s.slice(last), hl: false });
+  return segs;
+}
+function splitSentences(text) {
+  var out = [], buf = '';
+  for (var i = 0; i < text.length; i++) {
+    var ch = text.charAt(i);
+    buf += ch;
+    if ('。！？…'.indexOf(ch) >= 0) { var t = buf.trim(); if (t) out.push(t); buf = ''; }
+  }
+  if (buf.trim()) out.push(buf.trim());
+  return out;
+}
+function buildComment(idx) {
+  var tier = tierOf(idx);
+  var mid = (tier.min + tier.max) / 2;
+  return tier.openers[idx > mid ? 1 : 0] + tier.body + tier.tails[randInt(tier.tails.length)];
+}
+function buildCommentStructured(idx) {
+  return splitSentences(buildComment(idx)).map(function (s) { return parseHL(s); });
+}
+function pickList(idx) {
+  var pool = cryptoShuffle(tierOf(idx).list.slice());
+  var picked = pool.slice(0, 5);
+  if (!picked.some(function (x) { return !x.d; })) {
+    var neg = null;
+    for (var i = 0; i < pool.length; i++) if (!pool[i].d) { neg = pool[i]; break; }
+    if (neg) picked[picked.length - 1] = neg;
+  }
+  return picked;
+}
+
+/* ============================================================
+ * 5. 抽题（已抽索引池 + crypto 洗牌 + 池不足自动重置）
+ * ============================================================ */
+function loadDrawnSet() { try { return new Set(store.get('scum_drawn_idx') || []); } catch (e) { return new Set(); } }
+function saveDrawnSet(set) { store.set('scum_drawn_idx', Array.from(set)); }
+
+function drawQuestions(n) {
+  var total = QUESTION_BANK.length;
+  var drawn = loadDrawnSet();
+  var candidates = [], i;
+  for (i = 0; i < total; i++) if (!drawn.has(i)) candidates.push(i);
+  if (candidates.length < n) {
+    drawn.clear();
+    candidates = [];
+    for (i = 0; i < total; i++) candidates.push(i);
+  }
+  var picked = cryptoShuffle(candidates).slice(0, n);
+  picked.forEach(function (idx) { drawn.add(idx); });
+  saveDrawnSet(drawn);
+  return picked.map(function (idx) {
+    var q = QUESTION_BANK[idx];
+    var opts = cryptoShuffle(q.options.map(function (o) { return Object.assign({}, o); }));
+    var r = randInt(opts.length);
+    return { title: q.title, options: opts.slice(r).concat(opts.slice(0, r)) };
+  });
+}
+
+/* ============================================================
+ * 6. 状态 & 计分
+ * ============================================================ */
+var state = { questions: [], answers: [], current: 0, timer: null, report: null };
+
+function calcIndex() {
+  var sum = 0;
+  state.questions.forEach(function (q, i) { sum += q.options[state.answers[i]].w; });
+  return Math.max(0, Math.min(100, Math.round(sum / (12 * 10) * 100)));
+}
+
+/* ============================================================
+ * 7. 页面切换 & 门禁（验证通过 → 直接进入答题）
+ * ============================================================ */
+var G = window.gsap || null;
+if (G && window.ScrollTrigger) G.registerPlugin(ScrollTrigger);
+if (RM && G) G.globalTimeline.timeScale(50);
+
+function showPage(name) {
+  $$('.page').forEach(function (p) { p.classList.toggle('active', p.id === 'page-' + name); });
+  window.scrollTo(0, 0);
+  if (name !== 'result') {
+    cleanupResult();
+    document.body.classList.remove('locked');
+  }
+  if (name === 'home' && G && !RM) { playHomeIntro(); playHomeFloat(); }
+}
+function playHomeIntro() {
+  G.from('.home-inner > *', { y: 22, opacity: 0, rotate: -1, duration: .55, stagger: .08, ease: 'power2.out', clearProps: 'transform' });
+}
+function playHomeFloat() {
+  $$('.float-emojis span').forEach(function (el, i) {
+    G.to(el, { y: -26, x: 12, rotate: 14, duration: 2.6 + i * .4, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  });
+}
+
+function showGate() { $('#gate').style.display = 'grid'; document.body.classList.add('locked', 'app-locked'); }
+function hideGate() {
+  document.body.classList.remove('locked', 'app-locked');
+  var g = $('#gate');
+  if (G && !RM) G.to(g, { opacity: 0, duration: .4, onComplete: function () { g.style.display = 'none'; g.style.opacity = 1; } });
+  else g.style.display = 'none';
+}
+function gateError(msg) {
+  var input = $('#gate-input'), err = $('#gate-err');
+  input.value = '';
+  err.textContent = msg;
+  err.classList.remove('show'); void err.offsetWidth;
+  err.classList.add('show');
+  input.classList.remove('shake'); void input.offsetWidth;
+  input.classList.add('shake');
+}
+var lastUnlockTry = 0;
+function tryUnlock() {
+  if (Date.now() - lastUnlockTry < 800) return;
+  var v = ($('#gate-input').value || '').trim();
+  if (!/^\d{4}$/.test(v)) { lastUnlockTry = Date.now(); gateError('请输入完整的 4 位数字访问码'); return; }
+  lastUnlockTry = Date.now();
+  if (v === ACCESS_CODE) {
+    store.set('scum_unlocked', 1);
+    hideGate();
+    startQuiz();
+    toast('验证通过，直接开始检测 🎣');
+  } else {
+    gateError('访问码不对，再想想？');
+  }
+}
+window.__tryUnlock = tryUnlock;
+
+function resetToEntry() {
+  clearTimeout(state.timer);
+  state.answers = []; state.current = 0; state.questions = []; state.report = null;
+  $('#btn-report').classList.add('hidden');
+  cleanupResult();
+  if (store.get('scum_unlocked')) {
+    document.body.classList.remove('locked', 'app-locked');
+    $('#gate').style.display = 'none';
+    showPage('home');
+  } else showGate();
+}
+
+/* ============================================================
+ * 8. 答题流程
+ * ============================================================ */
+function startQuiz() {
+  state.questions = drawQuestions(12);
+  state.answers = [];
+  state.current = 0;
+  showPage('quiz');
+  renderQuestion(true);
+}
+function renderQuestion(instant) {
+  var i = state.current, q = state.questions[i];
+  $('#q-chip').textContent = CHAPTERS[i % 5];
+  $('#q-now').textContent = i + 1;
+  $('#q-num').textContent = 'Q' + ('0' + (i + 1)).slice(-2);
+  $('#q-title').textContent = q.title;
+  $('#btn-back').classList.toggle('ghost', i !== 0);
+  $('#btn-report').classList.add('hidden');
+  $('#q-fill').style.width = (i / 12 * 100) + '%';
+  var box = $('#q-opts');
+  box.innerHTML = '';
+  q.options.forEach(function (o, oi) {
+    var btn = document.createElement('button');
+    btn.className = 'opt' + (state.answers[i] === oi ? ' on' : '');
+    btn.innerHTML = '<span class="opt-mark">✓</span><span class="opt-text">' + o.t + '</span>';
+    (function (k) { onTap(btn, function () { chooseOption(k); }); })(oi);
+    box.appendChild(btn);
+  });
+  if (G && !RM && !instant) {
+    G.fromTo('#q-card', { opacity: 0, y: 20, rotate: 1.2 }, { opacity: 1, y: 0, rotate: 0, duration: .32, ease: 'power2.out', clearProps: 'transform,opacity' });
+  }
+}
+function chooseOption(oi) {
+  var i = state.current;
+  state.answers[i] = oi;
+  var opts = $$('#q-opts .opt');
+  opts.forEach(function (el, k) { el.classList.toggle('on', k === oi); });
+  $('#q-fill').style.width = ((i + 1) / 12 * 100) + '%';
+  clearTimeout(state.timer);
+  if (i === 11) {
+    var b = $('#btn-report');
+    if (b.classList.contains('hidden')) {
+      b.classList.remove('hidden');
+      if (G && !RM) G.from(b, { scale: .6, opacity: 0, y: 12, duration: .4, ease: 'back.out(2)', clearProps: 'all' });
+    }
+  } else {
+    (function (next) { state.timer = setTimeout(function () { state.current = next; renderQuestion(false); }, 400); })(i + 1);
+  }
+}
+
+/* ============================================================
+ * 9. 结果页：序幕锁场 → 丰富化验动画 → 播完才揭晓报告 → 滚动叙事
+ * ============================================================ */
+var DIGIT_PATHS = {
+  '0': ['M52,18 C24,14 14,50 14,74 C14,106 29,128 51,128 C73,128 87,106 87,74 C87,50 78,20 51,18'],
+  '1': ['M34,44 C44,32 52,26 58,19 L62,126'],
+  '2': ['M24,50 C28,27 46,17 60,21 C76,25 82,43 74,59 C66,75 48,89 34,103 C28,109 22,115 18,127 L81,127'],
+  '3': ['M26,40 C32,21 50,15 62,23 C74,31 72,47 60,55 C56,58 52,59 48,61 C62,63 78,73 76,93 C74,115 52,127 33,119 C28,117 24,113 21,109'],
+  '4': ['M70,17 C59,44 43,68 21,93 L85,93', 'M57,63 L55,127'],
+  '5': ['M72,19 L34,21 C31,43 28,57 24,69 C40,61 62,63 70,79 C80,97 70,121 48,125 C36,127 26,121 20,111'],
+  '6': ['M67,17 C47,39 31,65 25,91 C20,113 33,129 51,129 C69,129 80,114 77,97 C74,80 56,71 41,79 C33,84 28,91 25,99'],
+  '7': ['M18,22 L82,22 C72,58 54,96 42,128'],
+  '8': ['M50,62 C34,60 24,47 26,34 C28,20 46,15 55,18 C70,22 76,41 68,56 C60,71 31,81 25,99 C19,117 35,131 52,131 C69,131 81,117 77,100 C73,84 58,72 50,62'],
+  '9': ['M70,57 C55,63 34,59 27,45 C20,31 30,15 46,14 C62,13 73,24 72,41 L70,127'],
+  '%': ['M31,33 a15,15 0 1,1 -0.2,0.1', 'M40,114 L90,20', 'M76,113 a15,15 0 1,1 -0.2,0.1'],
+};
+function buildNumSVG(idx, color) {
+  var parts = String(idx).split('').concat('%');
+  var x = 0, specs = [];
+  parts.forEach(function (ch) { specs.push({ ch: ch, x: x }); x += (ch === '%' ? 116 : 96) + 6; });
+  var W = x - 6, strokes = '', ghosts = '';
+  specs.forEach(function (sp) {
+    (DIGIT_PATHS[sp.ch] || []).forEach(function (d) {
+      strokes += '<path class="num-path" d="' + d + '" pathLength="100" transform="translate(' + sp.x + ',0)"/>';
+      ghosts += '<path d="' + d + '" transform="translate(' + sp.x + ',0)"/>';
+    });
+  });
+  return '<svg viewBox="0 0 ' + W + ' 150" xmlns="http://www.w3.org/2000/svg">' +
+    '<g id="numGhost" fill="' + color + '" stroke="none" opacity="0">' + ghosts + '</g>' +
+    '<g stroke="' + color + '" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round">' + strokes + '</g></svg>';
+}
+function buildGaugeSVG(idx, color) {
+  var cx = 140, cy = 112, R = 82;
+  function pol(r, d) { var a = d * Math.PI / 180; return [cx + r * Math.sin(a), cy - r * Math.cos(a)]; }
+  function arc(r, a0, a1) {
+    var p0 = pol(r, a0), p1 = pol(r, a1);
+    return 'M' + p0[0].toFixed(1) + ',' + p0[1].toFixed(1) + ' A' + r + ',' + r + ' 0 ' + (Math.abs(a1 - a0) > 180 ? 1 : 0) + ',1 ' + p1[0].toFixed(1) + ',' + p1[1].toFixed(1);
+  }
+  var ticks = '';
+  for (var p = 0; p <= 100; p += 5) {
+    var a = -135 + p * 2.7, big = p % 25 === 0;
+    var i0 = pol(big ? R - 14 : R - 8, a), i1 = pol(R - 1, a);
+    ticks += '<line x1="' + i0[0].toFixed(1) + '" y1="' + i0[1].toFixed(1) + '" x2="' + i1[0].toFixed(1) + '" y2="' + i1[1].toFixed(1) + '" stroke="#2B2B2B" stroke-width="' + (big ? 3.5 : 2) + '"/>';
+    if (big) {
+      var lb = pol(R + 15, a);
+      ticks += '<text x="' + lb[0].toFixed(1) + '" y="' + (lb[1] + 4).toFixed(1) + '" font-size="13" font-weight="700" text-anchor="middle" fill="#2B2B2B">' + p + '</text>';
+    }
+  }
+  var target = (-135 + idx * 2.7).toFixed(1);
+  return '<svg viewBox="0 -14 280 200" class="gauge-svg" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="' + arc(R, -135, 135) + '" fill="none" stroke="#2B2B2B" stroke-width="5" stroke-linecap="round"/>' + ticks +
+    '<g id="needle" transform="rotate(' + target + ' ' + cx + ' ' + cy + ')">' +
+    '<line id="needle-line" x1="' + cx + '" y1="' + (cy + 15) + '" x2="' + cx + '" y2="' + (cy - R + 24) + '" stroke="' + color + '" stroke-width="6" stroke-linecap="round"/>' +
+    '<circle cx="' + cx + '" cy="' + (cy + 15) + '" r="6" fill="' + color + '"/></g>' +
+    '<circle cx="' + cx + '" cy="' + cy + '" r="10" fill="#FFFDF9" stroke="#2B2B2B" stroke-width="4"/>' +
+    '<text x="' + cx + '" y="' + (cy + 46) + '" font-size="24" font-weight="900" text-anchor="middle" fill="' + color + '">' + idx + '%</text>' +
+    '<text x="' + cx + '" y="' + (cy + 70) + '" font-size="11" font-weight="700" text-anchor="middle" fill="rgba(43,43,43,.5)" letter-spacing="3">渣度检测仪 v2026</text></svg>';
+}
+
+/* 【本次改动】化验场景 SVG：主烧瓶 + 对照小试管 + 台面线 + 试剂滴 + 蒸汽 + 完成星 + 扫光 */
+function buildFlaskSVG() {
+  var body = 'M54,14 L54,44 C54,54 26,72 20,104 C15,131 34,152 70,152 C106,152 125,131 120,104 C114,72 86,54 86,44 L86,14';
+  var inner = 'M54,17 L54,44 C54,54 26,72 20,104 C15,131 34,149 70,149 C106,149 125,131 120,104 C114,72 86,54 86,44 L86,17 Z';
+  var liquid = 'M6,102 C30,94 50,110 70,102 C90,94 112,110 134,102 L134,160 L6,160 Z';
+  var bubbles = '', bx = [44, 58, 72, 88, 50, 80, 36, 64, 98];
+  for (var i = 0; i < bx.length; i++) {
+    bubbles += '<circle class="flk-b" cx="' + bx[i] + '" cy="132" r="' + (2.4 + (i % 3) * 1.3).toFixed(1) + '" fill="#FFFDF9" opacity=".78"/>';
+  }
+  var steam = '', sx = [62, 72, 81];
+  for (var j = 0; j < 3; j++) steam += '<circle class="steam" cx="' + sx[j] + '" cy="12" r="3.2" fill="rgba(43,43,43,.18)" opacity="0"/>';
+  return '<svg viewBox="0 -20 176 188" width="150" xmlns="http://www.w3.org/2000/svg">' +
+    '<path id="bench" d="M2,161 C60,158 120,162 174,159" stroke="#2B2B2B" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round" fill="none" opacity=".45"/>' +
+    '<g id="mini-tube" transform="translate(146,64) rotate(11)">' +
+      '<path d="M0,4 L0,58 C0,72 22,72 22,58 L22,4" fill="#FFFDF9" stroke="#2B2B2B" stroke-width="4" stroke-linejoin="round"/>' +
+      '<path id="mini-liquid" d="M4,34 L4,57 C4,68 18,68 18,57 L18,34 Z" fill="#E9D9DE"/>' +
+      '<path d="M-4,3 L26,3" stroke="#2B2B2B" stroke-width="4" stroke-linecap="round"/>' +
+    '</g>' +
+    '<defs><clipPath id="flaskClip"><path d="' + inner + '"/></clipPath></defs>' +
+    '<g id="flask">' +
+      '<path d="' + body + '" fill="#FFFDF9" stroke="#2B2B2B" stroke-width="5" stroke-linejoin="round"/>' +
+      '<path d="M30,112 L40,110" stroke="rgba(43,43,43,.35)" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<path d="M100,112 L110,114" stroke="rgba(43,43,43,.35)" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<g clip-path="url(#flaskClip)">' +
+        '<path id="liquid" d="' + liquid + '" fill="#E9D9DE"/>' +
+        bubbles +
+        '<rect id="shine" x="-70" y="-10" width="15" height="185" fill="#FFFDF9" opacity="0" transform="rotate(14 70 80)"/>' +
+      '</g>' +
+      '<path d="M48,14 L92,14" stroke="#2B2B2B" stroke-width="5" stroke-linecap="round"/>' +
+      '<path d="M32,120 C38,116 42,122 48,118" stroke="#FFFDF9" stroke-width="4" stroke-linecap="round" opacity=".8" fill="none"/>' +
+    '</g>' +
+    '<circle id="drop" cx="70" cy="0" r="4.6" fill="#F26D6D" opacity="0"/>' +
+    steam +
+    '<g id="sparkle"><path d="M116,13 C117.6,20.8 119.2,22.4 127,24 C119.2,25.6 117.6,27.2 116,35 C114.4,27.2 112.8,25.6 105,24 C112.8,22.4 114.4,20.8 116,13" fill="#F2B03C" opacity=".95"/></g>' +
+    '<g id="sparkle2"><path d="M30,28 C31,32.2 31.8,33 36,34 C31.8,35 31,35.8 30,40 C29,35.8 28.2,35 24,34 C28.2,33 29,32.2 30,28" fill="#F26D6D" opacity=".9"/></g>' +
+  '</svg>';
+}
+
+var resultTriggers = [], bubbleSystem = null, prologueTL = null, flaskLoops = [];
+function addLoop(tw) { flaskLoops.push(tw); return tw; }
+function killFlaskLoops() {
+  flaskLoops.forEach(function (t) { try { t.kill(); } catch (e) {} });
+  flaskLoops = [];
+}
+function cleanupResult() {
+  resultTriggers.forEach(function (t) { try { t.kill(); } catch (e) {} });
+  resultTriggers = [];
+  if (bubbleSystem) { bubbleSystem.stop(); bubbleSystem = null; }
+  if (prologueTL) { try { prologueTL.kill(); } catch (e) {} prologueTL = null; }
+  killFlaskLoops();
+  var page = $('#page-result');
+  if (page) page.classList.remove('lab-phase');
+}
+
+function buildReport() {
+  var idx = calcIndex();
+  var count = (store.get('scum_count') || 0) + 1;
+  store.set('scum_count', count);
+  try { var h = store.get('scum_history') || []; h.push({ i: idx, g: typeOf(idx).name, t: Date.now() }); store.set('scum_history', h); } catch (e) {}
+  state.report = {
+    index: idx,
+    type: typeOf(idx),
+    sentences: buildCommentStructured(idx),
+    list: pickList(idx),
+    count: count, sample: 'SCUM-' + (1000 + randInt(9000)),
+    date: new Date().toLocaleDateString('zh-CN'),
+  };
+}
+
+function renderResult() {
+  killFlaskLoops(); /* 清掉上一轮烧瓶循环，避免空转 */
+  var rep = state.report, type = rep.type, idx = rep.index;
+  $('#sample-tag').textContent = '样本 ' + rep.sample;
+  $('#flask-wrap').innerHTML = buildFlaskSVG();
+  $('#lab-line').textContent = '正在化验你的渣渣样本…';
+  $('#lab-line').classList.remove('done');
+  $('#lab-line').style.opacity = '';
+  $('#numWrap').innerHTML = buildNumSVG(idx, type.color);
+  $('#gauge-wrap').innerHTML = buildGaugeSVG(idx, type.color);
+  var label = '【' + type.name + '】';
+  $('#v-title').innerHTML = label.split('').map(function (c) { return '<span class="vchar">' + c + '</span>'; }).join('') +
+    '<span class="v-emoji">' + type.emoji + '</span>';
+  $('#stamp-wrap').innerHTML = '<div class="stamp" id="stamp">' + type.verdict + '</div><span class="stamp-post" id="stamp-post" style="opacity:0">📮</span>';
+  $('#bar-bad').style.width = idx + '%';
+  $('#bar-good').style.width = (100 - idx) + '%';
+  $('#m-bad').textContent = idx + '%';
+  $('#m-good').textContent = (100 - idx) + '%';
+  $('#v-range').textContent = '类型区间 ' + type.min + '–' + type.max + '% · 第 ' + rep.count + ' 份报告';
+  $('#list-sub').textContent = '基于本次样本特征生成 · ✓ 你可能做过 · ✗ 你绝不可能做';
+  $('#r-list').innerHTML = rep.list.map(function (x) {
+    return '<li class="list-item"><span class="li-emoji">' + x.e + '</span><span class="li-text">' + x.t +
+      '</span><span class="li-badge ' + (x.d ? 'yes' : 'no') + '">' + (x.d ? '✓' : '✗') + '</span></li>';
+  }).join('');
+  $('#r-cmt').innerHTML = rep.sentences.map(function (s) {
+    return '<p class="cmt-line">' + s.map(function (g) {
+      return g.hl ? '<mark class="hl">' + g.t + '</mark>' : g.t;
+    }).join('') + '</p>';
+  }).join('');
+  $('#end-meta').textContent = '第 ' + rep.count + ' 份检测报告 · 已存档本机（' + (store.mode === 'memory' ? '当前为沙箱/隐私环境：本次会话内有效' : '仅本机') + '）';
+}
+
+function enterResult() {
+  buildReport();
+  renderResult();
+  $('#page-result').classList.add('lab-phase');
+  document.body.classList.add('locked');
+  $('#scroll-hint').classList.remove('show');
+  $('#btn-skip').classList.remove('hide');
+  showPage('result');
+  window.scrollTo(0, 0);
+  requestAnimationFrame(function () { playPrologue(); });
+}
+
+/* 试剂滴入后的持续反应：变色（主瓶+试管）+ 液面波动 + 气泡群 + 蒸汽 + 试管浮动 */
+function startFlaskFX() {
+  if (!G || RM) return;
+  G.to(['#liquid', '#mini-liquid'], { attr: { fill: '#F26D6D' }, duration: 1.3, ease: 'power1.inOut' });
+  addLoop(G.to('#liquid', {
+    attr: { d: 'M6,106 C30,114 50,98 70,106 C90,114 112,98 134,106 L134,160 L6,160 Z' },
+    duration: 1.5, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: .3,
+  }));
+  $$('.flk-b').forEach(function (b, i) {
+    var y0 = 130 + (i % 3) * 5;
+    addLoop(G.to(b, {
+      keyframes: [
+        { attr: { cy: y0 }, opacity: .85, duration: .22 },
+        { attr: { cy: y0 - 36 - (i % 3) * 7 }, duration: 1.5 + (i % 4) * .4, ease: 'power1.out' },
+        { opacity: 0, duration: .2 },
+      ],
+      repeat: -1, delay: i * .3,
+    }));
+    addLoop(G.to(b, { x: 5 * (i % 2 ? 1 : -1), duration: .7 + (i % 3) * .25, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
+  });
+  $$('.steam').forEach(function (s, i) {
+    addLoop(G.fromTo(s, { attr: { cy: 14, r: 3 }, opacity: 0 }, {
+      keyframes: [
+        { opacity: .55, duration: .35 },
+        { attr: { cy: -10, r: 6.5 }, opacity: 0, duration: 1.6 + i * .25, ease: 'sine.out' },
+      ],
+      repeat: -1, delay: i * .55,
+    }));
+  });
+  addLoop(G.to('#mini-tube', { y: -2.5, rotate: 1.5, duration: 1.6, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
+  addLoop(G.to('#mini-liquid', { y: -1.5, duration: 1.2, yoyo: true, repeat: -1, ease: 'sine.inOut' }));
+}
+
+/* 序幕时间线：布景 → 滴落 → 反应 → 文案轮换（第三段抖动）→ 完成扫光与双星 */
+function playPrologue() {
+  if (!G || RM) {
+    $$('#liquid, #mini-liquid').forEach(function (el) { el.setAttribute('fill', '#F26D6D'); });
+    finishPrologue();
+    return;
+  }
+  var line = $('#lab-line');
+  var msgs = ['正在化验你的渣渣样本…', '提取心动成分中…', '检测海王基因浓度…', '化验完成！'];
+  var tl = G.timeline({ onComplete: finishPrologue });
+  prologueTL = tl;
+  tl.set(['#sparkle', '#sparkle2'], { opacity: 0 }, 0);
+  /* 布景：台面线与小试管先落位，主瓶弹入并摇晃 */
+  tl.from('#bench', { opacity: 0, y: 10, duration: .5, ease: 'power2.out' }, 0);
+  tl.from('#mini-tube', { opacity: 0, y: 14, duration: .45, ease: 'power2.out' }, 0);
+  tl.from('#flask', { y: -26, opacity: 0, rotate: -8, duration: .5, ease: 'back.out(1.8)' }, 0);
+  tl.to('#flask', { rotate: 2.4, duration: .16, repeat: 7, yoyo: true, ease: 'power1.inOut' }, .35);
+  /* 试剂滴落 */
+  tl.fromTo('#drop', { attr: { cy: -2 }, opacity: 0 }, { opacity: 1, duration: .12 }, .55);
+  tl.to('#drop', { attr: { cy: 95 }, duration: .42, ease: 'power2.in' });
+  tl.to('#drop', { opacity: 0, duration: .1 });
+  /* 滴入瞬间：反应开始 */
+  tl.call(startFlaskFX);
+  /* 文案轮换 */
+  msgs.forEach(function (m, i) {
+    var last = i === msgs.length - 1;
+    tl.call(function () { line.textContent = m; if (last) line.classList.add('done'); });
+    tl.fromTo(line, { opacity: 0 }, { opacity: 1, duration: .18 });
+    if (i === 2) tl.to('#flask', { x: 2.2, duration: .05, repeat: 11, yoyo: true, ease: 'none' }, '+=.06'); /* 离心式高频抖动 */
+    if (!last) tl.to(line, { opacity: 0, duration: .2 }, '+=.42');
+    else {
+      /* 完成：高光扫过瓶身 + 双星弹出 */
+      tl.fromTo('#shine', { attr: { x: -70 }, opacity: 0 }, { opacity: .8, duration: .12 });
+      tl.to('#shine', { attr: { x: 155 }, duration: .5, ease: 'power1.inOut' }, '<');
+      tl.to('#shine', { opacity: 0, duration: .18 }, '<+=.32');
+      tl.fromTo('#sparkle', { scale: 0, rotate: -40, opacity: 0, transformOrigin: '50% 50%' }, { scale: 1, rotate: 0, opacity: 1, duration: .45, ease: 'back.out(3)' }, '<+=.08');
+      tl.fromTo('#sparkle2', { scale: 0, rotate: 30, opacity: 0, transformOrigin: '50% 50%' }, { scale: 1, rotate: 0, opacity: 1, duration: .4, ease: 'back.out(3)' }, '<+=.15');
+      tl.to({}, { duration: .4 });
+    }
+  });
+}
+
+function finishPrologue() {
+  var page = $('#page-result');
+  if (!page.classList.contains('lab-phase')) return;
+  if (prologueTL) { try { prologueTL.kill(); } catch (e) {} prologueTL = null; }
+  if (G) {
+    try { /* 跳过时把特效定稿：液体全红、星星常亮、扫光/液滴归零 */
+      G.set('#shine', { opacity: 0 });
+      G.set('#drop', { opacity: 0 });
+      G.set(['#sparkle', '#sparkle2'], { opacity: 1, scale: 1, rotate: 0 });
+      G.set(['#liquid', '#mini-liquid'], { attr: { fill: '#F26D6D' } });
+    } catch (e) {}
+  }
+  page.classList.remove('lab-phase');
+  document.body.classList.remove('locked');
+  var line = $('#lab-line');
+  line.textContent = '化验完成！';
+  line.classList.add('done');
+  line.style.opacity = '1';
+  $('#scroll-hint').classList.add('show');
+  $('#btn-skip').classList.add('hide');
+  setupResultScroll();
+}
+
+function makeFPSGuard(onSlow) {
+  var slow = 0, last = null, stopped = false;
+  function tick(t) {
+    if (stopped) return;
+    if (last !== null) {
+      var dt = t - last;
+      if (dt > 50) { slow++; if (slow >= 3) { stopped = true; onSlow(); return; } }
+      else slow = 0;
+    }
+    last = t;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  return { stop: function () { stopped = true; } };
+}
+function makeBubbles(canvas) {
+  var ctx = canvas.getContext('2d');
+  var W = 0, H = 0, bs = [], raf = 0, running = false, guard = null, dead = false;
+  function clearAll() { cancelAnimationFrame(raf); if (guard) guard.stop(); running = false; ctx.clearRect(0, 0, W, H); }
+  function size() { var r = canvas.parentElement.getBoundingClientRect(); W = canvas.width = Math.max(1, r.width); H = canvas.height = Math.max(1, r.height); }
+  function spawn() {
+    bs = [];
+    var n = W < 480 ? 14 : 22;
+    for (var i = 0; i < n; i++) bs.push({
+      x: Math.random() * W, y: H + Math.random() * H * .4,
+      r: 2 + Math.random() * 4.5, v: .35 + Math.random() * .85,
+      sw: Math.random() * Math.PI * 2, sws: .01 + Math.random() * .025,
+      c: Math.random() < .6 ? '242,109,109' : '143,214,192', a: .16 + Math.random() * .3,
+    });
+  }
+  function frame() {
+    if (!running) return;
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < bs.length; i++) {
+      var b = bs[i];
+      b.y -= b.v; b.sw += b.sws;
+      var x = b.x + Math.sin(b.sw) * 14;
+      if (b.y < -12) { b.y = H + 12; b.x = Math.random() * W; }
+      ctx.beginPath();
+      ctx.arc(x, b.y, b.r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(' + b.c + ',' + b.a.toFixed(3) + ')';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  return {
+    start: function () {
+      if (dead || running || RM) return;
+      size(); spawn(); running = true; frame();
+      guard = makeFPSGuard(function () { dead = true; clearAll(); });
+    },
+    stop: clearAll,
+  };
+}
+
+function setupResultScroll() {
+  if (!G || !window.ScrollTrigger) return;
+  var ST = ScrollTrigger;
+  bubbleSystem = makeBubbles($('#bubble-canvas'));
+  bubbleSystem.start();
+  resultTriggers.push(ST.create({
+    trigger: '#rs-lab', start: 'top bottom', end: 'bottom top',
+    onLeave: function () { if (bubbleSystem) bubbleSystem.stop(); },
+    onEnterBack: function () { if (bubbleSystem) bubbleSystem.start(); },
+  }));
+  function onEnter(sel, fn) { resultTriggers.push(ST.create({ trigger: sel, start: 'top 74%', once: true, onEnter: fn })); }
+  onEnter('#rs-index', playIndexScene);
+  onEnter('#rs-verdict', playVerdictScene);
+  onEnter('#rs-list', playListScene);
+  $$('#r-cmt .cmt-line').forEach(function (line) {
+    resultTriggers.push(ST.create({
+      trigger: line, start: 'top 88%', once: true,
+      onEnter: function () {
+        if (RM) { line.querySelectorAll('mark.hl').forEach(function (m) { m.classList.add('on'); }); return; }
+        G.fromTo(line, { y: 20, opacity: 0 }, {
+          y: 0, opacity: 1, duration: .55, ease: 'power2.out',
+          onComplete: function () { line.querySelectorAll('mark.hl').forEach(function (m) { m.classList.add('on'); }); },
+        });
+      },
+    }));
+  });
+  onEnter('#rs-end', playEndScene);
+}
+
+function playIndexScene() {
+  if (!G) return;
+  var rep = state.report;
+  var tl = G.timeline();
+  tl.from('#rs-index .sec-cap', { y: 16, opacity: 0, duration: .4, clearProps: 'all' }, 0);
+  tl.fromTo('#gauge-wrap', { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: .5, clearProps: 'opacity' }, 0);
+  if (!RM) {
+    G.set('.num-path', { strokeDasharray: 100, strokeDashoffset: 100 });
+    tl.to('.num-path', { strokeDashoffset: 0, duration: .45, stagger: .14, ease: 'power2.inOut' }, .15)
+      .to('#numGhost', { opacity: .16, duration: .35 }, '-=.25')
+      .to('#numWrap', { scale: 1.08, duration: .13, ease: 'power2.out' })
+      .to('#numWrap', { scale: 1, duration: .75, ease: 'elastic.out(1,.42)', clearProps: 'scale' })
+      .from('#num-label', { y: 12, opacity: 0, duration: .35, clearProps: 'all' }, '-=.5');
+    G.set('#needle', { rotation: -135, svgOrigin: '140 112' });
+    tl.to('#needle', { rotation: -135 + rep.index * 2.7, duration: 1.7, ease: 'power3.inOut' }, .3);
+  }
+}
+function playVerdictScene() {
+  if (!G) return;
+  var rep = state.report, idx = rep.index;
+  var tl = G.timeline();
+  tl.from('#rs-verdict .sec-cap', { y: 16, opacity: 0, duration: .4, clearProps: 'all' }, 0);
+  if (!RM) {
+    tl.from('#v-title .vchar', { scale: 2.4, opacity: 0, rotate: 22, duration: .42, stagger: .07, ease: 'back.out(2.2)', clearProps: 'transform,opacity' }, .1)
+      .from('#v-title .v-emoji', { scale: 0, rotate: -30, duration: .5, ease: 'back.out(3)', clearProps: 'all' }, '-=.2')
+      .fromTo('#stamp', { scale: 2.8, opacity: 0, rotate: 14 }, { scale: 1, opacity: 1, rotate: -7, duration: .4, ease: 'power4.in' }, '-=.15')
+      .to('#stamp-wrap', { x: -6, duration: .05, repeat: 5, yoyo: true, clearProps: 'x' })
+      .to('#stamp-post', { opacity: 1, scale: 1.25, duration: .3, yoyo: true, repeat: 1, clearProps: 'scale' }, '-=.2')
+      .fromTo('#bar-bad', { scaleX: 0 }, { scaleX: 1, transformOrigin: 'left center', duration: 1.1, ease: 'power2.out' }, '-=.5')
+      .fromTo('#bar-good', { scaleX: 0 }, { scaleX: 1, transformOrigin: 'right center', duration: 1.1, ease: 'power2.out' }, '<')
+      .from('.meter-legend', { y: 10, opacity: 0, duration: .35, clearProps: 'all' }, '-=.8');
+    var o = { v: 0 };
+    tl.to(o, { v: idx, duration: 1.1, ease: 'power2.out', onUpdate: function () {
+      $('#m-bad').textContent = Math.round(o.v) + '%';
+      $('#m-good').textContent = (100 - Math.round(o.v)) + '%';
+    } }, '<');
+  }
+  tl.from('#v-range', { opacity: 0, duration: .4, clearProps: 'all' }, RM ? 0 : '-=.4');
+}
+function playListScene() {
+  if (!G || RM) return;
+  G.timeline()
+    .from('#rs-list .sec-cap, #list-sub', { y: 16, opacity: 0, duration: .4, stagger: .12, clearProps: 'all' })
+    .from('.list-item', { x: 34, opacity: 0, duration: .42, stagger: .13, ease: 'power2.out', clearProps: 'transform,opacity' }, '-=.2')
+    .from('.li-badge', { scale: 0, rotate: -40, duration: .4, stagger: .13, ease: 'back.out(3)', clearProps: 'all' }, '-=.9');
+}
+function playEndScene() {
+  if (!G || RM) return;
+  G.timeline().from('.end-zone > *', { y: 20, opacity: 0, duration: .45, stagger: .09, ease: 'power2.out', clearProps: 'transform,opacity' });
+  var bs = $('#balloons');
+  G.to(bs, { y: -26, rotate: -3, duration: 2.4, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  G.to(bs, { x: 8, duration: 3.1, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: .4 });
+}
+
+/* ============================================================
+ * 10. 海报导出（称号/盖章/颜色按 10 档类型渲染）
+ * ============================================================ */
+function rr(ctx, x, y, w, h, r) {
+  if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); return; }
+  var k = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + k, y);
+  ctx.lineTo(x + w - k, y); ctx.quadraticCurveTo(x + w, y, x + w, y + k);
+  ctx.lineTo(x + w, y + h - k); ctx.quadraticCurveTo(x + w, y + h, x + w - k, y + h);
+  ctx.lineTo(x + k, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - k);
+  ctx.lineTo(x, y + k); ctx.quadraticCurveTo(x, y, x + k, y);
+  ctx.closePath();
+}
+function makePoster() {
+  var rep = state.report, type = rep.type, idx = rep.index;
+  var W = 1080, padX = 72, CW = W - padX * 2;
+  var INK = '#2B2B2B', RED = '#E14D4D', GREEN = '#3AA98A';
+  function F(w, s) { return w + ' ' + s + 'px "PingFang SC","Microsoft YaHei",sans-serif'; }
+  var mctx = document.createElement('canvas').getContext('2d');
+  var cFont = 27, cLH = 46, cGap = 18;
+  mctx.font = F(500, cFont);
+  var cmtLayout = rep.sentences.map(function (segs) {
+    var cx = 0, lines = 1;
+    segs.forEach(function (g) {
+      for (var i = 0; i < g.t.length; i++) {
+        var ch = g.t.charAt(i), w = mctx.measureText(ch).width;
+        if (cx + w > CW) { lines++; cx = 0; }
+        cx += w;
+      }
+    });
+    return { segs: segs, h: lines * cLH + cGap };
+  });
+  var cmtH = 0;
+  cmtLayout.forEach(function (b) { cmtH += b.h; });
+  var listH = rep.list.length * 92 + (rep.list.length - 1) * 18;
+  var H = 330 + 300 + 170 + 96 + listH + 96 + cmtH + 210;
+  var s = Math.min(2, window.devicePixelRatio || 1);
+  if (H * s > 4000) s = 4000 / H;
+  var canvas = document.createElement('canvas');
+  canvas.width = Math.round(W * s); canvas.height = Math.round(H * s);
+  var ctx = canvas.getContext('2d');
+  ctx.scale(s, s);
+
+  ctx.fillStyle = '#F7F0F2'; ctx.fillRect(0, 0, W, H);
+  var dot = document.createElement('canvas'); dot.width = dot.height = 24;
+  var dctx = dot.getContext('2d');
+  dctx.fillStyle = 'rgba(43,43,43,.05)'; dctx.beginPath(); dctx.arc(6, 6, 1.4, 0, 7); dctx.fill();
+  ctx.fillStyle = ctx.createPattern(dot, 'repeat'); ctx.fillRect(0, 0, W, H);
+
+  ctx.save(); ctx.translate(150, 44); ctx.rotate(-.12);
+  ctx.fillStyle = 'rgba(251,231,161,.9)'; rr(ctx, -95, -14, 190, 30, 4); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.translate(W - 150, 44); ctx.rotate(.1);
+  ctx.fillStyle = 'rgba(251,231,161,.9)'; rr(ctx, -95, -14, 190, 30, 4); ctx.fill(); ctx.restore();
+
+  ctx.textAlign = 'center'; ctx.fillStyle = INK;
+  ctx.font = F(900, 66); ctx.fillText('渣渣检测报告', W / 2, 150);
+  ctx.font = F(700, 22); ctx.fillStyle = 'rgba(43,43,43,.55)';
+  ctx.fillText('SCUM INDEX · 渣渣检测中心 · 样本 ' + rep.sample + ' · ' + rep.date, W / 2, 198);
+  ctx.strokeStyle = RED; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath();
+  var wx = W / 2 - 180; ctx.moveTo(wx, 224);
+  for (var wi = 0; wi < 6; wi++) { ctx.quadraticCurveTo(wx + 30, 224 + (wi % 2 ? -12 : 12), wx + 60, 224); wx += 60; }
+  ctx.stroke();
+
+  var y = 300;
+  ctx.textAlign = 'left';
+  ctx.font = F(800, 26); ctx.fillStyle = 'rgba(43,43,43,.6)'; ctx.fillText('你的渣渣指数', padX, y);
+  ctx.save(); ctx.translate(padX + 14, y + 168); ctx.rotate(-.05);
+  ctx.font = F(900, 150); ctx.fillStyle = type.color;
+  ctx.fillText(idx + '%', 0, 0); ctx.restore();
+  ctx.save(); ctx.translate(W - padX - 340, y + 40); ctx.rotate(-.02);
+  ctx.font = F(900, 46); ctx.fillStyle = INK; ctx.fillText('【' + type.name + '】', 0, 46);
+  ctx.font = F(900, 34); ctx.strokeStyle = RED; ctx.lineWidth = 5; ctx.fillStyle = RED;
+  var vw = ctx.measureText(type.verdict).width + 56;
+  ctx.save(); ctx.rotate(-.06); rr(ctx, 0, 76, vw, 78, 16); ctx.stroke(); ctx.fillText(type.verdict, 28, 128); ctx.restore();
+  ctx.restore();
+
+  y = 600;
+  ctx.font = F(800, 26); ctx.fillStyle = RED; ctx.fillText('渣化程度 ' + idx + '%', padX, y);
+  ctx.textAlign = 'right'; ctx.fillStyle = GREEN; ctx.fillText('救赎进度 ' + (100 - idx) + '%', W - padX, y);
+  ctx.textAlign = 'left';
+  var trackY = y + 24, trackH = 40;
+  ctx.fillStyle = '#FFFDF9'; rr(ctx, padX, trackY, CW, trackH, 20); ctx.fill();
+  ctx.lineWidth = 5; ctx.strokeStyle = INK; rr(ctx, padX, trackY, CW, trackH, 20); ctx.stroke();
+  ctx.save(); rr(ctx, padX, trackY, CW, trackH, 20); ctx.clip();
+  ctx.fillStyle = '#F26D6D'; ctx.fillRect(padX, trackY, CW * idx / 100, trackH);
+  ctx.fillStyle = '#8FD6C0'; ctx.fillRect(padX + CW * idx / 100, trackY, CW, trackH);
+  ctx.restore();
+
+  y = trackY + trackH + 76;
+  ctx.font = F(900, 36); ctx.fillStyle = INK; ctx.fillText('渣渣行为清单 📋', padX, y);
+  ctx.strokeStyle = type.color; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(padX, y + 14); ctx.lineTo(padX + 250, y + 14); ctx.stroke();
+  y += 40;
+  rep.list.forEach(function (x) {
+    ctx.fillStyle = '#FFFDF9'; rr(ctx, padX, y, CW, 74, 16); ctx.fill();
+    ctx.lineWidth = 4; ctx.strokeStyle = INK; rr(ctx, padX, y, CW, 74, 16); ctx.stroke();
+    ctx.font = F(500, 30); ctx.fillText(x.e, padX + 18, y + 49);
+    ctx.font = F(700, 27); ctx.fillStyle = INK; ctx.fillText(x.t, padX + 66, y + 48);
+    ctx.beginPath(); ctx.arc(W - padX - 42, y + 37, 22, 0, 7);
+    ctx.fillStyle = x.d ? '#8FD6C0' : '#FFD9D9'; ctx.fill();
+    ctx.lineWidth = 3.5; ctx.strokeStyle = INK; ctx.stroke();
+    ctx.font = F(900, 26); ctx.fillStyle = x.d ? INK : RED; ctx.textAlign = 'center';
+    ctx.fillText(x.d ? '✓' : '✗', W - padX - 42, y + 46); ctx.textAlign = 'left';
+    y += 92;
+  });
+
+  y += 20;
+  ctx.font = F(900, 36); ctx.fillStyle = INK; ctx.fillText('检测员锐评 🖊️', padX, y);
+  ctx.strokeStyle = type.color; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(padX, y + 14); ctx.lineTo(padX + 250, y + 14); ctx.stroke();
+  y += 42;
+  cmtLayout.forEach(function (line) {
+    var cx = padX, cy = y;
+    line.segs.forEach(function (g) {
+      ctx.font = F(g.hl ? 800 : 500, cFont);
+      ctx.fillStyle = g.hl ? RED : 'rgba(43,43,43,.9)';
+      for (var i = 0; i < g.t.length; i++) {
+        var ch = g.t.charAt(i), w = ctx.measureText(ch).width;
+        if (cx + w > padX + CW) { cx = padX; cy += cLH; }
+        ctx.fillText(ch, cx, cy); cx += w;
+      }
+    });
+    y = cy + cLH + cGap;
+  });
+
+  ctx.setLineDash([12, 10]); ctx.strokeStyle = 'rgba(43,43,43,.35)'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(padX, H - 130); ctx.lineTo(W - padX, H - 130); ctx.stroke(); ctx.setLineDash([]);
+  ctx.textAlign = 'center'; ctx.font = F(600, 22); ctx.fillStyle = 'rgba(43,43,43,.55)';
+  ctx.fillText('本测试纯属娱乐，不构成对任何人的真实评价。', W / 2, H - 88);
+  ctx.font = F(800, 22);
+  ctx.fillText('渣渣检测中心 · 第 ' + rep.count + ' 份报告 · SCUM INDEX', W / 2, H - 52);
+  return canvas;
+}
+
+function downloadCanvas(canvas) {
+  var a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = '渣渣检测报告-' + state.report.index + '分.png';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function openPosterModal(canvas) {
+  $('#pm-img').src = canvas.toDataURL('image/png');
+  $('#pm-tip').textContent = matchMedia('(pointer: coarse)').matches ? '长按图片保存到相册' : '右键图片另存为，或点下方下载';
+  $('#poster-modal').classList.add('show');
+  requestAnimationFrame(function () { $('#pm-card').classList.add('show'); });
+  document.body.classList.add('locked');
+}
+function closePosterModal() {
+  $('#pm-card').classList.remove('show');
+  $('#poster-modal').classList.remove('show');
+  $('#pm-img').src = '';
+  document.body.classList.remove('locked');
+}
+function saveReport() {
+  toast('正在生成报告长图…', 1800);
+  var canvas = makePoster();
+  var isMobile = matchMedia('(pointer: coarse)').matches;
+  if (isMobile && navigator.canShare) {
+    var blobP = new Promise(function (res) { canvas.toBlob(res, 'image/png'); });
+    blobP.then(function (blob) {
+      if (!blob) { openPosterModal(canvas); return; }
+      var file = new File([blob], 'scum-report.png', { type: 'image/png' });
+      if (navigator.canShare({ files: [file] })) {
+        return navigator.share({ files: [file], title: '渣渣检测报告', text: '我的渣渣指数 ' + state.report.index + '%，' + state.report.type.name + '！' })
+          .catch(function (e) { if (e && e.name === 'AbortError') return; openPosterModal(canvas); });
+      }
+      openPosterModal(canvas);
+    }).catch(function () { openPosterModal(canvas); });
+    return;
+  }
+  if (isMobile) openPosterModal(canvas);
+  else { downloadCanvas(canvas); toast('报告已保存到下载目录 📥'); }
+}
+
+/* ============================================================
+ * 11. 抽屉 / 事件绑定 / 启动
+ * ============================================================ */
+function openDrawer() {
+  $('#drawer-mask').classList.add('show');
+  requestAnimationFrame(function () { $('#drawer').classList.add('show'); });
+}
+function closeDrawer() {
+  $('#drawer').classList.remove('show');
+  $('#drawer-mask').classList.remove('show');
+}
+
+onTap($('#gate-btn'), tryUnlock);
+ $('#gate-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
+ $('#gate-input').addEventListener('input', function () {
+  this.value = this.value.replace(/\D/g, '').slice(0, 4);
+  $('#gate-err').classList.remove('show');
+  clearTimeout(this._auto);
+  if (this.value.length === 4) {
+    var self = this;
+    this._auto = setTimeout(function () {
+      if (/^\d{4}$/.test(self.value)) tryUnlock();
+    }, 350);
+  }
+});
+
+onTap($('#btn-start'), startQuiz);
+onTap($('#btn-how'), function () { toast('12 道情境题 × 每题 4 个选项，每个选项背后都藏着 0–10 的渣度权重（答题时不提示），答完自动出具渣渣检测报告 🧪'); });
+onTap($('#btn-back'), function () { clearTimeout(state.timer); toast('本次进度已丢弃'); showPage('home'); });
+onTap($('#btn-report'), enterResult);
+onTap($('#btn-save'), saveReport);
+onTap($('#btn-again'), function () { toast('已为你抽了 12 道新题 🎣'); startQuiz(); });
+onTap($('#btn-howcalc'), openDrawer);
+onTap($('#btn-drawer-close'), closeDrawer);
+onTap($('#drawer-mask'), closeDrawer);
+onTap($('#btn-pm-close'), closePosterModal);
+onTap($('#btn-pm-save'), function () { downloadCanvas(makePoster()); });
+onTap($('#poster-modal'), function (e) { if (e.target === $('#poster-modal')) closePosterModal(); });
+onTap($('#btn-skip'), finishPrologue);
+
+window.addEventListener('resize', function () { if (bubbleSystem) bubbleSystem.stop(); });
+
+function boot() {
+  try {
+    var code = null;
+    try { code = new URLSearchParams(location.search).get('code'); } catch (e) { code = null; }
+    if (code && /^\d{4}$/.test(code)) {
+      $('#gate-input').value = code;
+      if (code === ACCESS_CODE) {
+        store.set('scum_unlocked', 1);
+        hideGate();
+        startQuiz();
+        toast('访问码已自动验证 ✨');
+        return;
+      }
+      gateError('链接里的访问码不对，手动再试试？');
+    }
+    resetToEntry();
+  } catch (e) { resetToEntry(); }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+window.addEventListener('pageshow', function (e) { if (e.persisted) resetToEntry(); });
+
+window.__SCUM_OK = true;
+
+/* ============================================================
+ * 12. 文件末尾自检断言
+ * ============================================================ */
+(function assertions() {
+  var A = function (cond, msg) { console.assert(cond, '❌ 自检失败：' + msg); };
+  A(/^\d{4}$/.test(ACCESS_CODE), '门禁码必须为 4 位纯数字');
+  A(LOVE_SCENES.length === 50 && SOCIAL_SCENES.length === 50, '场景池应各 50 个（共 100 个）');
+  var names = LOVE_SCENES.concat(SOCIAL_SCENES).map(function (s) { return s.name; });
+  A(new Set(names).size === 100, '100 个场景名应互不重复');
+  var optSets = LOVE_SCENES.concat(SOCIAL_SCENES).map(function (s) { return s.opts.map(function (o) { return o.t; }).join('¦'); });
+  A(new Set(optSets).size === 100, '100 个场景选项组应彼此独立');
+  A(SCENE_QUESTIONS.length === 400, '程序化场景题应恰好 400 题（实际 ' + SCENE_QUESTIONS.length + '）');
+  A(QUESTION_BANK.length === BASE_QUESTIONS.length + SCENE_QUESTIONS.length, '抽题池应 = 基准题 + 场景题');
+  A(new Set(QUESTION_BANK.map(function (q) { return q.title; })).size === QUESTION_BANK.length, '全部题干必须唯一');
+  var okOpt = true;
+  QUESTION_BANK.forEach(function (q) {
+    if (q.options.length !== 4) { okOpt = false; return; }
+    for (var i = 0; i < 4; i++) { var w = q.options[i].w; if (!(typeof w === 'number' && w >= 0 && w <= 10)) okOpt = false; }
+  });
+  A(okOpt, '每题应恰有 4 个选项且权重为 0–10');
+  var covered = true;
+  for (var s = 0; s <= 100; s++) { if (!TIERS.some(function (t) { return s >= t.min && s <= t.max; })) covered = false; }
+  A(covered, '5 大档区间应完整覆盖 0–100 无缝隙');
+  A(TIERS[0].min === 0 && TIERS[TIERS.length - 1].max === 100, '大档区间应从 0 覆盖到 100');
+  A(TYPES.length === 10, '结果类型应细分为 10 档');
+  var typeOK = true;
+  for (var v = 0; v <= 100; v++) { if (!TYPES.some(function (t) { return v >= t.min && v <= t.max; })) typeOK = false; }
+  A(typeOK, '10 个类型区间应完整覆盖 0–100 无缝隙');
+  A(TYPES[0].min === 0 && TYPES[TYPES.length - 1].max === 100, '类型区间应从 0 到 100');
+  A(TYPES.every(function (t, i, a) { return i === 0 || t.min === a[i - 1].max + 1; }), '类型区间应连续无缝');
+  TYPES.forEach(function (t) {
+    A(!!t.name && !!t.emoji && !!t.verdict && !!t.color, '每个类型应配齐称号 / emoji / 结论 / 颜色');
+    A(TIERS.some(function (m) { return t.min >= m.min && t.max <= m.max; }), t.name + ' 应完整落在某一大档区间内');
+  });
+  TIERS.forEach(function (t) {
+    A(t.openers.length >= 2 && t.tails.length >= 2 && t.list.length >= 6 && t.verdict, t.name + '：模板库应齐备');
+    var mid = Math.floor((t.min + t.max) / 2);
+    var raw = buildComment(mid);
+    var len = raw.replace(/\{\{|\}\}/g, '').length;
+    A(len >= 200 && len <= 350, t.name + '：评语应 200–350 字（实测 ' + len + '）');
+    var hl = (raw.match(/\{\{/g) || []).length;
+    A(hl >= 4 && hl <= 8, t.name + '：高亮短语应 4–8 处（实测 ' + hl + '）');
+    A(splitSentences(raw).length >= 4 && splitSentences(raw).length <= 7, t.name + '：评语应为 4–7 句');
+  });
+  console.log('%c渣渣检测中心 · 自检完成 ✓（题库 ' + QUESTION_BANK.length + ' 题 = 12 基准 + 400 场景；10 档类型）', 'color:#F26D6D;font-weight:bold;');
+})();
+</script>
+</body>
+</html>
