@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F0C18">
+<title>好玩研究所 · 点一个，测测你自己</title>
+<meta name="description" content="好玩研究所：一个装满趣味测试的地方。前世人物志、做人成绩单、人格小瓶子、渣渣检测中心……点一个，测测你自己。">
+<meta property="og:title" content="好玩研究所">
+<meta property="og:description" content="点一个，测测你自己">
+<meta property="og:type" content="website">
+<script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<canvas id="glow" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">趣味测试 · 点着玩</p>
+    <h1 class="brand" id="brand">好玩研究所</h1>
+    <p class="tagline" id="tagline">点一个，测测你自己</p>
+    <button class="scroll-hint" type="button" id="scrollHint">看看都有什么<span class="arrow">↓</span></button>
+  </header>
+
+  <main class="gallery">
+    <p class="section-label">全 部 测 试</p>
+    <div class="test-grid" id="testGrid">
+      <noscript><p class="grid-empty">列表需要开启 JavaScript 才能显示。</p></noscript>
+    </div>
+  </main>
+
+  <footer>© Endeavour-Yuan<span class="dot">·</span>好玩研究所</footer>
+</div>
+
+<script type="module" src="./main.js"></script>
+<script>
+  /* 安全兜底：即使入口脚本加载失败，也不让首页内容永久隐藏 */
+  setTimeout(function () {
+    document.querySelectorAll('.eyebrow,.tagline,.scroll-hint,.brand .ch')
+      .forEach(function (el) { el.classList.add('in'); });
+  }, 2600);
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+/* =====================================================================
+   好玩研究所 · 首页样式
+   主题：赛博糖果（深色底 + 霓虹糖果色 + 圆角玻璃卡片）
+   ===================================================================== */
+
+:root{
+  --bg:#0F0C18;
+  --text:#F4F1FF;
+  --muted:#A79FC6;
+  --line:rgba(255,255,255,.12);
+  --surface:rgba(255,255,255,.055);
+  --surface-2:rgba(255,255,255,.10);
+
+  --pink:#FF5FA2;
+  --mint:#5CF2CE;
+  --violet:#A78BFA;
+  --yellow:#FFD166;
+  --coral:#FF8A5B;
+
+  --font: ui-rounded, "SF Pro Rounded", "PingFang SC", "Hiragino Sans GB",
+          "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{min-height:100%}
+
+body{
+  font-family:var(--font);
+  color:var(--text);
+  background:
+    radial-gradient(85% 55% at 12% 0%,  rgba(167,139,250,.26), transparent 60%),
+    radial-gradient(75% 55% at 92% 6%,  rgba(92,242,206,.18),  transparent 55%),
+    radial-gradient(90% 65% at 50% 108%, rgba(255,95,162,.20),  transparent 62%),
+    linear-gradient(180deg,#15111F 0%, var(--bg) 55%, #0B0912 100%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* 细颗粒噪点，增加质感 */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:radial-gradient(rgba(255,255,255,.10) .8px, transparent 1px);
+  background-size:26px 26px;
+  -webkit-mask-image:radial-gradient(120% 90% at 50% 0%, #000 15%, transparent 80%);
+          mask-image:radial-gradient(120% 90% at 50% 0%, #000 15%, transparent 80%);
+}
+
+#glow{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ============================ 头部 ============================ */
+.hero{
+  min-height:78svh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:96px 0 40px;
+}
+.eyebrow{
+  font-size:13px;letter-spacing:.34em;text-indent:.34em;font-weight:600;
+  color:var(--mint);text-transform:uppercase;margin-bottom:20px;
+  display:inline-flex;align-items:center;gap:14px;
+}
+.eyebrow::before,.eyebrow::after{
+  content:"";width:30px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--mint),transparent);opacity:.7;
+}
+.brand{
+  font-size:clamp(52px,11vw,108px);font-weight:900;letter-spacing:.03em;line-height:1.06;
+  display:flex;justify-content:center;gap:.03em;
+  color:var(--text);
+  filter:drop-shadow(0 10px 40px rgba(167,139,250,.30));
+}
+/* 每个字由 JS 赋一个霓虹糖果色 + 同色描边光晕 */
+.brand .ch{display:inline-block;will-change:transform,opacity,filter}
+.tagline{
+  margin-top:18px;font-size:clamp(15px,3.2vw,19px);letter-spacing:.14em;color:var(--muted);
+}
+.scroll-hint{
+  margin-top:46px;display:inline-flex;flex-direction:column;align-items:center;gap:8px;
+  font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.24em;text-indent:.24em;
+  color:var(--muted);background:transparent;border:0;cursor:pointer;padding:8px 12px;border-radius:12px;
+  transition:color .3s ease,background .3s ease;
+}
+.scroll-hint:hover{color:var(--text);background:var(--surface)}
+.scroll-hint .arrow{font-size:16px;animation:bob 1.9s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(7px);opacity:1}}
+
+/* ============================ 卡片区 ============================ */
+.gallery{padding:6px 0 40px}
+.section-label{
+  font-size:12px;letter-spacing:.4em;text-indent:.4em;color:var(--muted);
+  text-align:center;margin:0 0 22px;
+}
+.test-grid{
+  display:grid;gap:18px;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+}
+
+.test-card{
+  /* 变换分量统一走 CSS 变量，避免「入场动画 / hover 抬升 / 3D 跟随」互相覆盖 */
+  --ty:0px; --sc:1; --rx:0deg; --ry:0deg;
+  --c1:var(--violet); --c2:#CDBBFF;
+  --glow:rgba(167,139,250,.45); --soft:rgba(167,139,250,.16); --edge:rgba(167,139,250,.45);
+
+  position:relative;display:flex;align-items:center;gap:16px;
+  padding:20px;border-radius:22px;text-decoration:none;color:inherit;
+  background:var(--surface);
+  border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(12px) saturate(140%);
+          backdrop-filter:blur(12px) saturate(140%);
+  box-shadow:0 16px 40px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.09);
+  transform:perspective(900px) translateY(var(--ty)) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--sc));
+  transition:transform .38s cubic-bezier(.2,.9,.3,1), box-shadow .35s ease,
+             border-color .35s ease, background .35s ease;
+  overflow:hidden;
+}
+/* 顶部霓虹细线 */
+.test-card::before{
+  content:"";position:absolute;left:14px;right:14px;top:0;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--c1),var(--c2),transparent);
+  opacity:.5;transition:opacity .35s ease;
+}
+/* hover 霓虹光晕 */
+.test-card::after{
+  content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(120% 120% at 0% 0%, var(--glow), transparent 55%);
+  opacity:0;transition:opacity .4s ease;
+}
+.test-card:hover,.test-card:focus-visible{
+  background:var(--surface-2);
+  border-color:transparent;
+  box-shadow:0 26px 60px -24px var(--glow), 0 0 0 1px var(--c1) inset,
+             inset 0 1px 0 rgba(255,255,255,.14);
+  outline:none;
+}
+.test-card:hover::before,.test-card:focus-visible::before{opacity:1}
+.test-card:hover::after,.test-card:focus-visible::after{opacity:.5}
+/* 抬升：仅在已入场后生效，且优先级高于入场状态 */
+.test-card.in:hover,.test-card.in:focus-visible{--ty:-6px}
+
+.test-icon{
+  flex:none;width:56px;height:56px;border-radius:17px;display:grid;place-items:center;
+  font-size:26px;line-height:1;
+  background:linear-gradient(140deg,var(--c1),var(--c2));
+  box-shadow:0 10px 26px -10px var(--glow), inset 0 0 0 1px rgba(255,255,255,.25);
+  transition:transform .45s cubic-bezier(.2,1.5,.4,1);
+}
+.test-card:hover .test-icon,.test-card:focus-visible .test-icon{transform:rotate(-6deg) scale(1.08)}
+
+.test-body{display:flex;flex-direction:column;gap:4px;min-width:0;z-index:1}
+.test-tag{
+  align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.16em;
+  color:var(--c2);background:var(--soft);border:1px solid var(--edge);
+  padding:2px 9px;border-radius:999px;margin-bottom:3px;
+}
+.test-title{font-size:20px;font-weight:800;letter-spacing:.02em}
+.test-sub{font-size:13.5px;color:var(--muted);letter-spacing:.03em}
+
+.test-go{
+  margin-left:auto;flex:none;font-size:20px;color:var(--muted);z-index:1;
+  transition:transform .35s ease,color .35s ease;
+}
+.test-card:hover .test-go,.test-card:focus-visible .test-go{transform:translateX(5px);color:var(--c2)}
+
+.grid-empty{
+  grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 0;font-size:14px;
+}
+
+footer{
+  text-align:center;padding:22px 0 64px;color:var(--muted);
+  font-size:12.5px;letter-spacing:.14em;
+}
+footer .dot{color:var(--violet);margin:0 8px}
+
+/* ============================ 动画初态 ============================ */
+.js .eyebrow,.js .tagline,.js .scroll-hint{opacity:0;transform:translateY(14px)}
+.js .brand .ch{opacity:0;filter:blur(12px);transform:translateY(22px) scale(.92)}
+.js .test-card{opacity:0;--ty:34px;--sc:.96}
+
+.js .eyebrow.in,.js .tagline.in,.js .scroll-hint.in{
+  opacity:1;transform:none;transition:opacity .8s ease,transform .8s ease;
+}
+.js .brand .ch.in{
+  opacity:1;filter:none;transform:none;
+  transition:opacity .7s ease,filter .7s ease,transform .7s cubic-bezier(.2,1.6,.35,1);
+}
+.js .test-card.in{
+  opacity:1;--ty:0px;--sc:1;
+  transition:opacity .6s ease, transform .6s cubic-bezier(.2,1.35,.35,1),
+             box-shadow .35s ease, border-color .35s ease, background .35s ease;
+}
+
+@media (max-width:560px){
+  .hero{min-height:70svh;padding:72px 0 32px}
+  .test-grid{grid-template-columns:1fr;gap:14px}
+  .test-icon{width:50px;height:50px;font-size:23px;border-radius:15px}
+  .test-title{font-size:18.5px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .scroll-hint .arrow{animation:none}
+  .js .eyebrow,.js .tagline,.js .scroll-hint,.js .brand .ch{opacity:1;filter:none;transform:none}
+  .js .test-card{opacity:1;--ty:0px;--sc:1}
+  .test-card,.test-icon,.test-go{transition:none !important}
+  .test-card.in:hover,.test-card.in:focus-visible{--ty:0px}
+}

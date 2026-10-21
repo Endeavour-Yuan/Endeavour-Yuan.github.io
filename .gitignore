@@ -1,0 +1,7 @@
+node_modules/
+dist/
+
+# 本地可视化/临时产物
+.DS_Store
+.superpowers/
+*.log
