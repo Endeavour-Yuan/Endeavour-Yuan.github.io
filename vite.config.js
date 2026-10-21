@@ -63,6 +63,7 @@ export default defineConfig({
         person_report: page('person_report'),
         personality_bottles: page('personality_bottles'),
         scum_report: page('scum_report'),
+        scum_report: page('attachment'),
       },
     },
   },
