@@ -55,4 +55,13 @@ export const tests = [
     tag: '娱乐',
     accent: 'yellow',
   },
+  {
+    id: 'attachment',
+    title: '依恋测试',
+    subtitle: '测测亲密关系,你站在哪里',
+    href: 'attachment.html',
+    emoji: '😶‍🌫️',
+    tag: '娱乐',
+    accent: 'green',
+  },
 ]

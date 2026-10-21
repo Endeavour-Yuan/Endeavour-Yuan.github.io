@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FBF8F3">
+<title>屿 · 成人依恋风格测试</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          cream: '#FBF8F3', ink: '#39434E', inksoft: '#6E7887',
+          mist:  { DEFAULT:'#A9C9E8', deep:'#5F89B6', soft:'#DCE9F6' },
+          blush: { DEFAULT:'#F2CFD6', deep:'#D998A6', soft:'#F6DCE1' },
+          lilac: { DEFAULT:'#D9D3EE', deep:'#9A8CCB', soft:'#E6E1F5' },
+          sand:  { DEFAULT:'#F5E6D0', deep:'#CDA97E', soft:'#F5E6D0' },
+          line: '#E7E0D2'
+        },
+        fontFamily: {
+          serif: ['"Noto Serif SC"', 'Songti SC', 'serif'],
+          sans:  ['"Noto Sans SC"', 'PingFang SC', '-apple-system', 'sans-serif']
+        },
+        boxShadow: {
+          card: '0 10px 30px -12px rgba(122,150,180,.28)',
+          soft: '0 20px 44px -20px rgba(122,150,180,.38)'
+        }
+      }
+    }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: #FBF8F3; overflow-x: hidden; }
+  :root { --tc-soft: #DCE9F6; --tc-deep: #5F89B6; }
+  .blob { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+  .float-dot { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; opacity: .55; }
+
+  /* ============ 验证码门 ============ */
+  #gate {
+    background: rgba(251, 248, 243, .74);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .gc {
+    width: 56px; height: 64px; border-radius: 16px; border: 1.5px solid #E3DCCC;
+    background: #FDFBF7; text-align: center; outline: none;
+    font-family: 'Noto Serif SC', serif; font-size: 26px; font-weight: 600; color: #39434E;
+    transition: border-color .18s ease, background-color .18s ease, transform .18s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .gc:focus { border-color: #A9C9E8; background: #FFFFFF; transform: translateY(-2px); }
+  .gc.bad { border-color: #E39AA2; background: #FBEDEF; }
+  .gc.ok  { border-color: #7FBF9F; background: #EDF7F0; }
+  .gc:disabled { opacity: 1; }
+
+  /* ============ 选项按钮 ============ */
+  .opt { transition: transform .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease; -webkit-tap-highlight-color: transparent; }
+  .opt:active { transform: scale(.965); }
+  .opt.is-on { background-color: #DCE9F6; border-color: #5F89B6; box-shadow: 0 8px 18px -10px rgba(95,137,182,.5); }
+  .opt.is-on .opt-txt { font-weight: 500; color: #2F3B47; }
+  .opt-cells { display: flex; align-items: flex-end; gap: 3px; height: 20px; flex-shrink: 0; width: 42px; justify-content: center; }
+  .opt-cell  { display: block; width: 5px; border-radius: 99px; background: #E7E2D5; transition: background-color .22s ease; }
+  .opt-cell.lit { background: #CDC6B4; }
+  .opt.is-on .opt-cell.lit { background: #5F89B6; }
+
+  /* ============ 按钮通用 ============ */
+  .btn-main { transition: transform .18s ease, box-shadow .18s ease; -webkit-tap-highlight-color: transparent; }
+  .btn-main:active { transform: scale(.96); }
+  .btn-ghost { transition: transform .18s ease, background-color .18s ease; -webkit-tap-highlight-color: transparent; }
+  .btn-ghost:active { transform: scale(.96); }
+  .nav-btn { transition: all .18s ease; -webkit-tap-highlight-color: transparent; }
+  .nav-btn:disabled { opacity: .35; pointer-events: none; }
+  .nav-btn:active { transform: scale(.95); }
+  #btn-next.is-ready { background: #5F89B6; color: #fff; border-color: #5F89B6; box-shadow: 0 10px 22px -10px rgba(95,137,182,.55); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .opt:hover { transform: scale(1.015); background-color: #EEF4FB; border-color: #A9C9E8; }
+    .opt:hover .opt-cell.lit { background: #9CC0E4; }
+    .btn-main:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 16px 30px -14px rgba(95,137,182,.6); }
+    .btn-ghost:hover { transform: translateY(-1px); background-color: #F3EFE6; }
+    #btn-next.is-ready:hover { transform: translateY(-1px); }
+  }
+
+  /* ============ 首页星系 ============ */
+  #home-stage { will-change: transform; }
+  #g-me, #g-you { cursor: pointer; }
+  .tilt { transform-box: fill-box; transform-origin: center; }
+  .ring-half { fill: none; stroke-width: 1; stroke-dasharray: 2 6; opacity: 0; }
+  .twinkle { animation: tw 3s ease-in-out infinite alternate; }
+  @keyframes tw { from { opacity: .15; } to { opacity: .85; } }
+
+  /* ============ 结果卡片标题行 ============ */
+  .card-head { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid rgba(231,224,210,.75); }
+  .card-ic {
+    width: 36px; height: 36px; border-radius: 13px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--tc-soft); color: var(--tc-deep);
+  }
+
+  /* ============ 解读重点：荧光笔扫入 ============ */
+  .mk {
+    font-style: normal; font-weight: 600; color: var(--tc-deep);
+    background-image: linear-gradient(var(--tc-soft), var(--tc-soft));
+    background-repeat: no-repeat; background-size: 0% 60%; background-position: 0 70%;
+    border-radius: 3px; padding: 0 2px;
+    transition: background-size .65s cubic-bezier(.22,.8,.3,1);
+  }
+  .mk.on { background-size: 100% 60%; }
+
+  /* ============ 小剧场：3D 球 + 完整表情 ============ */
+  #mode-stage { overflow: hidden; }
+  .m-ball {
+    position: absolute; left: 50%; top: 50%;
+    width: 62px; height: 62px; margin: -31px 0 0 -31px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600; color: #fff;
+    box-shadow: 0 10px 20px -8px rgba(90,110,140,.4);
+  }
+  .m-ball::before { content: ''; position: absolute; left: 18%; top: 12%; width: 30%; height: 20%; border-radius: 50%; background: rgba(255,255,255,.55); filter: blur(1.5px); }
+  .m-shadow { position: absolute; left: 50%; top: 112px; width: 54px; height: 11px; margin-left: -27px; border-radius: 50%; background: #39434E; opacity: .09; filter: blur(2.5px); }
+  .m-face { position: absolute; left: 50%; top: 19%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 2; }
+  .m-eye { width: 10px; height: 12px; background: #fff; border-radius: 50%; position: relative; overflow: hidden; display: block; animation: blink 4.8s infinite; }
+  #m-ta .m-eye { animation-delay: .5s; }
+  #m-me .m-eye { animation-delay: 1.3s; }
+  .m-pupil { position: absolute; left: 50%; top: 58%; width: 5px; height: 5px; background: #39434E; border-radius: 50%; transform: translate(-50%,-50%); transition: transform .4s ease; }
+  .pupil-big .m-pupil { width: 6.5px; height: 6.5px; }
+  .look-r  .m-pupil { transform: translate(-22%,-58%); }
+  .look-l  .m-pupil { transform: translate(-78%,-58%); }
+  .look-ur .m-pupil { transform: translate(-25%,-105%); }
+  .m-ball.closed .m-eye { animation: none; transform: scaleY(.14); }
+  .m-blush { position: absolute; top: 43%; width: 9px; height: 5px; border-radius: 50%; background: rgba(255,128,128,.42); opacity: 0; transition: opacity .4s ease; z-index: 2; }
+  .m-blush.l { left: 14%; } .m-blush.r { right: 14%; }
+  .blush-on .m-blush { opacity: 1; }
+  .m-mouth { position: absolute; left: 50%; top: 53%; transform: translateX(-50%); width: 11px; height: 6px; z-index: 2; }
+  .mouth-smile { border-bottom: 2.5px solid rgba(255,255,255,.92); border-radius: 0 0 11px 11px; }
+  .mouth-flat  { width: 9px; height: 2.5px; background: rgba(255,255,255,.85); border-radius: 3px; }
+  .mouth-o     { width: 7px; height: 8px; border: 2.4px solid rgba(255,255,255,.92); border-radius: 50%; }
+  .mouth-frown { border-top: 2.5px solid rgba(255,255,255,.92); border-radius: 11px 11px 0 0; }
+  .m-tag { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); font-size: 11px; font-weight: 600; color: rgba(255,255,255,.94); z-index: 2; }
+  @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.12); } }
+
+  /* ============ 标尺 ============ */
+  .scale-pin {
+    position: absolute; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px;
+    border-radius: 50%; z-index: 2;
+    box-shadow: 0 3px 7px rgba(90,110,140,.35), inset -3px -4px 6px rgba(0,0,0,.18), inset 3px 3px 5px rgba(255,255,255,.6);
+    transition: left .95s cubic-bezier(.22,.8,.3,1);
+  }
+  .scale-tick { position: absolute; top: 50%; width: 2px; height: 5px; margin-top: -2.5px; border-radius: 2px; background: #D9D1BF; opacity: .9; }
+
+  .pc, .qc { display: inline-block; }
+  .sent { display: inline-block; }
+
+  .sc-hl-a { background: #F6DCE1; padding: 1px 6px; border-radius: 7px; }
+  .sc-hl-v { background: #E6E1F5; padding: 1px 6px; border-radius: 7px; }
+
+  /* ============ 分享卡片预览 ============ */
+  .sc-card {
+    width: 320px; max-width: 100%; margin: 0 auto;
+    background: #FDFBF7; border: 1px solid #EAE3D6; border-radius: 22px;
+    overflow: hidden; text-align: center; color: #39434E;
+    font-family: 'Noto Sans SC', sans-serif;
+    box-shadow: 0 14px 34px -16px rgba(122,150,180,.38);
+  }
+  .sc-band { height: 10px; background: #5F89B6; }
+  .sc-inner { padding: 24px 26px 22px; }
+  .sc-brand  { font-size: 11px; letter-spacing: .22em; color: #8A93A0; }
+  .sc-eyebrow{ margin-top: 22px; font-size: 12px; letter-spacing: .35em; color: #8A93A0; }
+  .sc-type   { margin-top: 8px; font-family: 'Noto Serif SC', serif; font-size: 38px; font-weight: 600; line-height: 1.15; }
+  .sc-tag    { display: inline-block; margin-top: 12px; padding: 6px 16px; border-radius: 999px; font-size: 13px; background: #DCE9F6; color: #39434E; }
+  .sc-plain  { margin-top: 22px; font-size: 13px; line-height: 2.05; color: #4A5563; }
+  .sc-score  { margin-top: 18px; text-align: left; }
+  .sc-row    { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; color: #6E7887; }
+  .sc-num    { font-size: 16px; font-weight: 600; color: #39434E; font-family: 'Noto Serif SC', serif; }
+  .sc-track  { margin-top: 6px; height: 9px; border-radius: 99px; background: #EEE9DF; overflow: hidden; }
+  .sc-fill   { height: 100%; width: 0%; border-radius: 99px; background: #5F89B6; transition: width .9s cubic-bezier(.22,.8,.3,1); }
+  .sc-quote  { margin-top: 24px; font-family: 'Noto Serif SC', serif; font-size: 15px; line-height: 1.85; color: #4A5563; }
+  .sc-foot   { margin-top: 20px; font-size: 10.5px; letter-spacing: .08em; color: #9AA3AF; }
+</style>
+</head>
+
+<body class="font-sans text-ink antialiased" style="opacity:0">
+
+<div class="blob" style="width:46vmin;height:46vmin;left:-12%;top:-10%;background:radial-gradient(closest-side, rgba(169,201,232,.5), rgba(169,201,232,0))"></div>
+<div class="blob" style="width:40vmin;height:40vmin;right:-14%;top:32%;background:radial-gradient(closest-side, rgba(242,207,214,.42), rgba(242,207,214,0))"></div>
+<div class="blob" style="width:38vmin;height:38vmin;left:-10%;bottom:-8%;background:radial-gradient(closest-side, rgba(217,211,238,.42), rgba(217,211,238,0))"></div>
+
+<div class="relative z-10 max-w-[560px] mx-auto px-5 pb-16">
+
+  <header class="flex items-center gap-2.5 py-6">
+    <svg width="32" height="20" viewBox="0 0 32 20" fill="none" aria-hidden="true">
+      <defs>
+        <radialGradient id="lg-a" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#E4F0FA"/><stop offset="50%" stop-color="#A9C9E8"/><stop offset="100%" stop-color="#8FB0D4"/></radialGradient>
+        <radialGradient id="lg-b" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#FBEDEF"/><stop offset="50%" stop-color="#F2CFD6"/><stop offset="100%" stop-color="#E0B3BE"/></radialGradient>
+      </defs>
+      <circle cx="10" cy="10" r="7.5" fill="url(#lg-a)"/>
+      <circle cx="21" cy="10" r="7.5" fill="url(#lg-b)"/>
+    </svg>
+    <span class="font-serif font-semibold tracking-wide text-[15px]">屿 · 依恋测试</span>
+  </header>
+
+  <!-- ================================================================
+       首页 · 微缩星系
+  ================================================================= -->
+  <section id="screen-home">
+    <div class="pt-2">
+      <div id="home-stage" class="mx-auto max-w-[450px]">
+        <svg id="duo-svg" viewBox="0 0 340 250" class="w-full h-auto overflow-visible" aria-label="两颗星球在引力中靠近的动画">
+          <defs>
+            <radialGradient id="grad-me" cx="34%" cy="28%" r="80%">
+              <stop offset="0%" stop-color="#E4F0FA"/><stop offset="48%" stop-color="#A9C9E8"/><stop offset="100%" stop-color="#8FB0D4"/>
+            </radialGradient>
+            <radialGradient id="grad-you" cx="34%" cy="28%" r="80%">
+              <stop offset="0%" stop-color="#FBEDEF"/><stop offset="48%" stop-color="#F2CFD6"/><stop offset="100%" stop-color="#E0B3BE"/>
+            </radialGradient>
+            <radialGradient id="grad-link" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFFFFF"/><stop offset="55%" stop-color="#F7E8C6" stop-opacity=".85"/><stop offset="100%" stop-color="#F7E8C6" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="grad-planet" cx="35%" cy="30%" r="80%">
+              <stop offset="0%" stop-color="#F2F4F7"/><stop offset="50%" stop-color="#C4CEDA"/><stop offset="100%" stop-color="#AEBAC9"/>
+            </radialGradient>
+            <clipPath id="clip-me"><circle r="46"/></clipPath>
+            <clipPath id="clip-you"><circle r="46"/></clipPath>
+          </defs>
+
+          <g id="g-stars" opacity="0">
+            <ellipse cx="68" cy="158" rx="74" ry="34" fill="#D9D3EE" opacity=".16"/>
+            <ellipse cx="276" cy="66" rx="62" ry="30" fill="#F2CFD6" opacity=".15"/>
+            <g transform="translate(52 44)"><g id="pl1-in">
+              <ellipse rx="15" ry="4.5" fill="none" stroke="#C7CFDD" stroke-width="1" opacity=".6" transform="rotate(-16)"/>
+              <circle r="6.5" fill="url(#grad-planet)"/>
+            </g></g>
+            <g transform="translate(296 210)"><g id="pl2-in">
+              <circle r="4.5" fill="url(#grad-planet)"/>
+            </g></g>
+            <g id="meteor" opacity="0">
+              <line x1="-24" y1="-13" x2="0" y2="0" stroke="#DCE9F6" stroke-width="2" stroke-linecap="round" opacity=".85"/>
+              <circle r="1.8" fill="#FFFFFF"/>
+            </g>
+          </g>
+
+          <g id="g-lines"></g>
+          <g id="g-sparks"></g>
+
+          <g id="g-link" opacity="0">
+            <circle r="22" fill="none" stroke="#E9D9B4" stroke-width="1" opacity=".55" stroke-dasharray="1 5"/>
+            <circle r="15" fill="url(#grad-link)"/>
+          </g>
+
+          <circle id="ripple-c1" cx="170" cy="125" r="10" fill="none" stroke="#9BACC0" stroke-width="1.5" opacity="0"/>
+          <circle id="ripple-c2" cx="170" cy="125" r="10" fill="none" stroke="#9BACC0" stroke-width="1.5" opacity="0"/>
+
+          <!-- 主星「我」：大气 + 球体 + 自转纹理 + 星光点缀 + 轨道环 + 卫星 + 固定表情 -->
+          <g id="g-me"><g class="tilt" style="transform:rotate(-6deg)"><g id="g-me-in">
+            <path class="ring-half" d="M -54 0 A 54 15 0 0 0 54 0" stroke="#A9C9E8"/>
+            <circle id="sat-me-b" r="3" fill="#6F94BE" opacity="0"/>
+            <circle id="dust-me-1" r="1.6" fill="#8FB4D9" opacity="0"/>
+            <circle id="dust-me-2" r="1.2" fill="#8FB4D9" opacity="0"/>
+            <circle r="60" fill="#A9C9E8" opacity=".07"/>
+            <circle r="52" fill="#A9C9E8" opacity=".15"/>
+            <circle r="46" fill="url(#grad-me)"/>
+            <g clip-path="url(#clip-me)"><g id="tex-me"></g></g>
+            <!-- 星光点缀（替代原阴影层） -->
+            <g class="p-spark">
+              <path class="tw" style="animation-delay:.3s;animation-duration:2.4s" transform="translate(-26 -27)" d="M 0 -3.2 Q .9 -.9 3.2 0 Q .9 .9 0 3.2 Q -.9 .9 -3.2 0 Q -.9 -.9 0 -3.2 Z" fill="#FFFFFF"/>
+              <path class="tw" style="animation-delay:1.4s;animation-duration:3.1s" transform="translate(21 -31) scale(.8)" d="M 0 -3.2 Q .9 -.9 3.2 0 Q .9 .9 0 3.2 Q -.9 .9 -3.2 0 Q -.9 -.9 0 -3.2 Z" fill="#FBF0CF"/>
+              <path class="tw" style="animation-delay:.9s;animation-duration:2.7s" transform="translate(29 14) scale(.7)" d="M 0 -3.2 Q .9 -.9 3.2 0 Q .9 .9 0 3.2 Q -.9 .9 -3.2 0 Q -.9 -.9 0 -3.2 Z" fill="#FFFFFF"/>
+              <circle class="tw" style="animation-delay:2s;animation-duration:2.2s" cx="-19" cy="29" r="1.7" fill="#FBF0CF"/>
+            </g>
+            <path class="ring-half" d="M -54 0 A 54 15 0 0 1 54 0" stroke="#A9C9E8"/>
+            <circle id="sat-me-f" r="3" fill="#6F94BE" opacity="0"/>
+            <!-- 固定表情：对视（瞳孔看右）+ 腮红 + 微笑 -->
+            <g id="face-me" opacity="0">
+              <g transform="translate(-8 -12)"><ellipse rx="5" ry="6" fill="#FFFFFF"/><circle cx="1.6" cy="1" r="2.5" fill="#39434E"/></g>
+              <g transform="translate(8 -12)"><ellipse rx="5" ry="6" fill="#FFFFFF"/><circle cx="1.6" cy="1" r="2.5" fill="#39434E"/></g>
+              <ellipse cx="-17" cy="-3" rx="4.5" ry="2.8" fill="#F09CB0" opacity=".55"/>
+              <ellipse cx="17" cy="-3" rx="4.5" ry="2.8" fill="#F09CB0" opacity=".55"/>
+              <path d="M -6 6 Q 0 11 6 6" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="2.2" stroke-linecap="round"/>
+            </g>
+          </g></g></g>
+
+          <!-- 主星「你」：瞳孔看左 -->
+          <g id="g-you"><g class="tilt" style="transform:rotate(7deg)"><g id="g-you-in">
+            <path class="ring-half" d="M -54 0 A 54 15 0 0 0 54 0" stroke="#F2CFD6"/>
+            <circle id="sat-you-b" r="3" fill="#D6A5B1" opacity="0"/>
+            <circle id="dust-you-1" r="1.5" fill="#E3B4BD" opacity="0"/>
+            <circle id="dust-you-2" r="1.2" fill="#E3B4BD" opacity="0"/>
+            <circle r="60" fill="#F2CFD6" opacity=".07"/>
+            <circle r="52" fill="#F2CFD6" opacity=".15"/>
+            <circle r="46" fill="url(#grad-you)"/>
+            <g clip-path="url(#clip-you)"><g id="tex-you"></g></g>
+            <g class="p-spark">
+              <path class="tw" style="animation-delay:.7s;animation-duration:2.6s" transform="translate(-28 -24)" d="M 0 -3.2 Q .9 -.9 3.2 0 Q .9 .9 0 3.2 Q -.9 .9 -3.2 0 Q -.9 -.9 0 -3.2 Z" fill="#FBF0CF"/>
+              <path class="tw" style="animation-delay:0s;animation-duration:2.9s" transform="translate(24 -28) scale(.85)" d="M 0 -3.2 Q .9 -.9 3.2 0 Q .9 .9 0 3.2 Q -.9 .9 -3.2 0 Q -.9 -.9 0 -3.2 Z" fill="#FFFFFF"/>
+              <path class="tw" style="animation-delay:1.8s;animation-duration:2.3s" transform="translate(-24 26) scale(.65)" d="M 0 -3.2 Q .9 -.9 3.2 0 Q .9 .9 0 3.2 Q -.9 .9 -3.2 0 Q -.9 -.9 0 -3.2 Z" fill="#FFFFFF"/>
+              <circle class="tw" style="animation-delay:1.1s;animation-duration:2.5s" cx="20" cy="28" r="1.7" fill="#FBF0CF"/>
+            </g>
+            <path class="ring-half" d="M -54 0 A 54 15 0 0 1 54 0" stroke="#F2CFD6"/>
+            <circle id="sat-you-f" r="3" fill="#D6A5B1" opacity="0"/>
+            <g id="face-you" opacity="0">
+              <g transform="translate(-8 -12)"><ellipse rx="5" ry="6" fill="#FFFFFF"/><circle cx="-1.6" cy="1" r="2.5" fill="#39434E"/></g>
+              <g transform="translate(8 -12)"><ellipse rx="5" ry="6" fill="#FFFFFF"/><circle cx="-1.6" cy="1" r="2.5" fill="#39434E"/></g>
+              <ellipse cx="-17" cy="-3" rx="4.5" ry="2.8" fill="#F09CB0" opacity=".55"/>
+              <ellipse cx="17" cy="-3" rx="4.5" ry="2.8" fill="#F09CB0" opacity=".55"/>
+              <path d="M -6 6 Q 0 11 6 6" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="2.2" stroke-linecap="round"/>
+            </g>
+          </g></g></g>
+        </svg>
+      </div>
+      <p id="home-tagline" class="mt-3 text-center text-xs text-inksoft tracking-[.32em] opacity-0">
+        引力让两颗星球靠近，爱让我们彼此依恋
+      </p>
+    </div>
+
+    <h1 class="rise-home mt-7 font-serif font-semibold text-[30px] leading-snug text-center">
+      亲密关系里，<br>你站在哪里？
+    </h1>
+    <p class="rise-home mt-4 text-[14.5px] leading-7 text-inksoft text-center">
+      依恋风格，是我们与最重要的人之间<br>习惯的距离、依赖与回应方式。<br>36 道题，找到你在关系里的位置。
+    </p>
+
+    <div class="rise-home mt-8 flex flex-col gap-3">
+      <button id="btn-start" class="btn-main min-h-[52px] rounded-2xl bg-mist-deep text-white text-[16px] font-medium tracking-widest shadow-soft flex items-center justify-center gap-2">
+        开始测试
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </button>
+      <div id="continue-wrap" class="hidden flex-col gap-3">
+        <button id="btn-continue" class="btn-main min-h-[52px] rounded-2xl bg-mist-deep text-white text-[15px] shadow-soft">
+          <span id="continue-label">继续上次测试</span>
+        </button>
+        <div class="px-1">
+          <div class="h-1.5 rounded-full bg-[#EDE7DB] overflow-hidden">
+            <div id="cont-bar" class="h-full rounded-full bg-mist-deep origin-left" style="transform:scaleX(0)"></div>
+          </div>
+        </div>
+        <button id="btn-fresh" class="btn-ghost min-h-[48px] rounded-2xl border border-line bg-white/70 text-[14px] text-inksoft">
+          重新开始新的测试
+        </button>
+      </div>
+    </div>
+
+    <p class="rise-home mt-7 text-center text-xs text-inksoft/80 tracking-[.18em]">36 题精编 · 双维度画像 · 进度自动保存</p>
+    <p class="rise-home mt-12 text-center text-[11px] leading-5 text-inksoft/60">
+      本测试依据成人依恋理论（ECR）编制，仅供娱乐与自我探索参考，<br>不替代专业心理咨询。
+    </p>
+  </section>
+
+  <!-- ================================================================
+       答题页
+  ================================================================= -->
+  <section id="screen-quiz" class="hidden">
+    <div class="flex items-center justify-between pt-1">
+      <button id="btn-exit" aria-label="保存并退出" class="btn-ghost w-9 h-9 rounded-full border border-line bg-white/70 flex items-center justify-center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6E7887" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <p class="text-sm text-inksoft"><b id="q-count" class="text-ink font-semibold">1</b> / 36</p>
+      <span class="w-9"></span>
+    </div>
+    <div class="mt-3 h-1.5 rounded-full bg-[#EDE7DB] overflow-hidden">
+      <div id="progress-fill" class="h-full rounded-full bg-mist-deep origin-left" style="transform:scaleX(0)"></div>
+    </div>
+
+    <div id="q-card" class="mt-7 bg-white/85 rounded-3xl shadow-card p-6 sm:p-7">
+      <p class="text-xs tracking-[.3em] text-inksoft/80">Q<span id="q-no">1</span></p>
+      <h2 id="q-text" class="mt-2.5 font-serif font-medium text-[19px] leading-relaxed min-h-[72px]"></h2>
+      <div id="opts" class="mt-6 space-y-2.5">
+        <button class="opt w-full min-h-[48px] rounded-2xl border border-line bg-white/80 px-4 py-3 flex items-center gap-4 text-left" data-v="1"><span class="opt-txt text-[15px] flex-1"></span></button>
+        <button class="opt w-full min-h-[48px] rounded-2xl border border-line bg-white/80 px-4 py-3 flex items-center gap-4 text-left" data-v="2"><span class="opt-txt text-[15px] flex-1"></span></button>
+        <button class="opt w-full min-h-[48px] rounded-2xl border border-line bg-white/80 px-4 py-3 flex items-center gap-4 text-left" data-v="3"><span class="opt-txt text-[15px] flex-1"></span></button>
+        <button class="opt w-full min-h-[48px] rounded-2xl border border-line bg-white/80 px-4 py-3 flex items-center gap-4 text-left" data-v="4"><span class="opt-txt text-[15px] flex-1"></span></button>
+        <button class="opt w-full min-h-[48px] rounded-2xl border border-line bg-white/80 px-4 py-3 flex items-center gap-4 text-left" data-v="5"><span class="opt-txt text-[15px] flex-1"></span></button>
+      </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-between">
+      <button id="btn-prev" class="nav-btn min-h-[48px] px-5 rounded-2xl border border-line bg-white/70 text-[14px] text-inksoft flex items-center gap-1.5">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m6 6-6-6 6-6"/></svg>上一题
+      </button>
+      <button id="btn-next" class="nav-btn min-h-[48px] px-5 rounded-2xl border border-line bg-white/70 text-[14px] text-ink flex items-center gap-1.5">
+        下一题<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </button>
+    </div>
+    <p class="mt-5 text-center text-[11.5px] text-inksoft/70 tracking-wide leading-5">
+      选项措辞会随题目变化，意思都是「像不像你」，按真实感受作答即可<br>作答后自动进入下一题 · 可随时返回修改 · 进度实时保存
+    </p>
+  </section>
+
+  <!-- ================================================================
+       结果页
+  ================================================================= -->
+  <section id="screen-result" class="hidden">
+    <p class="rise mt-2 text-center text-xs tracking-[.4em] text-inksoft">测试完成 · 你的依恋风格</p>
+
+    <div class="rise mt-4 text-center">
+      <h2 id="r-type" class="font-serif font-semibold text-[42px] leading-tight">安全型</h2>
+      <p id="r-en" class="mt-1 text-[11px] tracking-[.3em] text-inksoft/70 uppercase">Secure</p>
+      <span id="r-tag" class="inline-block mt-4 px-5 py-2 rounded-full text-[13.5px] text-ink bg-mist-soft">温暖而有底气的大人</span>
+    </div>
+
+    <!-- 一句话看懂 -->
+    <div class="rise mt-6 bg-white/85 rounded-3xl shadow-card p-6">
+      <div class="card-head">
+        <span class="card-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.7-.8L3 21l1.9-5.3a8.3 8.3 0 0 1-1-4A8.4 8.4 0 0 1 12 3.2a8.4 8.4 0 0 1 9 8.3z"/></svg></span>
+        <div><p class="text-[15px] font-semibold text-ink leading-tight">一句话看懂</p><p class="text-[10px] tracking-[.25em] text-inksoft/60 mt-[3px]">PLAIN WORDS</p></div>
+      </div>
+      <p id="r-plain" class="mt-4 text-[16px] leading-9 font-medium text-center"></p>
+      <p class="mt-3 text-[11px] text-inksoft/60 text-center">粉色代表「患得患失」的程度 · 紫色代表「想保持距离」的程度</p>
+    </div>
+
+    <!-- 相处模式小剧场 -->
+    <div class="rise mt-5 bg-white/85 rounded-3xl shadow-card p-5">
+      <div class="card-head">
+        <span class="card-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/></svg></span>
+        <div><p class="text-[15px] font-semibold text-ink leading-tight">你的相处模式</p><p class="text-[10px] tracking-[.25em] text-inksoft/60 mt-[3px]">IN MOTION</p></div>
+      </div>
+      <div id="mode-stage" class="relative h-[150px] mt-3">
+        <div id="m-sh-me" class="m-shadow"></div>
+        <div id="m-sh-ta" class="m-shadow"></div>
+        <div id="m-ta" class="m-ball look-l">
+          <span class="m-face"><i class="m-eye"><b class="m-pupil"></b></i><i class="m-eye"><b class="m-pupil"></b></i></span>
+          <i class="m-blush l"></i><i class="m-blush r"></i>
+          <i class="m-mouth mouth-smile"></i>
+          <span class="m-tag">TA</span>
+        </div>
+        <div id="m-me" class="m-ball look-r">
+          <span class="m-face"><i class="m-eye"><b class="m-pupil"></b></i><i class="m-eye"><b class="m-pupil"></b></i></span>
+          <i class="m-blush l"></i><i class="m-blush r"></i>
+          <i class="m-mouth mouth-smile"></i>
+          <span class="m-tag">我</span>
+        </div>
+      </div>
+      <p id="mode-sub" class="mt-1 text-center text-[13px] text-inksoft leading-6"></p>
+    </div>
+
+    <!-- 依恋地图 -->
+    <div class="rise mt-5 bg-white/85 rounded-3xl shadow-card p-5">
+      <div class="card-head">
+        <span class="card-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg></span>
+        <div><p class="text-[15px] font-semibold text-ink leading-tight">你的依恋地图</p><p class="text-[10px] tracking-[.25em] text-inksoft/60 mt-[3px]">YOUR MAP</p></div>
+      </div>
+      <p id="map-sub" class="mt-3.5 text-[13px] text-inksoft"></p>
+      <svg id="map" viewBox="0 0 320 210" class="w-full h-auto mt-2" aria-label="依恋地图">
+        <g class="wave-g" stroke="#9FC0DA" stroke-width="1.2" fill="none" opacity=".6" stroke-linecap="round">
+          <path d="M36 102 q 5 -4 10 0 q 5 4 10 0"/>
+          <path d="M168 22 q 5 -4 10 0 q 5 4 10 0"/>
+          <path d="M156 196 q 5 -4 10 0 q 5 4 10 0"/>
+          <path d="M28 16 q 5 -4 10 0 q 5 4 10 0"/>
+          <path d="M282 112 q 5 -4 10 0 q 5 4 10 0"/>
+          <path d="M150 105 q 5 -4 10 0 q 5 4 10 0"/>
+        </g>
+        <g id="isle-fea" class="isle">
+          <g stroke="#FDFBF7" stroke-width="2">
+            <ellipse cx="78" cy="56" rx="40" ry="23" fill="#F2D5A8"/>
+            <circle cx="106" cy="68" r="11" fill="#F2D5A8"/>
+            <circle cx="52" cy="66" r="8" fill="#F2D5A8"/>
+          </g>
+          <text class="isle-name" x="78" y="54" text-anchor="middle" font-size="13" font-weight="600" fill="#9C7340">恐惧迷雾</text>
+          <text x="78" y="69" text-anchor="middle" font-size="9.5" fill="#BC9A64">想靠近又想逃</text>
+        </g>
+        <g id="isle-sec" class="isle">
+          <g stroke="#FDFBF7" stroke-width="2">
+            <ellipse cx="92" cy="150" rx="46" ry="27" fill="#AECFEA"/>
+            <circle cx="122" cy="136" r="16" fill="#AECFEA"/>
+            <circle cx="64" cy="162" r="13" fill="#AECFEA"/>
+          </g>
+          <text class="isle-name" x="92" y="147" text-anchor="middle" font-size="13" font-weight="600" fill="#466F9E">安全湾</text>
+          <text x="92" y="163" text-anchor="middle" font-size="9.5" fill="#6E96C4">安心又亲密</text>
+        </g>
+        <g id="isle-pre" class="isle">
+          <g stroke="#FDFBF7" stroke-width="2">
+            <ellipse cx="235" cy="58" rx="42" ry="24" fill="#F3C6D1"/>
+            <circle cx="204" cy="70" r="12" fill="#F3C6D1"/>
+            <circle cx="263" cy="44" r="10" fill="#F3C6D1"/>
+          </g>
+          <text class="isle-name" x="235" y="56" text-anchor="middle" font-size="13" font-weight="600" fill="#AE5871">痴迷环礁</text>
+          <text x="235" y="71" text-anchor="middle" font-size="9.5" fill="#C9839A">想要更多确认</text>
+        </g>
+        <g id="isle-dis" class="isle">
+          <g stroke="#FDFBF7" stroke-width="2">
+            <ellipse cx="238" cy="152" rx="44" ry="25" fill="#CCC3EB"/>
+            <circle cx="207" cy="140" r="11" fill="#CCC3EB"/>
+            <circle cx="266" cy="162" r="9" fill="#CCC3EB"/>
+          </g>
+          <text class="isle-name" x="238" y="149" text-anchor="middle" font-size="13" font-weight="600" fill="#67599F">疏离冰原</text>
+          <text x="238" y="164" text-anchor="middle" font-size="9.5" fill="#8D80C4">独处更自在</text>
+        </g>
+        <path id="map-route" d="" fill="none" stroke="#7F9BBB" stroke-width="1.6" stroke-dasharray="4 5" opacity="0"/>
+        <path id="map-trail" d="" fill="none" stroke="#6F94BE" stroke-width="2.2" stroke-linecap="round" opacity="0"/>
+        <circle id="map-ripple" r="7" fill="none" stroke="#466F9E" stroke-width="1.6" opacity="0"/>
+        <text id="map-here" font-size="11.5" font-weight="700" fill="#39434E" paint-order="stroke" stroke="#FDFBF7" stroke-width="4" opacity="0">你在这里</text>
+        <g id="map-boat" opacity="0">
+          <path d="M -12 12 q 3 -3 6 0 q 3 3 6 0" fill="none" stroke="#BFD3E6" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M -10 2 L 10 2 L 6 8 Q 0 11 -6 8 Z" fill="#A87F5E" stroke="#8F6A4C" stroke-width="1"/>
+          <line x1="0" y1="2" x2="0" y2="-13" stroke="#8F6A4C" stroke-width="1.6"/>
+          <path d="M 1.5 -12 L 1.5 -2.5 L 9.5 -2.5 Z" fill="#FDFBF7" stroke="#DCD2BE" stroke-width="1"/>
+          <path d="M -1.5 -11 L -1.5 -3 L -7.5 -3 Z" fill="#A9C9E8" stroke="#8FB4D9" stroke-width="1"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 双维度标尺 -->
+    <div class="rise mt-5 bg-white/85 rounded-3xl shadow-card p-6">
+      <div class="card-head">
+        <span class="card-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l3.5-3.5"/><circle cx="12" cy="15" r="1.2"/></svg></span>
+        <div><p class="text-[15px] font-semibold text-ink leading-tight">两个维度的程度</p><p class="text-[10px] tracking-[.25em] text-inksoft/60 mt-[3px]">SCALES</p></div>
+      </div>
+      <div class="mt-5">
+        <div class="flex justify-between text-[11.5px] text-inksoft font-medium"><span>安心</span><span>患得患失</span></div>
+        <div class="relative mt-2 h-3.5 rounded-full bg-[#EEE9DF]">
+          <span class="scale-tick" style="left:25%"></span><span class="scale-tick" style="left:50%"></span><span class="scale-tick" style="left:75%"></span>
+          <div id="bar-a" class="absolute inset-y-0 left-0 rounded-full origin-left" style="background:#D998A6; transform:scaleX(0)"></div>
+          <div id="pin-a" class="scale-pin" style="left:0%; background:#D998A6"></div>
+        </div>
+        <div class="mt-2.5 flex items-baseline justify-between">
+          <span class="text-sm text-inksoft">依恋焦虑</span>
+          <span class="flex items-baseline gap-2">
+            <b id="score-a" class="font-serif text-[20px] leading-none">0.0</b><span class="text-xs text-inksoft/70">/ 5</span>
+            <span id="badge-a" class="text-[11px] px-2 py-0.5 rounded-full"></span>
+          </span>
+        </div>
+      </div>
+      <div class="mt-6">
+        <div class="flex justify-between text-[11.5px] text-inksoft font-medium"><span>渴望亲密</span><span>保持距离</span></div>
+        <div class="relative mt-2 h-3.5 rounded-full bg-[#EEE9DF]">
+          <span class="scale-tick" style="left:25%"></span><span class="scale-tick" style="left:50%"></span><span class="scale-tick" style="left:75%"></span>
+          <div id="bar-v" class="absolute inset-y-0 left-0 rounded-full origin-left" style="background:#9A8CCB; transform:scaleX(0)"></div>
+          <div id="pin-v" class="scale-pin" style="left:0%; background:#9A8CCB"></div>
+        </div>
+        <div class="mt-2.5 flex items-baseline justify-between">
+          <span class="text-sm text-inksoft">依恋回避</span>
+          <span class="flex items-baseline gap-2">
+            <b id="score-v" class="font-serif text-[20px] leading-none">0.0</b><span class="text-xs text-inksoft/70">/ 5</span>
+            <span id="badge-v" class="text-[11px] px-2 py-0.5 rounded-full"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 解读 + 建议 -->
+    <div class="rise mt-5 bg-white/85 rounded-3xl shadow-card p-6">
+      <div class="card-head">
+        <span class="card-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c2.5-1 5.5-1 8 1 2.5-2 5.5-2 8-1v13c-2.5-1-5.5-1-8 1-2.5-2-5.5-2-8-1z"/><path d="M12 6v13"/></svg></span>
+        <div><p class="text-[15px] font-semibold text-ink leading-tight">性格解读</p><p class="text-[10px] tracking-[.25em] text-inksoft/60 mt-[3px]">READING</p></div>
+      </div>
+      <p id="r-reading" class="mt-4 text-[14.5px] leading-[1.95] text-ink/90"></p>
+      <div class="card-head mt-6 !pb-3.5">
+        <span class="card-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.5l2 5.2 5.2 2-5.2 2-2 5.2-2-5.2-5.2-2 5.2-2z"/></svg></span>
+        <div><p class="text-[15px] font-semibold text-ink leading-tight">给你的相处建议</p><p class="text-[10px] tracking-[.25em] text-inksoft/60 mt-[3px]">ADVICE</p></div>
+      </div>
+      <p id="r-advice" class="mt-4 text-[14.5px] leading-[1.95] text-ink/90"></p>
+    </div>
+
+    <!-- 金句 -->
+    <div class="rise relative mt-9 px-8 text-center">
+      <span class="absolute -top-3 left-1 font-serif text-5xl text-mist select-none" style="opacity:.4">&ldquo;</span>
+      <p id="r-quote" class="font-serif text-[16px] leading-8 text-ink/90"></p>
+    </div>
+
+    <!-- 分享卡片预览 -->
+    <div class="rise mt-10">
+      <p class="text-center text-xs tracking-[.3em] text-inksoft/80 mb-4">分享卡片预览</p>
+      <div id="share-card" class="sc-card">
+        <div class="sc-band" id="sc-band"></div>
+        <div class="sc-inner">
+          <p class="sc-brand">屿 · 成人依恋测试</p>
+          <p class="sc-eyebrow">你的依恋风格</p>
+          <p class="sc-type" id="sc-type">安全型</p>
+          <div class="sc-tag" id="sc-tag">温暖而有底气的大人</div>
+          <p class="sc-plain" id="sc-plain"></p>
+          <div class="sc-score">
+            <div class="sc-row"><span>依恋焦虑</span><span class="sc-num" id="sc-va">0.0</span></div>
+            <div class="sc-track"><div class="sc-fill" id="sc-fa"></div></div>
+            <div class="sc-row" style="margin-top:14px"><span>依恋回避</span><span class="sc-num" id="sc-vv">0.0</span></div>
+            <div class="sc-track"><div class="sc-fill" id="sc-fv"></div></div>
+          </div>
+          <p class="sc-quote" id="sc-quote"></p>
+          <p class="sc-foot">来找到你的依恋坐标</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="rise mt-8 flex flex-col gap-3">
+      <button id="btn-share" class="btn-main min-h-[52px] rounded-2xl bg-mist-deep text-white text-[15.5px] font-medium shadow-soft flex items-center justify-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="m5 18 5-5 3 3 3-3 3 3"/></svg>
+        <span id="btn-share-txt">生成分享图</span>
+      </button>
+      <div class="grid grid-cols-2 gap-3">
+        <button id="btn-copy" class="btn-ghost min-h-[48px] rounded-2xl border border-line bg-white/70 text-[14px] text-ink flex items-center justify-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>复制分享文案
+        </button>
+        <button id="btn-again" class="btn-ghost min-h-[48px] rounded-2xl border border-line bg-white/70 text-[14px] text-ink flex items-center justify-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.9-6.6"/><path d="M21 3v6h-6"/></svg>再测一次
+        </button>
+      </div>
+    </div>
+
+    <p class="rise mt-12 text-center text-[11px] leading-5 text-inksoft/60">
+      本测试依据成人依恋理论（ECR）编制，仅供娱乐与自我探索参考，<br>不替代专业心理咨询。
+    </p>
+  </section>
+</div>
+
+<!-- ============ 验证码门（固定验证码 5555，通过后方可进入首页开始测试） ============ -->
+<div id="gate" class="fixed inset-0 z-[60] flex items-center justify-center px-5">
+  <div id="gate-card" class="w-full max-w-[360px] bg-white/90 rounded-3xl shadow-soft p-7 text-center">
+    <div class="flex justify-center">
+      <svg width="44" height="28" viewBox="0 0 32 20" fill="none" aria-hidden="true">
+        <defs>
+          <radialGradient id="gt-a" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#E4F0FA"/><stop offset="50%" stop-color="#A9C9E8"/><stop offset="100%" stop-color="#8FB0D4"/></radialGradient>
+          <radialGradient id="gt-b" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#FBEDEF"/><stop offset="50%" stop-color="#F2CFD6"/><stop offset="100%" stop-color="#E0B3BE"/></radialGradient>
+        </defs>
+        <circle cx="10" cy="10" r="7.5" fill="url(#gt-a)"/>
+        <circle cx="21" cy="10" r="7.5" fill="url(#gt-b)"/>
+      </svg>
+    </div>
+    <p class="font-serif font-semibold text-[18px] mt-3">屿 · 依恋测试</p>
+    <p class="text-[12.5px] text-inksoft leading-5 mt-2">这是一片温柔的星域<br>请输入 4 位验证码，启程出发</p>
+    <div id="gate-cells" class="flex justify-center gap-3 mt-6">
+      <input class="gc" type="tel" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="验证码第 1 位">
+      <input class="gc" type="tel" inputmode="numeric" maxlength="1" aria-label="验证码第 2 位">
+      <input class="gc" type="tel" inputmode="numeric" maxlength="1" aria-label="验证码第 3 位">
+      <input class="gc" type="tel" inputmode="numeric" maxlength="1" aria-label="验证码第 4 位">
+    </div>
+    <button id="gate-btn" class="btn-main min-h-[48px] w-full rounded-2xl bg-mist-deep text-white text-[15px] font-medium mt-6">进入星域</button>
+    <p class="text-[11px] text-inksoft/50 mt-4 tracking-wider">体验验证码 · 5555</p>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="fixed top-6 left-1/2 -translate-x-1/2 z-[80] pointer-events-none">
+  <div id="toast" class="px-5 py-2.5 rounded-full bg-ink text-cream text-[13px] shadow-soft opacity-0 whitespace-nowrap"></div>
+</div>
+
+<!-- 分享图模态框 -->
+<div id="modal-share" class="fixed inset-0 z-[70] hidden items-center justify-center p-5" style="background:rgba(57,67,78,.48); backdrop-filter:blur(5px)">
+  <div id="modal-card" class="bg-cream rounded-3xl shadow-soft p-5 max-w-[340px] w-full">
+    <div class="flex items-center justify-between">
+      <p class="text-sm font-medium">分享图已生成</p>
+      <button id="btn-close-modal" aria-label="关闭" class="btn-ghost w-9 h-9 rounded-full border border-line bg-white/70 flex items-center justify-center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6E7887" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <img id="share-img" alt="依恋测试分享图" class="w-full rounded-2xl mt-3 border border-line">
+    <p class="mt-3 text-[11.5px] leading-5 text-inksoft text-center">手机端：长按图片保存到相册<br>电脑端：右键另存为，或点击下方下载</p>
+    <a id="btn-download" download="依恋测试结果.png" href="#" class="btn-main mt-4 min-h-[46px] rounded-2xl bg-mist-deep text-white text-[14px] font-medium flex items-center justify-center gap-2">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg>下载高清图片
+    </a>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   一、题库（80 题，可扩展至 1000 题）
+   ===================================================================== */
+const QUESTIONS = [
+  { id:'A01', dim:'A', rev:false, text:'伴侣没有及时回复消息时，我会忍不住反复查看手机。' },
+  { id:'A02', dim:'A', rev:false, text:'我担心对方不像我在乎TA那样在乎我。' },
+  { id:'A03', dim:'A', rev:false, text:'我需要伴侣经常向我确认感情，才能安心。' },
+  { id:'A04', dim:'A', rev:false, text:'对方语气稍微冷淡一点，我就会想很多。' },
+  { id:'A05', dim:'A', rev:false, text:'我害怕自己在关系中付出得比对方多。' },
+  { id:'A06', dim:'A', rev:false, text:'恋人要离开一段时间时，我会特别不安。' },
+  { id:'A07', dim:'A', rev:false, text:'我总担心对方会突然对我失去兴趣。' },
+  { id:'A08', dim:'A', rev:false, text:'伴侣和朋友出去玩而不带我时，我会隐隐失落。' },
+  { id:'A09', dim:'A', rev:false, text:'对方心情不好时，我的第一反应是「是不是因为我」。' },
+  { id:'A10', dim:'A', rev:false, text:'我会反复回想伴侣说过的某句话，分析TA的真实想法。' },
+  { id:'A11', dim:'A', rev:false, text:'我害怕表现出太多需要，会把对方吓跑。' },
+  { id:'A12', dim:'A', rev:false, text:'伴侣称赞别人时，我会莫名有点紧张。' },
+  { id:'A13', dim:'A', rev:false, text:'关系刚有起色时，我反而会担心好景不长。' },
+  { id:'A14', dim:'A', rev:false, text:'我常常需要通过对方的反应，来确认自己的价值。' },
+  { id:'A15', dim:'A', rev:false, text:'一点点疏远的迹象，都会让我心里警铃大作。' },
+  { id:'A16', dim:'A', rev:false, text:'我想黏着对方的时候，会先担心自己显得太烦。' },
+  { id:'A17', dim:'A', rev:false, text:'伴侣忘记答应过的小事，我会失落很久。' },
+  { id:'A18', dim:'A', rev:false, text:'我时常需要确认「我们还好好的」，才能放松下来。' },
+  { id:'A19', dim:'A', rev:false, text:'分开的时候，我总会想「TA现在在干什么、和谁在一起」。' },
+  { id:'A20', dim:'A', rev:false, text:'我害怕一旦表现出真实的自己，对方就会失望。' },
+  { id:'A21', dim:'A', rev:false, text:'对方稍晚回来又没提前说，我心里就会上演各种剧情。' },
+  { id:'A22', dim:'A', rev:false, text:'我会把伴侣的沉默自动解读成「TA厌倦了」。' },
+  { id:'A23', dim:'A', rev:false, text:'吵架之后，我总是先忍不住想和好的那一个。' },
+  { id:'A24', dim:'A', rev:false, text:'我担心如果自己不够有趣、不够好，对方就会离开。' },
+  { id:'A25', dim:'A', rev:true,  text:'伴侣晚点回消息，我也不会胡思乱想。' },
+  { id:'A26', dim:'A', rev:true,  text:'我相信对方的爱，不需要反复求证。' },
+  { id:'A27', dim:'A', rev:true,  text:'伴侣和别人相处融洽时，我并不会感到威胁。' },
+  { id:'A28', dim:'A', rev:true,  text:'即使暂时分开，我对这段关系也很安心。' },
+  { id:'A29', dim:'A', rev:true,  text:'我不太担心「被抛弃」这种事。' },
+  { id:'A30', dim:'A', rev:true,  text:'对方偶尔冷淡，我会想「TA大概只是累了」。' },
+  { id:'A31', dim:'A', rev:true,  text:'我能坦然地对伴侣说出「我需要你」。' },
+  { id:'A32', dim:'A', rev:true,  text:'我很少怀疑伴侣对我的感情。' },
+  { id:'A33', dim:'A', rev:true,  text:'伴侣心情不好时，我能分清那多半与我无关。' },
+  { id:'A34', dim:'A', rev:true,  text:'我不担心在关系里暴露自己的脆弱。' },
+  { id:'A35', dim:'A', rev:true,  text:'就算对方一时顾不上我，我也能把自己的日子过好。' },
+  { id:'A36', dim:'A', rev:true,  text:'我不会因为一点小迹象，就开始怀疑整段关系。' },
+  { id:'A37', dim:'A', rev:false, text:'见面时如果对方心不在焉，我的情绪会立刻低落下来。' },
+  { id:'A38', dim:'A', rev:false, text:'我会用小小的试探，去验证对方是否还在意我。' },
+  { id:'A39', dim:'A', rev:false, text:'对方一句无心的评价，能让我失眠。' },
+  { id:'A40', dim:'A', rev:false, text:'分开的日子里，我的情绪很容易被对方的态度牵着走。' },
+  { id:'V01', dim:'V', rev:false, text:'我更喜欢不依赖任何人的生活。' },
+  { id:'V02', dim:'V', rev:false, text:'当关系变得很亲密时，我会不自觉地想后退。' },
+  { id:'V03', dim:'V', rev:false, text:'我很难向伴侣袒露内心深处真实的想法和感受。' },
+  { id:'V04', dim:'V', rev:false, text:'遇到烦心事时，我习惯自己消化，而不是找伴侣倾诉。' },
+  { id:'V05', dim:'V', rev:false, text:'我觉得依赖别人，是一件有点麻烦的事。' },
+  { id:'V06', dim:'V', rev:false, text:'伴侣想要更多亲昵时，我有时会觉得有压力。' },
+  { id:'V07', dim:'V', rev:false, text:'我更喜欢保持一点距离的关系，哪怕再相爱。' },
+  { id:'V08', dim:'V', rev:false, text:'向别人求助会让我感到不太自在。' },
+  { id:'V09', dim:'V', rev:false, text:'我不太习惯和别人谈论自己的情绪。' },
+  { id:'V10', dim:'V', rev:false, text:'情绪激动的时候，我反而会变得沉默。' },
+  { id:'V11', dim:'V', rev:false, text:'一个人的时光，比两个人的热闹更让我放松。' },
+  { id:'V12', dim:'V', rev:false, text:'伴侣想认真聊聊「我们的关系」时，我会想岔开话题。' },
+  { id:'V13', dim:'V', rev:false, text:'我常常在对方靠得很近时，突然对这段关系产生怀疑。' },
+  { id:'V14', dim:'V', rev:false, text:'我更愿意用做事来表达关心，而不是用语言。' },
+  { id:'V15', dim:'V', rev:false, text:'长期的承诺会让我隐隐感到被束缚。' },
+  { id:'V16', dim:'V', rev:false, text:'我不习惯在别人面前流泪或示弱。' },
+  { id:'V17', dim:'V', rev:false, text:'心里难受时，我的第一反应是「让自己忙起来」。' },
+  { id:'V18', dim:'V', rev:false, text:'我觉得把脆弱交给别人，不如交给自己。' },
+  { id:'V19', dim:'V', rev:false, text:'关系里过于黏腻的时刻，会让我想找个借口躲开。' },
+  { id:'V20', dim:'V', rev:false, text:'我很少主动说「我想你」这类话。' },
+  { id:'V21', dim:'V', rev:true,  text:'和伴侣分享内心感受，对我来说是一件自然的事。' },
+  { id:'V22', dim:'V', rev:true,  text:'被伴侣关心和照顾时，我感觉放松而不是不自在。' },
+  { id:'V23', dim:'V', rev:true,  text:'我很享受在关系里彼此依赖的感觉。' },
+  { id:'V24', dim:'V', rev:true,  text:'遇到困难时，我会第一时间想到找伴侣聊一聊。' },
+  { id:'V25', dim:'V', rev:true,  text:'伴侣靠得很近时，我感到的是温暖而不是压力。' },
+  { id:'V26', dim:'V', rev:true,  text:'我愿意让别人看到我脆弱的样子。' },
+  { id:'V27', dim:'V', rev:true,  text:'深入的情感交流，会让我觉得和对方更亲近。' },
+  { id:'V28', dim:'V', rev:true,  text:'我不介意生活里多一个时时刻刻了解我的人。' },
+  { id:'V29', dim:'V', rev:true,  text:'向亲近的人诉说心事，对我来说不是难事。' },
+  { id:'V30', dim:'V', rev:true,  text:'在我看來，需要别人是一种亲近，而不是软弱。' },
+  { id:'V31', dim:'V', rev:true,  text:'我会主动向伴侣要一个拥抱。' },
+  { id:'V32', dim:'V', rev:true,  text:'聊到「我们的未来」时，我感到的是踏实而不是恐慌。' },
+  { id:'V33', dim:'V', rev:false, text:'别人对我太好的时候，我反而会有点不知所措。' },
+  { id:'V34', dim:'V', rev:false, text:'我宁愿自己解决问题，也不想麻烦别人。' },
+  { id:'V35', dim:'V', rev:false, text:'关系越稳定，我反而越需要完全属于自己的空间。' },
+  { id:'V36', dim:'V', rev:false, text:'伴侣难过的时候，我常常不知道说什么，干脆沉默。' },
+  { id:'V37', dim:'V', rev:false, text:'我觉得过度亲密会让人失去自我。' },
+  { id:'V38', dim:'V', rev:false, text:'身边有人待得太久，我会想要一个独处的出口。' },
+  { id:'V39', dim:'V', rev:false, text:'我很少想念一个人，即使很喜欢TA。' },
+  { id:'V40', dim:'V', rev:false, text:'被问「你现在感觉怎么样」时，我会一时答不上来。' },
+];
+
+/* =====================================================================
+   二、类型文案
+   ===================================================================== */
+const TYPE_META = {
+  secure: {
+    name:'安全型', en:'Secure', tag:'温暖而有底气的大人',
+    color:'#6E9BC9', soft:'#DCE9F6', dotColor:'#5F89B6',
+    ball: ['#EAF3FB', '#9CC3E8', '#6F94BE'],
+    quote:'爱是我在你身边，也可以安心做自己。',
+    plain: { a:'很少患得患失', conj:'也', b:'不怕靠得太近' },
+    subtitle:'你们可以安心地靠近，也能自在地各自呼吸',
+    reading:'在亲密关系中，你既能安心地依赖对方，也愿意被对方依赖。你相信【自己是值得被爱的】，也相信【爱你的人值得信任】。当分歧出现时，你更倾向于【直接沟通】，而不是冷战或反复试探。这份安全感并非天生的运气，而是在与自己、他人的长期相处里，慢慢长出来的【稳定内核】。你的情绪是有弹性的：会难过，但不容易被淹没；会想念，但不会被焦虑推着去抓取。',
+    advice:'请继续珍惜并【直接表达你的需要】——安全型最大的风险，是把「还行」误当成不需要维护。也留意那些不太擅长表达需要的伴侣，多给一点【确认与耐心】，你的稳定，会成为一段关系里【最珍贵的礼物】。'
+  },
+  preoccupied: {
+    name:'痴迷型', en:'Preoccupied', tag:'在爱里用力奔跑的人',
+    color:'#C4899A', soft:'#F6DCE1', dotColor:'#B87185',
+    ball: ['#FBEDEF', '#E8AEBB', '#C4808F'],
+    quote:'我的爱很满，正在学着先稳稳地给自己。',
+    plain: { a:'容易患得患失', conj:'却', b:'从不害怕靠近' },
+    subtitle:'你总想再靠近一点，来确认爱还在',
+    reading:'你在关系中【投入得很深】，渴望亲密，也渴望被反复确认。对方的语气、回复消息的快慢，都容易被你【放大解读】。你常常比对方更早、更快地付出，也因此更容易感到不安与失衡。其实这份敏感是一种【深刻的感受力】——你能捕捉到关系里最细微的温度变化，只是当它全部被用来监测「TA还爱我吗」的时候，就变成了【持续的内耗】。',
+    advice:'试着把【「求证」换成「表达」】——直接说出「我今天有点不安，需要你抱抱我」，往往比试探一百次更有效。也请练习【把一部分注意力收回自己身上】，你的价值，从不需要靠对方的秒回来证明。'
+  },
+  dismissive: {
+    name:'疏离型', en:'Dismissive-Avoidant', tag:'自带安全距离的灵魂',
+    color:'#8D80C0', soft:'#E6E1F5', dotColor:'#7A6BB0',
+    ball: ['#EFECF9', '#ABA0D6', '#8578BC'],
+    quote:'我不是不需要爱，只是需要慢慢学着靠近。',
+    plain: { a:'很少患得患失', conj:'却', b:'总想留一点距离' },
+    subtitle:'TA 每靠近一步，你就悄悄退后半步',
+    reading:'你重视【独立与自足】，习惯把事情自己消化掉，而不是向别人求助或倾诉。在关系里，你是可靠、克制的存在，但当亲密不断升级，你可能会【不自觉地拉开距离】——用忙碌、沉默或讲道理，代替情感上的回应。这并不是因为你冷漠，而是「依赖别人」在你的经验里【曾经并不总是安全的】。【距离，是你保护自己的方式】。',
+    advice:'试着小剂量地练习暴露感受：从【「我今天有点累」】这样简单的话开始，而不是急着给出解决方案。留意想要独处的冲动，分辨它是【真的需要休息，还是在回避受伤】。让信任，慢慢追上你的独立。'
+  },
+  fearful: {
+    name:'恐惧型', en:'Fearful-Avoidant', tag:'想靠近又怕受伤的心',
+    color:'#BE9265', soft:'#F5E6D0', dotColor:'#A87F52',
+    ball: ['#F9F0E3', '#D8B48C', '#B98F62'],
+    quote:'靠近与后退之间，我在练习停留。',
+    plain: { a:'容易患得患失', conj:'又', b:'总想留一点距离' },
+    subtitle:'你慢慢靠近，碰到的一瞬又想逃开',
+    reading:'你【既渴望亲密，又害怕亲密】——想要靠近一个人，又会在真正靠近之后想逃。你可能在「黏」与「冷」之间【来回摇摆】，让对方困惑，也让自己疲惫。这往往来自矛盾的早期经验：最想依赖的人，同时也是最不确定的人。你的挣扎不是矫情，而是【两股同样真实的力量在同时拉扯着你】。',
+    advice:'给自己设定「小步暴露」：在下一次想撤退的时刻，【试着多停留十分钟】，说出一句真实的感受。关系的修复不靠戏剧性的大和解，而靠这些微小的【「我再多待一会儿」】。如果拉扯感很重，也可以考虑和专业咨询师一起梳理。'
+  }
+};
+
+const ISLES = {
+  secure:      { name:'安全湾',   dock:{ x: 92, y:190 }, cp:[ 50, 210] },
+  preoccupied: { name:'痴迷环礁', dock:{ x:235, y: 92 }, cp:[160, 202] },
+  dismissive:  { name:'疏离冰原', dock:{ x:238, y:190 }, cp:[125, 208] },
+  fearful:     { name:'恐惧迷雾', dock:{ x: 78, y: 92 }, cp:[ 27, 137] }
+};
+const ISLE_ID = { secure:'isle-sec', preoccupied:'isle-pre', dismissive:'isle-dis', fearful:'isle-fea' };
+
+/* =====================================================================
+   三、存储层（localStorage + 内存兜底）
+   ===================================================================== */
+const mem = {};
+const LS = {
+  available: (() => { try { localStorage.setItem('__yu_t','1'); localStorage.removeItem('__yu_t'); return true; } catch(e){ return false; } })(),
+  get(k, f) { try { const v = localStorage.getItem(k); if (v !== null) return JSON.parse(v); } catch(e){} return (k in mem) ? mem[k] : f; },
+  set(k, v) { try { mem[k] = JSON.parse(JSON.stringify(v)); } catch(e){ mem[k] = v; } try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  del(k) { delete mem[k]; try { localStorage.removeItem(k); } catch(e){} }
+};
+
+/* =====================================================================
+   四、常量 / 状态 / 工具
+   ===================================================================== */
+const TOTAL = 36;
+const QMAP = Object.fromEntries(QUESTIONS.map(q => [q.id, q]));
+const $ = s => document.querySelector(s);
+const KEYS = { done:'yu_ecr_done_v1', prog:'yu_ecr_prog_v1' };
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GATE_CODE = '5555';   /* 固定验证码 */
+
+let session = null, locked = false, autoTimer = null, modeTl = null;
+
+const shuffle = a => { for (let i = a.length-1; i>0; i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const answeredCount = () => session ? Object.keys(session.answers).length : 0;
+const saveProgress  = () => LS.set(KEYS.prog, session);
+const hashId = s => [...s].reduce((a,c) => a + c.charCodeAt(0), 0);
+const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+
+const OPT_TONES = [
+  ['非常不符合','比较不符合','不确定','比较符合','非常符合'],
+  ['完全不是我','不太像我','说不准','挺像我','就是我'],
+  ['从来不会这样','很少会这样','不好说','经常会这样','总是这样']
+];
+
+/* =====================================================================
+   五、验证码门
+   ===================================================================== */
+function gateCheck() {
+  const cells = [...document.querySelectorAll('.gc')];
+  const code = cells.map(c => c.value).join('');
+  const firstEmpty = cells.findIndex(c => !c.value);
+  if (firstEmpty >= 0) { showToast('请输入完整的 4 位验证码'); cells[firstEmpty].focus(); return; }
+  if (code === GATE_CODE) {
+    cells.forEach(c => { c.classList.add('ok'); c.blur(); c.disabled = true; });
+    $('#gate-btn').disabled = true;
+    gsap.timeline()
+      .to('#gate-card', { y: -16, scale: .97, opacity: 0, duration: .4, ease: 'power2.in' })
+      .to('#gate', { opacity: 0, duration: .55, ease: 'power2.out',
+        onComplete() { const g = $('#gate'); if (g) g.remove(); } }, '-=.1')
+      .add(() => { if (!REDUCED) homeIntro(); }, '-=.35');
+  } else {
+    cells.forEach(c => c.classList.add('bad'));
+    gsap.fromTo('#gate-cells', { x: 0 }, { x: 9, duration: .06, repeat: 5, yoyo: true, ease: 'power1.inOut',
+      onComplete() { gsap.set('#gate-cells', { x: 0 }); } });
+    setTimeout(() => {
+      cells.forEach(c => { c.value = ''; c.classList.remove('bad'); });
+      cells[0].focus();
+    }, 400);
+    showToast('验证码不对，再试一次');
+  }
+}
+
+function initGate() {
+  const cells = [...document.querySelectorAll('.gc')];
+  cells.forEach((c, i) => {
+    c.addEventListener('input', () => {
+      c.value = c.value.replace(/\D/g, '').slice(-1);
+      c.classList.remove('bad');
+      if (c.value && i < 3) cells[i + 1].focus();
+      if (cells.every(x => x.value)) setTimeout(gateCheck, 180);
+    });
+    c.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !c.value && i > 0) { cells[i - 1].value = ''; cells[i - 1].focus(); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft' && i > 0) cells[i - 1].focus();
+      else if (e.key === 'ArrowRight' && i < 3) cells[i + 1].focus();
+      else if (e.key === 'Enter') gateCheck();
+    });
+    c.addEventListener('paste', e => {
+      e.preventDefault();
+      const txt = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 4);
+      txt.split('').forEach((ch, k) => { if (cells[k]) cells[k].value = ch; });
+      cells[Math.min(txt.length, 3)].focus();
+      if (txt.length === 4) setTimeout(gateCheck, 120);
+    });
+  });
+  $('#gate-btn').addEventListener('click', gateCheck);
+  /* 仅桌面端自动聚焦，移动端由用户点击唤起数字键盘 */
+  if (matchMedia('(pointer:fine)').matches) setTimeout(() => cells[0].focus(), 700);
+}
+
+/* =====================================================================
+   六、抽题（历史去重 + 维度平衡）
+   ===================================================================== */
+function pickSession() {
+  let done = LS.get(KEYS.done, []);
+  const poolA = QUESTIONS.filter(q => q.dim === 'A'), poolV = QUESTIONS.filter(q => q.dim === 'V');
+  let freshA = poolA.filter(q => !done.includes(q.id)), freshV = poolV.filter(q => !done.includes(q.id));
+  if (freshA.length < 18 || freshV.length < 18) { done = []; LS.set(KEYS.done, []); freshA = poolA; freshV = poolV; }
+  const pick = arr => shuffle([...arr]).slice(0, 18);
+  const qs = shuffle([...pick(freshA), ...pick(freshV)]);
+  return { qids: qs.map(q => q.id), answers: {}, index: 0 };
+}
+
+/* =====================================================================
+   七、页面切换
+   ===================================================================== */
+async function switchScreen(fromSel, toSel) {
+  const from = $(fromSel), to = $(toSel);
+  await gsap.to(from, { opacity: 0, duration: .22, ease: 'power2.in' });
+  from.classList.add('hidden');
+  to.classList.remove('hidden');
+  window.scrollTo(0, 0);
+  homeFx.active = (toSel === '#screen-home');
+  if (homeFx.active && !REDUCED && !homeFx.running) { homeFx.running = true; requestAnimationFrame(homeLoop); }
+  if (toSel !== '#screen-result' && modeTl) { modeTl.kill(); modeTl = null; }
+  if (toSel === '#screen-home') refreshHome();
+  gsap.fromTo(to, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: .4, ease: 'power2.out', overwrite: true });
+}
+
+/* =====================================================================
+   八、首页 · 微缩星系（固定表情 + 星光点缀）
+   ===================================================================== */
+const NS = 'http://www.w3.org/2000/svg';
+const homeFx = { active: true, running: false, intro: { v: 0 }, rings: 0, px: 0, py: 0, tx: 0, ty: 0, mid: { x: 170, y: 125 } };
+const LINES = [], SPARKS = [], LINE_OFFS = [-30, -15, 0, 15, 30];
+
+function qPoint(x0, y0, xc, yc, x1, y1, u) {
+  const a = (1-u)*(1-u), b = 2*u*(1-u), c = u*u;
+  return { x: a*x0 + b*xc + c*x1, y: a*y0 + b*yc + c*y1 };
+}
+function buildTexture(rowId, color, spots) {
+  const one = spots.map(s => `<ellipse cx="${s[0]}" cy="${s[1]}" rx="${s[2]}" ry="${s[3]}" fill="${color}" opacity=".55"/>`).join('');
+  document.getElementById(rowId).innerHTML = one + `<g transform="translate(92 0)">${one}</g>`;
+}
+function buildStage() {
+  const gStars = $('#g-stars');
+  const cols = ['#A9C9E8', '#F2CFD6', '#D9D3EE', '#B9C6D6'];
+  for (let i = 0; i < 22; i++) {
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', (8 + Math.random()*324).toFixed(1));
+    c.setAttribute('cy', (10 + Math.random()*230).toFixed(1));
+    c.setAttribute('r', (0.8 + Math.random()*1.5).toFixed(1));
+    c.setAttribute('fill', cols[i % 4]);
+    c.setAttribute('class', 'twinkle');
+    c.style.animationDelay = (Math.random()*3).toFixed(2) + 's';
+    c.style.animationDuration = (2 + Math.random()*2.5).toFixed(2) + 's';
+    gStars.insertBefore(c, gStars.firstChild);
+  }
+  const gLines = $('#g-lines'), gSparks = $('#g-sparks');
+  for (let i = 0; i < 5; i++) {
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', i % 2 ? '#F2CFD6' : '#A9C9E8');
+    p.setAttribute('stroke-width', '1.5');
+    p.setAttribute('stroke-linecap', 'round');
+    p.setAttribute('opacity', '0');
+    gLines.appendChild(p); LINES.push(p);
+    const s = document.createElementNS(NS, 'circle');
+    s.setAttribute('r', '2.2');
+    s.setAttribute('fill', i % 2 ? '#D998A6' : '#7FA6CE');
+    s.setAttribute('opacity', '0');
+    gSparks.appendChild(s); SPARKS.push(s);
+  }
+  buildTexture('tex-me', '#7FA6CE', [[-32,-18,9,5],[-6,8,12,7],[22,-9,7,4],[38,16,8,5],[-44,22,6,4]]);
+  buildTexture('tex-you', '#DEA9B4', [[-38,-12,8,5],[-14,14,10,6],[4,-20,7,4],[28,6,9,5],[42,-16,6,4]]);
+}
+function satPos(elB, elF, th, rx, ry, vis) {
+  const x = (Math.cos(th)*rx).toFixed(1), y = (Math.sin(th)*ry).toFixed(1);
+  const show = y < 0 ? elB : elF, hide = y < 0 ? elF : elB;
+  show.setAttribute('transform', `translate(${x} ${y})`);
+  show.setAttribute('opacity', vis.toFixed(2));
+  hide.setAttribute('opacity', '0');
+}
+function dustPos(el, th, rx, ry, vis) {
+  el.setAttribute('transform', `translate(${(Math.cos(th)*rx).toFixed(1)} ${(Math.sin(th)*ry).toFixed(1)})`);
+  el.setAttribute('opacity', (vis*.75).toFixed(2));
+}
+function drawHome(t) {
+  const intro = homeFx.intro.v;
+  const breathe = 0.82 + Math.sin(t*1.35)*0.12;
+  const eff = intro * clamp01(breathe);
+  const D = 140 - 56*eff;
+  const yMe = 125 + Math.sin(t*1.05)*5, yYou = 125 + Math.sin(t*1.3+2.1)*5;
+  const xMe = 170 - D/2, xYou = 170 + D/2;
+  homeFx.mid = { x: (xMe+xYou)/2, y: (yMe+yYou)/2 };
+  $('#g-me').setAttribute('transform', `translate(${xMe.toFixed(1)} ${yMe.toFixed(1)})`);
+  $('#g-you').setAttribute('transform', `translate(${xYou.toFixed(1)} ${yYou.toFixed(1)})`);
+  satPos($('#sat-me-b'), $('#sat-me-f'), t*0.5, 50, 13, homeFx.rings);
+  satPos($('#sat-you-b'), $('#sat-you-f'), -t*0.42+2, 50, 13, homeFx.rings);
+  dustPos($('#dust-me-1'), t*0.5+2.4, 50, 13, homeFx.rings);
+  dustPos($('#dust-me-2'), t*0.5+4.1, 50, 13, homeFx.rings);
+  dustPos($('#dust-you-1'), -t*0.42+3.6, 50, 13, homeFx.rings);
+  dustPos($('#dust-you-2'), -t*0.42+5.1, 50, 13, homeFx.rings);
+  const lineOp = clamp01((eff-0.55)/0.35) * 0.55;
+  LINES.forEach((p, i) => {
+    const off = LINE_OFFS[i]*0.5;
+    const x1 = xMe+40, y1 = yMe+off, x2 = xYou-40, y2 = yYou+off;
+    const xc = (x1+x2)/2, yc = (y1+y2)/2 + Math.sin(t*1.8+i*1.7)*(4+eff*5);
+    p.setAttribute('d', `M ${x1.toFixed(1)} ${y1.toFixed(1)} Q ${xc.toFixed(1)} ${yc.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`);
+    p.setAttribute('opacity', (lineOp*(0.7+0.3*Math.sin(t*2.2+i))).toFixed(3));
+    const u = (t*0.11 + i*0.2) % 1;
+    const pt = qPoint(x1, y1, xc, yc, x2, y2, u);
+    const fade = u < .15 ? u/.15 : u > .85 ? (1-u)/.15 : 1;
+    SPARKS[i].setAttribute('cx', pt.x.toFixed(1));
+    SPARKS[i].setAttribute('cy', pt.y.toFixed(1));
+    SPARKS[i].setAttribute('opacity', (lineOp*fade).toFixed(3));
+  });
+  const linkOp = clamp01((92-D)/18) * intro;
+  const pulse = 1 + Math.sin(t*2.6)*.07;
+  $('#g-link').setAttribute('transform', `translate(${homeFx.mid.x.toFixed(1)} ${homeFx.mid.y.toFixed(1)}) scale(${pulse.toFixed(3)})`);
+  $('#g-link').setAttribute('opacity', linkOp.toFixed(3));
+  $('#pl1-in').setAttribute('transform', `translate(0 ${(Math.sin(t*.5)*4).toFixed(1)})`);
+  $('#pl2-in').setAttribute('transform', `translate(0 ${(Math.sin(t*.65+2)*5).toFixed(1)})`);
+  homeFx.px += (homeFx.tx - homeFx.px)*0.05;
+  homeFx.py += (homeFx.ty - homeFx.py)*0.05;
+  $('#home-stage').style.transform = `translate(${(homeFx.px*8).toFixed(1)}px, ${(homeFx.py*5).toFixed(1)}px)`;
+  $('#g-stars').setAttribute('transform', `translate(${(-homeFx.px*5).toFixed(1)} ${(-homeFx.py*4).toFixed(1)})`);
+}
+function homeLoop(ts) {
+  if (!homeFx.active) { homeFx.running = false; return; }
+  drawHome(ts/1000);
+  requestAnimationFrame(homeLoop);
+}
+function ripple() {
+  const el = $(rippleIdx++ % 2 ? '#ripple-c2' : '#ripple-c1');
+  el.setAttribute('cx', homeFx.mid.x.toFixed(1));
+  el.setAttribute('cy', homeFx.mid.y.toFixed(1));
+  gsap.fromTo(el, { attr: { r: 10 }, opacity: .55 }, { attr: { r: 58 }, opacity: 0, duration: 1.05, ease: 'power2.out' });
+}
+let rippleIdx = 0;
+function meteorLoop() {
+  if (homeFx.active && !REDUCED) {
+    const m = $('#meteor');
+    const sx = 70 + Math.random()*190, sy = 12 + Math.random()*90;
+    gsap.fromTo(m, { x: sx, y: sy, opacity: 0 }, { opacity: .85, duration: .15, ease: 'power1.in' });
+    gsap.to(m, { x: sx+115, y: sy+62, duration: .8, ease: 'power1.in',
+      onComplete() { gsap.to(m, { opacity: 0, duration: .25 }); } });
+  }
+  gsap.delayedCall(3.5 + Math.random()*5, meteorLoop);
+}
+function homeIntro() {
+  const tl = gsap.timeline({ delay: .25 });
+  tl.fromTo('#g-stars', { opacity: 0 }, { opacity: 1, duration: 1.2 }, 0)
+    .to(homeFx.intro, { v: 1, duration: 2.0, ease: 'elastic.out(1, 0.55)' }, .8)
+    .call(ripple, null, 1.85)
+    .to(['#face-me', '#face-you'], { opacity: 1, duration: .6, stagger: .15 }, 2.2)
+    .to(homeFx, { rings: 1, duration: 1.2, ease: 'power2.out' }, 2.5)
+    .to('.ring-half', { opacity: .75, duration: 1.2 }, 2.5)
+    .to('#home-tagline', { opacity: 1, y: 0, duration: .6 }, 2.75)
+    .fromTo('.rise-home', { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: .6, stagger: .09, ease: 'power2.out' }, 2.45);
+}
+function squish(gIn) {
+  gsap.fromTo(gIn, { scale: .88 }, { scale: 1, duration: .9, ease: 'elastic.out(1, 0.35)' });
+  ripple();
+}
+
+/* =====================================================================
+   九、答题流程
+   ===================================================================== */
+function initOptions() {
+  document.querySelectorAll('#opts .opt').forEach((b, i) => {
+    const wrap = document.createElement('span');
+    wrap.className = 'opt-cells';
+    for (let k = 0; k < 5; k++) {
+      const c = document.createElement('i');
+      c.className = 'opt-cell' + (k <= i ? ' lit' : '');
+      c.style.height = (8 + k*3) + 'px';
+      wrap.appendChild(c);
+    }
+    b.insertBefore(wrap, b.firstChild);
+  });
+}
+function enterQuiz() {
+  renderQuestion();
+  switchScreen('#screen-home', '#screen-quiz').then(() => {
+    gsap.fromTo('#opts .opt', { y: 12, opacity: 0 }, { y: 0, opacity: 1, stagger: .05, duration: .4, ease: 'power2.out', clearProps: 'all' });
+  });
+}
+function renderQuestion() {
+  const q = QMAP[session.qids[session.index]];
+  $('#q-no').textContent = session.index + 1;
+  $('#q-count').textContent = session.index + 1;
+  $('#q-text').textContent = q.text;
+  const tone = OPT_TONES[hashId(q.id) % OPT_TONES.length];
+  document.querySelectorAll('#opts .opt').forEach((b, i) => {
+    b.querySelector('.opt-txt').textContent = tone[i];
+    b.classList.toggle('is-on', +b.dataset.v === session.answers[q.id]);
+  });
+  updateNav();
+  gsap.to('#progress-fill', { scaleX: answeredCount()/TOTAL, duration: .45, ease: 'power2.out', overwrite: true });
+}
+function updateNav() {
+  const all = answeredCount() === TOTAL;
+  const cur = session.qids[session.index];
+  $('#btn-prev').disabled = session.index === 0;
+  const next = $('#btn-next');
+  if (all) {
+    next.innerHTML = '查看结果 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
+    next.classList.add('is-ready'); next.disabled = false;
+  } else {
+    next.innerHTML = '下一题 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
+    next.classList.remove('is-ready');
+    next.disabled = session.answers[cur] === undefined;
+  }
+}
+function step(dir) {
+  if (locked) return;
+  const ni = session.index + dir;
+  if (ni < 0 || ni >= TOTAL) return;
+  locked = true; clearTimeout(autoTimer);
+  const tl = gsap.timeline({ onComplete: () => { locked = false; } });
+  tl.to('#q-card', { opacity: 0, x: -30*dir, duration: .2, ease: 'power2.in' })
+    .add(() => { session.index = ni; saveProgress(); renderQuestion(); })
+    .set('#q-card', { x: 30*dir })
+    .to('#q-card', { opacity: 1, x: 0, duration: .34, ease: 'power2.out' })
+    .fromTo('#opts .opt', { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: .3, stagger: .045, ease: 'power2.out', clearProps: 'all' }, '-=.18');
+}
+function computeResult() {
+  let sA = 0, sV = 0;
+  session.qids.forEach(id => {
+    const q = QMAP[id];
+    let v = session.answers[id];
+    if (q.rev) v = 6 - v;
+    q.dim === 'A' ? sA += v : sV += v;
+  });
+  const mA = sA/18, mV = sV/18;
+  const anxHigh = mA > 3.0, avoHigh = mV > 3.0;
+  const key = !anxHigh && !avoHigh ? 'secure' : anxHigh && !avoHigh ? 'preoccupied' : !anxHigh && avoHigh ? 'dismissive' : 'fearful';
+  return { mA, mV, pctA: (mA-1)/4*100, pctV: (mV-1)/4*100, anxHigh, avoHigh, key, type: TYPE_META[key] };
+}
+function finishQuiz() {
+  const done = new Set(LS.get(KEYS.done, []));
+  session.qids.forEach(id => done.add(id));
+  LS.set(KEYS.done, [...done]);
+  LS.del(KEYS.prog);
+  const result = computeResult();
+  renderResult(result);
+  switchScreen('#screen-quiz', '#screen-result').then(() => renderMap(result, 0.35));
+}
+
+/* =====================================================================
+   十、相处模式小剧场
+   ===================================================================== */
+function setFace(ball, look, mouth, opts = {}) {
+  ball.className = 'm-ball ' + look
+    + (opts.closed ? ' closed' : '')
+    + (opts.blush ? ' blush-on' : '')
+    + (opts.bigPupil ? ' pupil-big' : '');
+  ball.querySelector('.m-mouth').className = 'm-mouth ' + mouth;
+}
+
+function playModeScene(key, ball) {
+  const me = $('#m-me'), ta = $('#m-ta'), sme = $('#m-sh-me'), sta = $('#m-sh-ta');
+  if (modeTl) modeTl.kill();
+  gsap.killTweensOf([me, ta, sme, sta]);
+
+  me.style.background = `radial-gradient(circle at 32% 28%, ${ball[0]}, ${ball[1]} 48%, ${ball[2]})`;
+  ta.style.background = 'radial-gradient(circle at 32% 28%, #EEF1F5, #B9C4D2 48%, #93A2B4)';
+
+  if (key === 'secure') {
+    setFace(me, 'look-r', 'mouth-smile', { blush: true });
+    setFace(ta, 'look-l', 'mouth-smile', { blush: true });
+  } else if (key === 'preoccupied') {
+    setFace(me, 'look-r', 'mouth-smile', { blush: true, bigPupil: true });
+    setFace(ta, 'look-ur', 'mouth-flat');
+  } else if (key === 'dismissive') {
+    setFace(me, 'look-r', 'mouth-flat', { closed: true });
+    setFace(ta, 'look-l', 'mouth-smile', { blush: true });
+  } else {
+    setFace(me, 'look-r', 'mouth-frown', { blush: true });
+    setFace(ta, 'look-l', 'mouth-smile');
+  }
+
+  gsap.set([sme, sta], { opacity: 0, scale: 1 });
+  gsap.fromTo([me, sme], { x: -130 }, { x: -38, duration: 1, ease: 'power3.out', delay: .95 });
+  gsap.fromTo(sme, { opacity: 0 }, { opacity: .09, duration: 1, delay: .95 });
+  gsap.fromTo([ta, sta], { x: 130 }, { x: 38, duration: 1, ease: 'power3.out', delay: 1.05 });
+  gsap.fromTo(sta, { opacity: 0 }, { opacity: .09, duration: 1, delay: 1.05 });
+  gsap.set([me, ta], { y: 0, scale: 1 });
+
+  if (key === 'secure') {
+    modeTl = gsap.timeline({ delay: 2.05 });
+    modeTl.to([me, sme], { x: -31, duration: 1.4, ease: 'sine.inOut' }, 0)
+           .to([ta, sta], { x: 31, duration: 1.4, ease: 'sine.inOut' }, 0)
+           .to([me, ta], { scale: 1.05, y: -4, duration: 1.7, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 1.5);
+  } else if (key === 'preoccupied') {
+    modeTl = gsap.timeline({ delay: 2.05, repeat: -1, repeatDelay: .5 });
+    modeTl.to([me, sme], { x: -24, duration: .9, ease: 'sine.inOut' }, 0)
+           .to(me, { scale: 1.06, duration: .3, ease: 'power2.out' }, .85)
+           .to(me, { scale: 1, duration: .4 }, 1.25)
+           .to([ta, sta], { x: 52, duration: 1.5, ease: 'sine.inOut' }, 1.6)
+           .to([me, sme], { x: -10, duration: .7, ease: 'power1.inOut' }, 2.2)
+           .to(me, { scale: 1.06, duration: .3 }, 2.85)
+           .to(me, { scale: 1, duration: .4 }, 3.25)
+           .to([me, sme], { x: -38, duration: 1.2, ease: 'sine.inOut' }, 4.2)
+           .to([ta, sta], { x: 38, duration: 1.2, ease: 'sine.inOut' }, 4.35);
+  } else if (key === 'dismissive') {
+    modeTl = gsap.timeline({ delay: 2.05, repeat: -1, repeatDelay: .8 });
+    modeTl.to([ta, sta], { x: 28, duration: .5, ease: 'sine.inOut' }, 0)
+           .to([me, sme], { x: -46, duration: 1.0, ease: 'sine.inOut' }, .7)
+           .to([ta, sta], { x: 18, duration: .5, ease: 'sine.inOut' }, 1.9)
+           .to([me, sme], { x: -54, duration: 1.0, ease: 'sine.inOut' }, 2.6)
+           .to([ta, sta], { x: 38, duration: 1.1, ease: 'sine.inOut' }, 3.9)
+           .to([me, sme], { x: -38, duration: 1.1, ease: 'sine.inOut' }, 4.4);
+  } else {
+    modeTl = gsap.timeline({ delay: 2.05, repeat: -1, repeatDelay: .9 });
+    modeTl.to([me, sme], { x: -24, duration: 2.2, ease: 'sine.inOut' }, 0)
+           .to(me, { scale: 1.04, duration: .2, ease: 'power2.out' }, 2.1)
+           .to(ta, { scale: 1.07, duration: .2 }, 2.25)
+           .call(() => { me.classList.add('closed'); me.querySelector('.m-mouth').className = 'm-mouth mouth-o'; }, null, 2.32)
+           .to(me, { x: -64, y: -14, duration: .45, ease: 'power3.out' }, 2.35)
+           .to(sme, { scale: .65, opacity: .05, duration: .45 }, 2.35)
+           .to(ta, { scale: 1, duration: .4 }, 2.55)
+           .call(() => { me.classList.remove('closed'); me.querySelector('.m-mouth').className = 'm-mouth mouth-frown'; }, null, 3.4)
+           .to(me, { y: 0, duration: .7, ease: 'power2.in' }, 3.6)
+           .to(sme, { scale: 1, opacity: .09, duration: .7 }, 3.6)
+           .to([me, sme], { x: -38, duration: 1.5, ease: 'sine.inOut' }, 3.9)
+           .to([me, sme], { x: -31, duration: .9, ease: 'sine.inOut' }, 5.6);
+  }
+}
+
+/* =====================================================================
+   十一、依恋地图
+   ===================================================================== */
+function renderMap(r, base) {
+  const isle = ISLES[r.key], gid = ISLE_ID[r.key], dock = isle.dock, cp = isle.cp;
+  const sub = $('#map-sub'), boat = $('#map-boat'), route = $('#map-route'), trail = $('#map-trail');
+  sub.textContent = `你的小船，正驶向「${isle.name}」`;
+
+  gsap.killTweensOf(['#map-route', '#map-trail', '#map-boat', '#map-ripple', '#map-here', '.isle', '#map .wave-g']);
+  gsap.set(['#map-boat', '#map-trail', '#map-route', '#map-here'], { opacity: 0 });
+  gsap.set('.isle', { opacity: 1 });
+  document.querySelectorAll('.isle-name').forEach(t => t.setAttribute('font-size', '13'));
+
+  gsap.fromTo('.isle', { scale: 0, opacity: 0, transformOrigin: '50% 50%' },
+    { scale: 1, opacity: 1, duration: .75, stagger: .13, ease: 'back.out(1.7)', delay: base, overwrite: true });
+  gsap.fromTo('#map .wave-g', { opacity: 0 }, { opacity: .6, duration: .9, delay: base + .45, overwrite: true });
+
+  const d = `M 14 202 Q ${cp[0]} ${cp[1]} ${dock.x} ${dock.y}`;
+  route.setAttribute('d', d);
+  trail.setAttribute('d', d);
+  const len = route.getTotalLength();
+  trail.setAttribute('stroke-dasharray', len.toFixed(1));
+  trail.setAttribute('stroke-dashoffset', len.toFixed(1));
+  gsap.to(route, { opacity: .9, duration: .5, delay: base + .8 });
+
+  gsap.set(boat, { opacity: 0 });
+  gsap.to(boat, { opacity: 1, duration: .3, delay: base + 1.0 });
+  gsap.to(trail, { opacity: .85, duration: .3, delay: base + 1.05 });
+  boat.setAttribute('transform', 'translate(14 202) rotate(0) scale(1.15)');
+
+  const pr = { v: 0 };
+  gsap.to(pr, { v: 1, duration: 2.2, delay: base + 1.05, ease: 'power1.inOut',
+    onUpdate() {
+      const L = pr.v * len;
+      const p = route.getPointAtLength(L);
+      const p2 = route.getPointAtLength(Math.min(L + 2, len));
+      const ang = Math.atan2(p2.y - p.y, p2.x - p.x) * 180 / Math.PI;
+      boat.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${(ang + Math.sin(pr.v * 24) * 4).toFixed(1)}) scale(1.15)`);
+      trail.setAttribute('stroke-dashoffset', (len - L).toFixed(1));
+    },
+    onComplete() {
+      gsap.killTweensOf(boat);
+      gsap.set(boat, { x: dock.x, y: dock.y, rotation: 0, scale: 1.15 });
+      gsap.to(boat, { y: dock.y - 2.5, duration: 1.8, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      gsap.to(boat, { rotation: 2.5, duration: 2.3, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      const rp = $('#map-ripple');
+      rp.setAttribute('cx', dock.x); rp.setAttribute('cy', dock.y + 6);
+      gsap.fromTo(rp, { attr: { r: 6 }, opacity: .55 }, { attr: { r: 26 }, opacity: 0, duration: 1.1, ease: 'power2.out' });
+      gsap.fromTo(rp, { attr: { r: 6 }, opacity: .5 }, { attr: { r: 26 }, opacity: 0, duration: 1.1, delay: .35, ease: 'power2.out' });
+      document.querySelectorAll('.isle').forEach(g => { if (g.id !== gid) gsap.to(g, { opacity: .35, duration: .7, delay: .15 }); });
+      $(`#${gid} .isle-name`).setAttribute('font-size', '14.5');
+      const here = $('#map-here');
+      const left = dock.x > 220;
+      here.setAttribute('x', left ? dock.x - 26 : dock.x + 26);
+      here.setAttribute('y', dock.y + 4);
+      here.setAttribute('text-anchor', left ? 'end' : 'start');
+      gsap.to(here, { opacity: 1, duration: .5, delay: .4 });
+      sub.textContent = `你的小船，已停泊在「${isle.name}」`;
+    }});
+}
+
+/* =====================================================================
+   十二、结果渲染
+   ===================================================================== */
+function plainHTML(p) {
+  return `在亲密关系里，你<span class="sc-hl-a">${p.a}</span>，${p.conj}<span class="sc-hl-v">${p.b}</span>。`;
+}
+function charSpans(s, cls) { return [...s].map(c => `<i class="${cls}">${c}</i>`).join(''); }
+function splitSent(text) {
+  const out = []; let cur = '';
+  for (const ch of text) { cur += ch; if ('。！？'.includes(ch)) { out.push(cur); cur = ''; } }
+  if (cur) out.push(cur);
+  return out;
+}
+function richSentences(text) {
+  return splitSent(text).map(s => `<span class="sent">${s.replace(/【([^】]+)】/g, '<em class="mk">$1</em>')}</span>`).join('');
+}
+function setBadge(el, m, highCls) {
+  const lv = m <= 2.2 ? '很低' : m <= 3.0 ? '偏低' : m <= 3.8 ? '偏高' : '很高';
+  el.textContent = lv;
+  el.className = 'text-[11px] px-2 py-0.5 rounded-full ' + (m > 3.0 ? highCls : 'bg-[#EDE7DB] text-inksoft');
+}
+
+function renderResult(r) {
+  window.__lastResult = r;
+  const t = r.type, p = t.plain;
+
+  document.documentElement.style.setProperty('--tc-soft', t.soft);
+  document.documentElement.style.setProperty('--tc-deep', t.dotColor);
+
+  $('#r-type').textContent = t.name;
+  $('#r-en').textContent = t.en;
+  $('#r-tag').textContent = t.tag;
+  $('#r-tag').style.background = t.soft;
+
+  $('#r-plain').innerHTML =
+    `在亲密关系里，你<span class="sc-hl-a">${charSpans(p.a, 'pc')}</span>，${p.conj}<span class="sc-hl-v">${charSpans(p.b, 'pc')}</span>。`;
+  gsap.fromTo('#r-plain .pc', { y: 14, opacity: 0 },
+    { y: 0, opacity: 1, duration: .4, stagger: .032, ease: 'power2.out', delay: 1.0, overwrite: true });
+
+  $('#mode-sub').textContent = t.subtitle;
+  playModeScene(r.key, t.ball);
+
+  gsap.fromTo('.scale-tick', { scale: 0 }, { scale: 1, duration: .35, stagger: .06, delay: 1.05, overwrite: true });
+  gsap.fromTo('#bar-a', { scaleX: 0 }, { scaleX: r.pctA/100, duration: 1.1, delay: 1.25, ease: 'power3.out', overwrite: true });
+  gsap.fromTo('#bar-v', { scaleX: 0 }, { scaleX: r.pctV/100, duration: 1.1, delay: 1.4, ease: 'power3.out', overwrite: true });
+  $('#pin-a').style.left = r.pctA + '%';
+  $('#pin-v').style.left = r.pctV + '%';
+  setTimeout(() => gsap.fromTo('#pin-a', { scale: .4 }, { scale: 1, duration: .6, ease: 'elastic.out(1,.5)' }), 2250);
+  setTimeout(() => gsap.fromTo('#pin-v', { scale: .4 }, { scale: 1, duration: .6, ease: 'elastic.out(1,.5)' }), 2400);
+  const oa = { a: 0, v: 0 };
+  gsap.to(oa, { a: r.mA, v: r.mV, duration: 1.1, delay: 1.25, ease: 'power2.out',
+    onUpdate: () => { $('#score-a').textContent = oa.a.toFixed(1); $('#score-v').textContent = oa.v.toFixed(1); } });
+  setBadge($('#badge-a'), r.mA, 'bg-blush-soft text-[#B06E7E]');
+  setBadge($('#badge-v'), r.mV, 'bg-lilac-soft text-[#7A6BB0]');
+
+  $('#r-reading').innerHTML = richSentences(t.reading);
+  $('#r-advice').innerHTML = richSentences(t.advice);
+  gsap.fromTo('#r-reading .sent', { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: .5, stagger: .13, ease: 'power2.out', delay: 1.3, overwrite: true });
+  gsap.fromTo('#r-advice .sent',  { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: .5, stagger: .15, ease: 'power2.out', delay: 1.7, overwrite: true });
+  document.querySelectorAll('#r-reading .mk, #r-advice .mk').forEach((m, i) => {
+    setTimeout(() => m.classList.add('on'), 1750 + i * 150);
+  });
+
+  $('#r-quote').innerHTML = charSpans(t.quote, 'qc');
+  gsap.fromTo('#r-quote .qc', { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: .45, stagger: .05, ease: 'power2.out', delay: 2.1, overwrite: true });
+
+  $('#sc-type').textContent = t.name;
+  $('#sc-tag').textContent = t.tag;
+  $('#sc-plain').innerHTML = plainHTML(p);
+  $('#sc-va').textContent = r.mA.toFixed(1);
+  $('#sc-vv').textContent = r.mV.toFixed(1);
+  $('#sc-quote').textContent = '\u201c' + t.quote + '\u201d';
+  $('#sc-band').style.background = t.color;
+  $('#sc-tag').style.background = t.soft;
+  $('#sc-fa').style.background = t.color;
+  $('#sc-fv').style.background = t.color;
+  requestAnimationFrame(() => { $('#sc-fa').style.width = r.pctA + '%'; $('#sc-fv').style.width = r.pctV + '%'; });
+  gsap.fromTo('#share-card', { scale: .95, opacity: .6 }, { scale: 1, opacity: 1, duration: .7, delay: 2.0, ease: 'power2.out', overwrite: true });
+
+  gsap.fromTo('#screen-result .rise', { y: 26, opacity: 0 },
+    { y: 0, opacity: 1, duration: .55, stagger: .09, ease: 'power2.out', delay: .15, overwrite: true });
+
+  setTimeout(() => {
+    if (!window.confetti) return;
+    const colors = ['#A9C9E8', '#F2CFD6', '#D9D3EE', '#F5E6D0'];
+    const base = { particleCount: 42, spread: 55, startVelocity: 26, scalar: .9, ticks: 170, gravity: .9, colors, disableForReducedMotion: true };
+    confetti({ ...base, origin: { x: .22, y: .32 } });
+    confetti({ ...base, origin: { x: .78, y: .32 } });
+  }, 950);
+}
+
+/* =====================================================================
+   十三、分享图：原生 Canvas 手绘
+   ===================================================================== */
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawShareCard(r) {
+  const W = 750, H = 1200, cx = W / 2;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+  const t = r.type, p = t.plain;
+  const serif = '"Noto Serif SC", "Songti SC", serif';
+  const sans  = '"Noto Sans SC", "PingFang SC", sans-serif';
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.fillStyle = '#FDFBF7';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = t.color;
+  ctx.fillRect(0, 0, W, 30);
+
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = '#A9C9E8';
+  ctx.beginPath(); ctx.arc(cx - 22, 128, 24, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#F2CFD6';
+  ctx.beginPath(); ctx.arc(cx + 22, 128, 24, 0, Math.PI * 2); ctx.fill();
+  ctx.globalCompositeOperation = 'source-over';
+
+  ctx.fillStyle = '#8A93A0';
+  ctx.font = '400 27px ' + sans;
+  ctx.fillText('屿 · 成人依恋测试', cx, 205);
+  ctx.fillText('你 的 依 恋 风 格', cx, 316);
+
+  ctx.fillStyle = '#39434E';
+  ctx.font = '700 92px ' + serif;
+  ctx.fillText(t.name, cx, 412);
+
+  ctx.font = '500 30px ' + sans;
+  const tagW = ctx.measureText(t.tag).width + 72;
+  ctx.fillStyle = t.soft;
+  rr(ctx, cx - tagW / 2, 478, tagW, 58, 29); ctx.fill();
+  ctx.fillStyle = '#39434E';
+  ctx.fillText(t.tag, cx, 508);
+
+  ctx.font = '500 30px ' + sans;
+  ctx.fillStyle = '#4A5563';
+  ctx.fillText('在亲密关系里，', cx, 612);
+  const segs = [
+    { text: '你', hl: null },
+    { text: p.a, hl: '#F6DCE1', fg: t.dotColor },
+    { text: '，' + p.conj, hl: null },
+    { text: p.b, hl: '#E6E1F5', fg: t.dotColor },
+    { text: '。', hl: null }
+  ];
+  let total = 0;
+  segs.forEach(s => total += ctx.measureText(s.text).width);
+  let x = cx - total / 2;
+  const y2 = 670;
+  segs.forEach(s => {
+    const w = ctx.measureText(s.text).width;
+    if (s.hl) {
+      ctx.fillStyle = s.hl;
+      rr(ctx, x - 4, y2 - 21, w + 8, 42, 8); ctx.fill();
+    }
+    ctx.fillStyle = s.fg || '#4A5563';
+    ctx.fillText(s.text, x + w / 2, y2);
+    x += w;
+  });
+
+  const drawScale = (label, mean, pct, y) => {
+    ctx.textAlign = 'left';
+    ctx.font = '400 27px ' + sans;
+    ctx.fillStyle = '#6E7887';
+    ctx.fillText(label, 140, y);
+    ctx.textAlign = 'right';
+    ctx.font = '600 38px ' + serif;
+    ctx.fillStyle = '#39434E';
+    ctx.fillText(mean.toFixed(1), 610, y);
+    ctx.fillStyle = '#EEE9DF';
+    rr(ctx, 140, y + 26, 470, 16, 8); ctx.fill();
+    ctx.fillStyle = t.color;
+    rr(ctx, 140, y + 26, Math.max(24, 470 * pct / 100), 16, 8); ctx.fill();
+    ctx.textAlign = 'center';
+  };
+  drawScale('依恋焦虑', r.mA, r.pctA, 788);
+  drawScale('依恋回避', r.mV, r.pctV, 888);
+
+  let qs = '\u201c' + t.quote + '\u201d', qSize = 32;
+  ctx.font = '600 ' + qSize + 'px ' + serif;
+  while (ctx.measureText(qs).width > 630 && qSize > 22) {
+    qSize -= 2;
+    ctx.font = '600 ' + qSize + 'px ' + serif;
+  }
+  ctx.fillStyle = '#4A5563';
+  ctx.fillText(qs, cx, 1000);
+
+  ctx.font = '400 24px ' + sans;
+  ctx.fillStyle = '#9AA3AF';
+  ctx.fillText('来测测你的依恋坐标', cx, 1080);
+  ctx.font = '400 21px ' + sans;
+  ctx.fillStyle = '#B4BCC7';
+  ctx.fillText('本测试仅供娱乐参考，不替代专业心理咨询', cx, 1124);
+
+  return c.toDataURL('image/png');
+}
+
+async function makeShareImage() {
+  const btn = $('#btn-share'), txt = $('#btn-share-txt');
+  btn.disabled = true; txt.textContent = '生成中…';
+  try {
+    try {
+      await Promise.all([
+        document.fonts.load('700 92px "Noto Serif SC"'),
+        document.fonts.load('600 38px "Noto Serif SC"'),
+        document.fonts.load('500 30px "Noto Sans SC"'),
+        document.fonts.load('400 27px "Noto Sans SC"'),
+        document.fonts.ready
+      ]);
+    } catch (e) {}
+    const url = drawShareCard(window.__lastResult);
+    $('#share-img').src = url;
+    $('#btn-download').href = url;
+    openModal();
+  } catch (e) {
+    showToast('图片生成失败，请重试');
+  }
+  btn.disabled = false; txt.textContent = '生成分享图';
+}
+function openModal() {
+  const m = $('#modal-share');
+  m.classList.remove('hidden'); m.classList.add('flex');
+  gsap.fromTo('#modal-card', { scale: .9, y: 18, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: .38, ease: 'power2.out' });
+}
+function closeModal() {
+  const m = $('#modal-share');
+  gsap.to('#modal-card', { scale: .94, opacity: 0, duration: .22, ease: 'power2.in',
+    onComplete: () => { m.classList.add('hidden'); m.classList.remove('flex'); } });
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (_) {}
+    ta.remove(); return ok;
+  }
+}
+let toastTimer = null;
+function showToast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  clearTimeout(toastTimer);
+  gsap.killTweensOf(el);
+  gsap.fromTo(el, { y: -14, opacity: 0 }, { y: 0, opacity: 1, duration: .3, ease: 'power2.out' });
+  toastTimer = setTimeout(() => gsap.to(el, { y: -10, opacity: 0, duration: .3, ease: 'power2.in' }), 2400);
+}
+function refreshHome() {
+  const prog = LS.get(KEYS.prog, null);
+  const has = !!(prog && prog.qids && prog.qids.length);
+  $('#btn-start').classList.toggle('hidden', has);
+  $('#continue-wrap').classList.toggle('hidden', !has);
+  $('#continue-wrap').style.display = has ? 'flex' : 'none';
+  if (has) {
+    const n = Object.keys(prog.answers || {}).length;
+    $('#continue-label').textContent = n > 0 ? `继续上次测试 · 已完成 ${n} / ${TOTAL}` : '继续上次未完成的测试';
+    gsap.to('#cont-bar', { scaleX: n/TOTAL, duration: .6, ease: 'power2.out', overwrite: true });
+  }
+}
+
+/* =====================================================================
+   十四、事件绑定与初始化
+   ===================================================================== */
+function bindEvents() {
+  $('#btn-start').addEventListener('click', () => {
+    const prog = LS.get(KEYS.prog, null);
+    session = (prog && prog.qids && prog.qids.length) ? prog : pickSession();
+    saveProgress(); enterQuiz();
+  });
+  $('#btn-continue').addEventListener('click', () => {
+    const prog = LS.get(KEYS.prog, null);
+    session = (prog && prog.qids) ? prog : pickSession();
+    enterQuiz();
+  });
+  $('#btn-fresh').addEventListener('click', () => {
+    LS.del(KEYS.prog);
+    session = pickSession(); saveProgress();
+    enterQuiz(); showToast('已为你重新抽题');
+  });
+
+  $('#g-me').addEventListener('click', () => squish('#g-me-in'));
+  $('#g-you').addEventListener('click', () => squish('#g-you-in'));
+  if (matchMedia('(pointer:fine)').matches && !REDUCED) {
+    window.addEventListener('mousemove', e => {
+      homeFx.tx = (e.clientX/innerWidth - .5)*2;
+      homeFx.ty = (e.clientY/innerHeight - .5)*2;
+    });
+  }
+
+  document.querySelectorAll('#opts .opt').forEach(b => b.addEventListener('click', () => {
+    if (locked) return;
+    const q = QMAP[session.qids[session.index]];
+    const v = +b.dataset.v;
+    const had = session.answers[q.id] !== undefined;
+    session.answers[q.id] = v;
+    saveProgress();
+    document.querySelectorAll('#opts .opt').forEach(x => x.classList.toggle('is-on', x === b));
+    b.blur();
+    gsap.fromTo(b, { scale: .96 }, { scale: 1, duration: .35, ease: 'back.out(2.2)', clearProps: 'transform' });
+    gsap.fromTo(b.querySelectorAll('.opt-cell.lit'), { scaleY: .4 },
+      { scaleY: 1, duration: .45, stagger: .035, ease: 'back.out(3)', transformOrigin: 'bottom', clearProps: 'transform' });
+    updateNav();
+    gsap.to('#progress-fill', { scaleX: answeredCount()/TOTAL, duration: .45, ease: 'power2.out', overwrite: true });
+    clearTimeout(autoTimer);
+    if (session.index < TOTAL - 1) autoTimer = setTimeout(() => step(1), had ? 650 : 330);
+  }));
+
+  $('#btn-prev').addEventListener('click', () => step(-1));
+  $('#btn-next').addEventListener('click', () => { answeredCount() === TOTAL ? finishQuiz() : step(1); });
+  $('#btn-exit').addEventListener('click', () => {
+    saveProgress();
+    const ok = LS.get(KEYS.prog, null);
+    refreshHome();
+    switchScreen('#screen-quiz', '#screen-home').then(() => {
+      showToast(!LS.available ? '浏览器存储受限，本次进度保留在当前页面'
+              : (ok && ok.qids ? '进度已保存，随时回来继续' : '保存失败，请尽量不要刷新页面'));
+    });
+  });
+
+  $('#btn-share').addEventListener('click', makeShareImage);
+  $('#btn-close-modal').addEventListener('click', closeModal);
+  $('#modal-share').addEventListener('click', e => { if (e.target.id === 'modal-share') closeModal(); });
+  $('#btn-copy').addEventListener('click', async () => {
+    const r = window.__lastResult, p = r.type.plain;
+    const txt = `我在依恋测试里测出了「${r.type.name} · ${r.type.tag}」\n在关系里，我${p.a}，${p.conj}${p.b}。\n来测测你的依恋坐标 → 「屿」成人依恋测试 · 36题`;
+    (await copyText(txt)) ? showToast('文案已复制，快去分享吧') : showToast('复制失败，请手动复制');
+  });
+  $('#btn-again').addEventListener('click', () => {
+    session = pickSession(); saveProgress();
+    renderQuestion();
+    switchScreen('#screen-result', '#screen-quiz').then(() => {
+      gsap.fromTo('#opts .opt', { y: 12, opacity: 0 }, { y: 0, opacity: 1, stagger: .05, duration: .4, ease: 'power2.out', clearProps: 'all' });
+    });
+  });
+}
+
+function initBackdrop() {
+  if (REDUCED) return;
+  gsap.utils.toArray('.blob').forEach((b, i) => {
+    gsap.to(b, { x: i % 2 ? 42 : -42, y: 30 + i*8, duration: 16 + i*5, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  });
+  const cols = ['rgba(169,201,232,.55)', 'rgba(242,207,214,.55)', 'rgba(217,211,238,.55)', 'rgba(245,230,208,.6)'];
+  for (let i = 0; i < 9; i++) {
+    const d = document.createElement('i');
+    d.className = 'float-dot';
+    const s = 3.5 + Math.random()*4.5;
+    d.style.cssText = `width:${s}px;height:${s}px;left:${(Math.random()*100).toFixed(1)}vw;top:${(12+Math.random()*82).toFixed(1)}vh;background:${cols[i%4]}`;
+    document.body.appendChild(d);
+    gsap.to(d, { y: -(60 + Math.random()*90), x: (Math.random()-.5)*60, duration: 9 + Math.random()*8, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: Math.random()*5 });
+    gsap.to(d, { opacity: .18, duration: 3 + Math.random()*2, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: Math.random()*3 });
+  }
+}
+
+(function init() {
+  setTimeout(() => { document.body.style.opacity = 1; }, 1200);
+  gsap.to('body', { opacity: 1, duration: .5, ease: 'power1.out' });
+
+  buildStage();
+  initOptions();
+  bindEvents();
+  refreshHome();
+  initBackdrop();
+  initGate();   /* 验证码门：通过后 homeIntro 才会启动 */
+
+  if (REDUCED) {
+    homeFx.intro.v = 1; homeFx.rings = 1;
+    drawHome(0.7);
+    gsap.set(['#g-stars', '#face-me', '#face-you', '#home-tagline'], { opacity: 1 });
+    gsap.set('.ring-half', { opacity: .75 });
+    gsap.set(['#dust-me-1', '#dust-me-2', '#dust-you-1', '#dust-you-2'], { opacity: .75 });
+    gsap.set('.rise-home', { opacity: 1 });
+  } else {
+    /* 门后星系先安静地待机（纹理自转、流星、星尘闪烁隐约可见），
+       验证通过后由 gateCheck 触发 homeIntro 相遇叙事 */
+    homeFx.running = true;
+    requestAnimationFrame(homeLoop);
+    gsap.to('#tex-me',  { x: -92, duration: 22, repeat: -1, ease: 'none' });
+    gsap.to('#tex-you', { x: 92,  duration: 27, repeat: -1, ease: 'none' });
+    gsap.delayedCall(2.5, meteorLoop);
+  }
+})();
+</script>
+</body>
+</html>
